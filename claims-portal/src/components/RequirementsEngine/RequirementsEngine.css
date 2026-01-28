@@ -1,0 +1,35 @@
+.requirements-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 1024px) {
+  .requirements-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .requirements-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.requirement-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 1024px) {
+  .requirement-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .requirement-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

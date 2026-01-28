@@ -1,0 +1,23 @@
+.beneficiary-analyzer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-gap-l);
+}
+
+@media (max-width: 1200px) {
+  .beneficiary-analyzer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.beneficiary-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 768px) {
+  .beneficiary-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

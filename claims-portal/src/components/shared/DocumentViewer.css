@@ -1,0 +1,26 @@
+/**
+ * DocumentViewer Component Styles
+ */
+
+.document-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-gap-m);
+}
+
+.document-thumbnail {
+  width: 100%;
+  height: 180px;
+  background-color: var(--color-bg-neutral-lighter);
+  border-bottom: 1px solid var(--border-color-neutral-lighter);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.document-grid > div:hover {
+  border-color: var(--border-color-secondary-medium) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}

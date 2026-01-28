@@ -1,0 +1,91 @@
+.workbench-container {
+  padding: 2rem;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline-event {
+  position: relative;
+  padding-bottom: 2rem;
+  border-left: 2px solid #e0e0e0;
+  padding-left: 2rem;
+}
+
+.timeline-event:last-child {
+  border-left: none;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #0095FF;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px #0095FF;
+}
+
+/* SA-001 Dashboard 360° Layout */
+.dashboard-grid-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-gap-l);
+}
+
+.dashboard-grid-middle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-gap-l);
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid-top,
+  .dashboard-grid-middle {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Payment Details Grid */
+.payment-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 1024px) {
+  .payment-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Policy Details Grid */
+.policy-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 1024px) {
+  .policy-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .policy-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

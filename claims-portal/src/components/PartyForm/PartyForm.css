@@ -1,0 +1,11 @@
+.party-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 768px) {
+  .party-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
