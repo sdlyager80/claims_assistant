@@ -3,17 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "description": "Claims Portal built with React and DXC Halstack",
-  "workspaces": [
-    "claims-portal"
-  ],
   "scripts": {
-    "dev": "npm run dev -w claims-portal",
-    "build": "npm run build -w claims-portal",
-    "preview": "npm run preview -w claims-portal",
-    "lint": "npm run lint -w claims-portal"
+    "dev": "cd claims-portal && npm run dev",
+    "build": "cd claims-portal && npm install && npm run build",
+    "preview": "cd claims-portal && npm run preview",
+    "lint": "cd claims-portal && npm run lint",
+    "postinstall": "cd claims-portal && npm install"
   },
   "engines": {
-    "node": ">=18.0.0 || >=20.0.0",
+    "node": ">=18.0.0",
     "npm": ">=9.0.0"
   }
 }
