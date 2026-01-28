@@ -1,0 +1,23 @@
+.tax-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 768px) {
+  .tax-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tax-results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-gap-m);
+}
+
+@media (max-width: 768px) {
+  .tax-results-grid {
+    grid-template-columns: 1fr;
+  }
+}

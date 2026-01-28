@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd claims-portal && npm run build",
+  "outputDirectory": "claims-portal/dist",
+  "installCommand": "cd claims-portal && npm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
