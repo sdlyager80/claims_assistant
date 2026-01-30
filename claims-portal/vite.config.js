@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    base: './',
     server: {
       proxy: {
         // Proxy for OAuth token requests
