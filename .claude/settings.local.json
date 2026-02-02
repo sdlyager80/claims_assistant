@@ -28,7 +28,8 @@
       "Bash(npm view:*)",
       "Bash(timeout:*)",
       "WebFetch(domain:developer.dxc.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(npx vite build:*)"
     ]
   }
 }
