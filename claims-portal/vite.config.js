@@ -44,6 +44,16 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: true,
 
+          rewrite: (path) => path.replace(/^\/servicenow-oauth/, '/oauth_token.do'),
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('[OAuth Proxy] Token request →', options.target + '/oauth_token.do');
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              console.log('[OAuth Proxy] Token response:', proxyRes.statusCode);
+            });
+            proxy.on('error', (err, req, res) => {
+
           rewrite: () => '/oauth_token.do',
 
           configure(proxy) {
