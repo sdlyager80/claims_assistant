@@ -150,7 +150,7 @@ export const RequirementType = {
  * @property {string} routing - Routing type (fasttrack, standard)
  * @property {string} slaDate - SLA due date
  * @property {number} daysOpen - Days since claim opened
- * @property {number} daysToSla - Days remaining until SLA breach
+ * @property {number} daysToSla - Days remaining until SLA overdue
  * @property {string} assignedTo - Assigned examiner/queue
  * @property {string} priority - Priority level
  */

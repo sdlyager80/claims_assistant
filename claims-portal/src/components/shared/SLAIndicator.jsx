@@ -34,7 +34,7 @@ const SLAIndicator = ({
 
       // Determine status
       if (days < 0) {
-        setStatus('breached');
+        setStatus('overdue');
       } else if (days <= 1) {
         setStatus('critical');
       } else if (days <= 3) {
@@ -53,7 +53,7 @@ const SLAIndicator = ({
   // Get color based on status
   const getColor = () => {
     switch (status) {
-      case 'breached':
+      case 'overdue':
         return '#D0021B';
       case 'critical':
         return '#FF6B00';
@@ -69,7 +69,7 @@ const SLAIndicator = ({
   // Get icon based on status
   const getIcon = () => {
     switch (status) {
-      case 'breached':
+      case 'overdue':
         return 'error';
       case 'critical':
         return 'warning';
@@ -104,7 +104,7 @@ const SLAIndicator = ({
             fontWeight="600"
             color={getColor()}
           >
-            {status === 'breached' && 'Delayed'}
+            {status === 'overdue' && 'SLA Overdue'}
             {status === 'critical' && 'SLA Critical'}
             {status === 'at-risk' && 'SLA At Risk'}
             {status === 'on-track' && 'On Track'}

@@ -378,7 +378,7 @@ export const getSLAStatus = async (caseId) => {
 };
 
 /**
- * Get cases at risk of SLA breach
+ * Get cases at risk of becoming SLA overdue
  * @param {number} daysThreshold - Days threshold (default: 3)
  * @returns {Promise<Array>} At-risk cases
  */

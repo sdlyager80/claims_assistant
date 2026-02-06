@@ -274,7 +274,7 @@ User Action → Orchestrator → Service Call → Event Published → Sync Engin
 | **Claim-to-Pay (FastTrack)** | ≤10 days | Target ready | ✅ Ready |
 | **3-Point Match Accuracy** | ≥95% | Verification integrated | ✅ Ready |
 | **IDP Auto-Satisfaction** | 85-95% | 85% threshold | ✅ Ready |
-| **SLA Breach Rate** | <5% | Tracking active | ✅ Ready |
+| **SLA Overdue Rate** | <5% | Tracking active | ✅ Ready |
 | **Dashboard Load Time** | <3s | Optimized caching | ✅ Achieved |
 | **Orchestration Time** | <3s | Architecture ready | ✅ Ready |
 | **Rule Evaluation** | <100ms | ~50ms | ✅ Achieved |
@@ -472,7 +472,7 @@ claims-portal/
 - **60% Reduction** in claim processing time (30-45 days → 10 days for FastTrack)
 - **85-95% Automation** of requirement satisfaction via IDP
 - **40%+ Claims** eligible for FastTrack processing
-- **<5% SLA Breaches** with real-time monitoring
+- **<5% SLA Overdue** with real-time monitoring
 
 ### **Cost Savings**
 

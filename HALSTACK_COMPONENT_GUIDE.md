@@ -667,7 +667,7 @@ import { DxcAlert } from '@dxc-technology/halstack-react';
 <DxcAlert
   semantic="warning"
   title="SLA At Risk"
-  message={{ text: 'This claim will breach SLA in 2 days.' }}
+  message={{ text: 'This claim will be SLA overdue in 2 days.' }}
   primaryAction={{
     label: 'Escalate',
     onClick: handleEscalate

@@ -185,7 +185,7 @@ Real-time SLA countdown with visual status alerts.
   - 🟢 On Track (>3 days remaining)
   - 🟡 At Risk (1-3 days remaining)
   - 🟠 Critical (<1 day remaining)
-  - 🔴 Breached (past SLA date)
+  - 🔴 Overdue (past SLA date)
 
 ```javascript
 import SLAIndicator, { SLACountdownCompact } from './shared/SLAIndicator';
@@ -294,7 +294,7 @@ Claim ready for processing
 | FastTrack Eligibility Rate | ≥40% | ✅ Engine ready |
 | 3-Point Match Accuracy | ≥95% | ✅ Verification integrated |
 | Claim-to-Pay (FastTrack) | ≤10 days | 🔧 Monitoring ready |
-| SLA Breach Rate | <5% | ✅ SLA tracking active |
+| SLA Overdue Rate | <5% | ✅ SLA tracking active |
 | Automated Requirements | 85-95% | ⏳ Phase 3 |
 
 ---

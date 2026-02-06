@@ -625,7 +625,7 @@ export class SLAService {
     const daysRemaining = targetDays - daysSinceSubmission;
 
     const status = daysRemaining > 5 ? 'on-track' :
-                   daysRemaining > 0 ? 'at-risk' : 'breached';
+                   daysRemaining > 0 ? 'at-risk' : 'overdue';
 
     return {
       targetDays,
@@ -651,9 +651,9 @@ export class SLAService {
           daysRemaining: sla.daysRemaining,
           assignedTo: claim.assignedExaminer
         });
-      } else if (sla.status === 'breached') {
+      } else if (sla.status === 'overdue') {
         await this.escalate({
-          type: 'sla-breach',
+          type: 'sla-overdue',
           claimId: claim.id,
           daysPastDue: Math.abs(sla.daysRemaining),
           assignedTo: claim.assignedExaminer,

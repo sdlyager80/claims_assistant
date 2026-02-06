@@ -74,7 +74,7 @@ Phase 2 successfully implements the orchestration layer that coordinates claim p
 #### **SLA Indicator** (`SLAIndicator.jsx`)
 - Real-time countdown with visual alerts
 - Updates every minute via setInterval
-- Status-based coloring: Breached (red), Critical (orange), At Risk (yellow), On Track (green)
+- Status-based coloring: Overdue (red), Critical (orange), At Risk (yellow), On Track (green)
 - Progress bar showing days elapsed / SLA days
 - Compact version for list views
 - Props: `slaDate`, `daysOpen`, `slaDays`, `routing`, `compact`
@@ -138,7 +138,7 @@ Phase 2 seamlessly extends Phase 1:
 | FastTrack Eligibility Rate | ≥40% | ✅ Engine operational |
 | 3-Point Match Accuracy | ≥95% | ✅ Verification integrated |
 | Claim-to-Pay (FastTrack) | ≤10 days | ✅ Monitoring ready |
-| SLA Breach Rate | <5% | ✅ SLA tracking active |
+| SLA Overdue Rate | <5% | ✅ SLA tracking active |
 | Automated Requirements | 85-95% | ⏳ Phase 3 |
 
 **Current Performance:**
