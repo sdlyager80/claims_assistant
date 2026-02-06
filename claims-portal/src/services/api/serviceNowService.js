@@ -28,7 +28,8 @@ class ServiceNowService {
     this.clientSecret = import.meta.env.VITE_SERVICENOW_CLIENT_SECRET || '';
     this.useOAuth = !!(this.clientId && this.clientSecret);
     // Redirect back to the app's actual URL (not a sub-path that won't exist on static hosting)
-    this.redirectUri = import.meta.env.VITE_OAUTH_REDIRECT_URI || window.location.origin + window.location.pathname;
+    // this.redirectUri = import.meta.env.VITE_OAUTH_REDIRECT_URI || window.location.origin + window.location.pathname;
+    this.redirectUri = import.meta.env.VITE_OAUTH_REDIRECT_URI;
     this.accessToken = null;
     this.tokenExpiry = null;
     this.refreshToken = null;
