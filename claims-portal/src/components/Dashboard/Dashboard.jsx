@@ -85,7 +85,7 @@ const Dashboard = ({ onClaimSelect }) => {
       }
     });
 
-    return () => unsubscribe();
+    return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
   }, []);
 
   // Merge demo claims with ServiceNow claims (deduplicate by sysId)
@@ -1131,7 +1131,7 @@ const Dashboard = ({ onClaimSelect }) => {
                   ? new Date(submission.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
                   : submission.submitted;
                 const hasFastTrack = isClaim && submission.routing?.type === RoutingType.FASTTRACK;
-                const isClosed = isClaim && (submission.status === 'CLOSED' || submission.status === 'DENIED' || submission.status === 'APPROVED');
+                const isClosed = isClaim && (submission.status === 'closed' || submission.status === 'denied' || submission.status === 'approved');
                 const hasSLA = isClaim && submission.workflow?.sla?.dueDate;
 
                 return (

@@ -54,6 +54,9 @@ class ServiceNowService {
 
   onAuthChange(cb) {
     this._callbacks.push(cb);
+    return () => {
+      this._callbacks = this._callbacks.filter(fn => fn !== cb);
+    };
   }
 
   _notify() {

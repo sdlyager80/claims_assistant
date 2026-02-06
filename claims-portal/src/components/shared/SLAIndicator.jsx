@@ -21,7 +21,7 @@ const SLAIndicator = ({
   const [status, setStatus] = useState('on-track');
 
   // Check if claim is closed/denied
-  const isClosed = claimStatus === 'CLOSED' || claimStatus === 'DENIED' || claimStatus === 'APPROVED';
+  const isClosed = claimStatus === 'closed' || claimStatus === 'denied' || claimStatus === 'approved';
 
   useEffect(() => {
     if (!slaDate) return;
@@ -237,7 +237,7 @@ const SLAIndicator = ({
  * Compact version for list views
  */
 export const SLACountdownCompact = ({ daysRemaining, status = 'on-track', claimStatus = null }) => {
-  const isClosed = claimStatus === 'CLOSED' || claimStatus === 'DENIED' || claimStatus === 'APPROVED';
+  const isClosed = claimStatus === 'closed' || claimStatus === 'denied' || claimStatus === 'approved';
 
   if (isClosed) {
     return (
