@@ -11,62 +11,62 @@ import {
 
 const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
   const [customColors, setCustomColors] = useState({
-    blue: '#0095FF',
+    blue: '#2196f3',
+    lightBlue: '#64b5f6',
     green: '#24A148',
     orange: '#FF6B00',
-    red: '#D0021B',
-    purple: '#7B61FF'
+    red: '#D0021B'
   });
 
   const predefinedThemes = [
     {
       name: 'Ocean Blue',
       colors: {
-        blue: '#0095FF',
+        blue: '#2196f3',
+        lightBlue: '#64b5f6',
         green: '#00C9A7',
         orange: '#FF8C42',
-        red: '#FF5E5E',
-        purple: '#6C63FF'
+        red: '#FF5E5E'
       }
     },
     {
-      name: 'Forest Green',
+      name: 'Sky Blue',
       colors: {
-        blue: '#2E7D32',
+        blue: '#42a5f5',
+        lightBlue: '#90caf9',
+        green: '#66bb6a',
+        orange: '#FFA726',
+        red: '#ef5350'
+      }
+    },
+    {
+      name: 'Navy Blue',
+      colors: {
+        blue: '#1565c0',
+        lightBlue: '#1976d2',
         green: '#43A047',
         orange: '#FB8C00',
-        red: '#D32F2F',
-        purple: '#7B1FA2'
+        red: '#D32F2F'
       }
     },
     {
-      name: 'Sunset Orange',
+      name: 'Corporate Blue',
       colors: {
-        blue: '#F57C00',
-        green: '#FFB300',
-        orange: '#FF6F00',
-        red: '#D84315',
-        purple: '#E65100'
-      }
-    },
-    {
-      name: 'Corporate Purple',
-      colors: {
-        blue: '#5E35B1',
-        green: '#7E57C2',
+        blue: '#1976d2',
+        lightBlue: '#42a5f5',
+        green: '#4caf50',
         orange: '#FF7043',
-        red: '#E53935',
-        purple: '#8E24AA'
+        red: '#E53935'
       }
     },
     {
       name: 'Modern Teal',
       colors: {
         blue: '#00897B',
-        green: '#26A69A',
+        lightBlue: '#26A69A',
+        green: '#66bb6a',
         orange: '#FFB74D',
-        red: '#EF5350',
-        purple: '#AB47BC'
+        red: '#EF5350'
       }
     }
   ];
@@ -82,10 +82,15 @@ const ThemeSettings = ({ isOpen, onClose, onThemeChange }) => {
     // Apply theme to CSS variables
     const root = document.documentElement;
     root.style.setProperty('--color-blue-700', colors.blue);
+    root.style.setProperty('--color-blue-400', colors.lightBlue);
     root.style.setProperty('--color-green-700', colors.green);
     root.style.setProperty('--color-orange-700', colors.orange);
     root.style.setProperty('--color-red-700', colors.red);
-    root.style.setProperty('--color-purple-700', colors.purple);
+
+    // Override primary colors with blue
+    root.style.setProperty('--color-primary', colors.blue);
+    root.style.setProperty('--color-primary-dark', colors.blue);
+    root.style.setProperty('--color-primary-lighter', colors.lightBlue);
 
     if (onThemeChange) {
       onThemeChange(colors);

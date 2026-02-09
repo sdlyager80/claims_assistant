@@ -2,6 +2,65 @@
   box-sizing: border-box;
 }
 
+/* Halstack Theme Override: Replace Purple with Blue */
+:root {
+  /* Primary color overrides - changing purple to blue */
+  --color-purple-100: #e3f2fd !important;
+  --color-purple-200: #bbdefb !important;
+  --color-purple-300: #90caf9 !important;
+  --color-purple-400: #64b5f6 !important;
+  --color-purple-500: #42a5f5 !important;
+  --color-purple-600: #2196f3 !important;
+  --color-purple-700: #1976d2 !important;
+  --color-purple-800: #1565c0 !important;
+  --color-purple-900: #0d47a1 !important;
+
+  /* Halstack primary color tokens (purple -> blue) */
+  --color-primary-lightest: #e3f2fd !important;
+  --color-primary-lighter: #90caf9 !important;
+  --color-primary-light: #42a5f5 !important;
+  --color-primary: #2196f3 !important;
+  --color-primary-dark: #1976d2 !important;
+  --color-primary-darker: #1565c0 !important;
+  --color-primary-darkest: #0d47a1 !important;
+
+  /* Background colors for primary (purple -> blue) */
+  --color-bg-primary-weakest: #e3f2fd !important;
+  --color-bg-primary-weaker: #bbdefb !important;
+  --color-bg-primary-weak: #90caf9 !important;
+  --color-bg-primary-lighter: #64b5f6 !important;
+  --color-bg-primary: #2196f3 !important;
+  --color-bg-primary-strong: #1976d2 !important;
+  --color-bg-primary-stronger: #1565c0 !important;
+  --color-bg-primary-strongest: #0d47a1 !important;
+
+  /* Foreground/text colors for primary (purple -> blue) */
+  --color-fg-primary-weakest: #e3f2fd !important;
+  --color-fg-primary-weaker: #bbdefb !important;
+  --color-fg-primary-weak: #90caf9 !important;
+  --color-fg-primary-lighter: #64b5f6 !important;
+  --color-fg-primary: #2196f3 !important;
+  --color-fg-primary-medium: #2196f3 !important;
+  --color-fg-primary-strong: #1976d2 !important;
+  --color-fg-primary-stronger: #1565c0 !important;
+  --color-fg-primary-strongest: #0d47a1 !important;
+
+  /* Border colors for primary (purple -> blue) */
+  --color-border-primary-weakest: #e3f2fd !important;
+  --color-border-primary-weaker: #bbdefb !important;
+  --color-border-primary-weak: #90caf9 !important;
+  --color-border-primary-lighter: #64b5f6 !important;
+  --color-border-primary: #2196f3 !important;
+  --color-border-primary-strong: #1976d2 !important;
+  --color-border-primary-stronger: #1565c0 !important;
+  --color-border-primary-strongest: #0d47a1 !important;
+
+  /* Secondary color overrides (keeping blue tones) */
+  --color-secondary: #2196f3 !important;
+  --color-secondary-dark: #1976d2 !important;
+  --color-secondary-darker: #1565c0 !important;
+}
+
 body {
   margin: 0;
   padding: 0;
