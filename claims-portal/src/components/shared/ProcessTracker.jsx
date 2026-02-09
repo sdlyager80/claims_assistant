@@ -60,7 +60,7 @@ const ProcessTracker = ({ claim }) => {
             left: 0,
             height: '100%',
             width: isDenied ? '50%' : `${(currentStageIndex / (stages.length - 1)) * 100}%`,
-            backgroundColor: isDenied ? '#000000' : '#000000',
+            backgroundColor: isDenied ? '#d02e2e' : '#1b75bb',
             transition: 'width 0.5s ease',
             zIndex: 1
           }} />
@@ -86,14 +86,14 @@ const ProcessTracker = ({ claim }) => {
                   width: '56px',
                   height: '56px',
                   borderRadius: '50%',
-                  backgroundColor: isComplete || isCurrent ? '#000000' : 'var(--color-bg-neutral-lighter)',
-                  border: isCurrent ? '4px solid #000000' : '2px solid var(--color-border-neutral-medium)',
+                  backgroundColor: isComplete ? '#37a526' : isCurrent ? '#1b75bb' : 'var(--color-bg-neutral-lighter)',
+                  border: isCurrent ? '4px solid #1b75bb' : '2px solid var(--color-border-neutral-medium)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '24px',
                   transition: 'all 0.3s ease',
-                  boxShadow: isCurrent ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none',
+                  boxShadow: isCurrent ? '0 4px 12px rgba(27, 117, 187, 0.3)' : 'none',
                   animation: isCurrent ? 'pulse 2s infinite' : 'none',
                   position: 'relative'
                 }}>
@@ -114,7 +114,7 @@ const ProcessTracker = ({ claim }) => {
                       width: '100%',
                       height: '100%',
                       borderRadius: '50%',
-                      border: '3px solid #000000',
+                      border: '3px solid #1b75bb',
                       animation: 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite'
                     }} />
                   )}
@@ -134,7 +134,7 @@ const ProcessTracker = ({ claim }) => {
                 {isCurrent && (
                   <div style={{
                     padding: '4px 12px',
-                    backgroundColor: '#000000',
+                    backgroundColor: '#1b75bb',
                     borderRadius: 'var(--border-radius-m)',
                     marginTop: '4px'
                   }}>
@@ -145,7 +145,7 @@ const ProcessTracker = ({ claim }) => {
                 )}
 
                 {isComplete && (
-                  <DxcTypography fontSize="10px" color="#000000" fontWeight="font-weight-medium">
+                  <DxcTypography fontSize="10px" color="#37a526" fontWeight="font-weight-medium">
                     COMPLETED
                   </DxcTypography>
                 )}

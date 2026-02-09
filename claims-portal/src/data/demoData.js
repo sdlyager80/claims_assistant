@@ -330,12 +330,12 @@ const createShowcaseClaims = () => {
     const claimAmount = 75000;
 
     const claim = {
-      id: 'claim-0c', claimNumber: 'CLM-000052', status: ClaimStatus.APPROVED, type: ClaimType.SURRENDER,
+      id: 'claim-0c', claimNumber: 'CLM-000052', status: ClaimStatus.APPROVED, type: ClaimType.WITHDRAWAL,
       createdAt: createdDate.toISOString(), updatedAt: approvedDate.toISOString(), closedAt: null,
       deathEvent: {
         dateOfDeath: null,
-        mannerOfDeath: 'N/A - Surrender',
-        causeOfDeath: 'N/A - No Death',
+        mannerOfDeath: 'N/A - Loan',
+        causeOfDeath: 'N/A - Loan Request',
         deathInUSA: null,
         countryOfDeath: null,
         stateOfDeath: null,
@@ -344,7 +344,7 @@ const createShowcaseClaims = () => {
         certifiedDOB: '1965-12-08',
         verificationSource: 'Policy Admin',
         verificationScore: 98,
-        specialEvent: 'Annuity Surrender'
+        specialEvent: 'Annuity Loan'
       },
       insured: {
         name: 'Patricia Williams',
@@ -361,31 +361,32 @@ const createShowcaseClaims = () => {
       policies: [{
         policyNumber: 'POL-459123', policyType: 'Variable Annuity', policyStatus: 'In Force', issueDate: '2016-09-10',
         issueState: 'GA', region: 'Southeast', companyCode: 'ALI', planCode: 'VA-FLEX', faceAmount: 0,
-        currentCashValue: claimAmount, loanBalance: 0, paidToDate: new Date(createdDate.getTime() - 30 * DAY).toISOString().split('T')[0],
+        currentCashValue: 150000, loanBalance: claimAmount, paidToDate: new Date(createdDate.getTime() - 30 * DAY).toISOString().split('T')[0],
         source: 'Policy Admin', owner: 'Patricia Williams'
       }],
       policy: {
         policyNumber: 'POL-459123', type: 'Variable Annuity', status: 'In Force', issueDate: '2016-09-10',
-        faceAmount: 0, currentCashValue: claimAmount, owner: 'Patricia Williams'
+        faceAmount: 0, currentCashValue: 150000, loanBalance: claimAmount, owner: 'Patricia Williams'
       },
       parties: [
         { id: 'party-0c-1', name: 'Patricia Williams', role: 'Policy Owner', source: 'Policy Admin', resState: 'GA', dateOfBirth: '1965-12-08', ssn: maskedSSN('8524'), phone: '404-555-0734', email: 'patricia.williams@email.com', address: '3680 Peachtree Road, Atlanta, GA 30319', verificationStatus: 'Verified', verificationScore: 98, cslnAction: 'Verified', cslnResult: 'Match' }
       ],
       aiInsights: {
-        riskScore: 12,
+        riskScore: 8,
         alerts: [],
         stpEligible: true,
-        stpReason: 'Full surrender request verified. Owner identity confirmed, no contestability period, surrender value confirmed.'
+        stpReason: 'Annuity loan request verified. Policy owner identity confirmed, sufficient cash value available, loan within policy limits.'
       },
       financial: {
         claimAmount, reserve: 0, amountPaid: 0, pmiState: null, pmiRate: 0, pmiDays: 0,
         interestAmount: 0, netBenefitProceeds: claimAmount, netBenefitPMI: 0,
-        surrenderCharge: 3750, // 5% surrender charge
-        netAmount: claimAmount - 3750,
-        federalTaxRate: 24, stateTaxRate: 6, taxableAmount: claimAmount, // Full amount is taxable for annuity
-        federalTaxWithheld: Math.floor(claimAmount * 0.24),
-        stateTaxWithheld: Math.floor(claimAmount * 0.06),
-        taxWithheld: Math.floor(claimAmount * 0.30),
+        loanAmount: claimAmount, // Loan amount
+        loanInterestRate: 5.5, // Annual interest rate
+        netAmount: claimAmount, // Full loan amount disbursed
+        federalTaxRate: 0, stateTaxRate: 0, taxableAmount: 0, // Loans are not taxable
+        federalTaxWithheld: 0,
+        stateTaxWithheld: 0,
+        taxWithheld: 0,
         percentage: 100, currency: 'USD', payments: []
       },
       routing: {
