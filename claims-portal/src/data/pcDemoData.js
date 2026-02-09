@@ -4,7 +4,7 @@
 const pcDemoData = [
   {
     id: 'pc-claim-001',
-    claimNumber: 'PC-2024-001',
+    claimNumber: 'PC-2026-001',
     type: 'commercial_property',
     lineOfBusiness: 'property_casualty',
     subType: 'water_damage',
@@ -22,8 +22,8 @@ const pcDemoData = [
     // Loss Event (P&C equivalent of death event)
     lossEvent: {
       eventType: 'winter_storm',
-      lossDate: '2024-01-15T03:45:00Z',
-      reportedDate: '2024-01-15T07:30:00Z',
+      lossDate: '2026-01-15T03:45:00Z',
+      reportedDate: '2026-01-15T07:30:00Z',
       causeOfLoss: 'Frozen Pipe Burst',
       location: {
         address: '1245 Pearl Street',
@@ -44,7 +44,7 @@ const pcDemoData = [
           sensorId: 'TEMP-GPF-001',
           type: 'temperature',
           reading: '-5°F',
-          timestamp: '2024-01-15T02:30:00Z',
+          timestamp: '2026-01-15T02:30:00Z',
           alert: 'Critical temperature drop detected',
           status: 'active'
         },
@@ -52,7 +52,7 @@ const pcDemoData = [
           sensorId: 'WATER-GPF-002',
           type: 'water_leak',
           reading: 'Active leak detected',
-          timestamp: '2024-01-15T03:45:00Z',
+          timestamp: '2026-01-15T03:45:00Z',
           alert: 'Water leak detected in storage area',
           status: 'active'
         },
@@ -60,7 +60,7 @@ const pcDemoData = [
           sensorId: 'HUMID-GPF-003',
           type: 'humidity',
           reading: '85%',
-          timestamp: '2024-01-15T04:00:00Z',
+          timestamp: '2026-01-15T04:00:00Z',
           alert: 'Abnormal humidity spike',
           status: 'active'
         }
@@ -98,8 +98,8 @@ const pcDemoData = [
       ],
       totalEstimatedLoss: 87000,
       photos: [
-        { url: '/images/water-damage-storage.jpg', caption: 'Storage room water damage', timestamp: '2024-01-15T08:00:00Z' },
-        { url: '/images/inventory-loss.jpg', caption: 'Damaged flower inventory', timestamp: '2024-01-15T08:15:00Z' }
+        { url: '/images/water-damage-storage.jpg', caption: 'Storage room water damage', timestamp: '2026-01-15T08:00:00Z' },
+        { url: '/images/inventory-loss.jpg', caption: 'Damaged flower inventory', timestamp: '2026-01-15T08:15:00Z' }
       ]
     },
 
@@ -124,14 +124,14 @@ const pcDemoData = [
     proactiveAlerts: [
       {
         type: 'temperature_warning',
-        timestamp: '2024-01-15T02:30:00Z',
+        timestamp: '2026-01-15T02:30:00Z',
         message: 'Critical temperature drop detected at insured location',
         severity: 'high',
         actionTaken: 'Automated notification sent to insured'
       },
       {
         type: 'weather_advisory',
-        timestamp: '2024-01-14T18:00:00Z',
+        timestamp: '2026-01-14T18:00:00Z',
         message: 'Winter storm warning issued for Denver area',
         severity: 'medium',
         actionTaken: 'Preventive measures advisory sent'
@@ -149,7 +149,7 @@ const pcDemoData = [
       totalExposure: 87000,
       paidToDate: 0,
       reserveAdequacy: 'adequate',
-      lastReserveUpdate: '2024-01-15T10:00:00Z'
+      lastReserveUpdate: '2026-01-15T10:00:00Z'
     },
 
     policy: {
@@ -157,7 +157,7 @@ const pcDemoData = [
       policyType: 'Business Owners Policy',
       carrier: 'Assure Insurance Group',
       effectiveDate: '2023-06-01',
-      expirationDate: '2024-06-01',
+      expirationDate: '2026-06-01',
       premium: 4500,
       coverages: [
         { type: 'Property Damage', limit: 500000, deductible: 5000 },
@@ -169,7 +169,7 @@ const pcDemoData = [
     workflow: {
       currentStage: 'adjuster_review',
       assignedTo: 'James Mitchell',
-      assignedDate: '2024-01-15T09:00:00Z',
+      assignedDate: '2026-01-15T09:00:00Z',
       sla: {
         responseTime: '4 hours',
         resolutionTime: '15 days',
@@ -191,24 +191,24 @@ const pcDemoData = [
     },
 
     documents: [
-      { id: 'doc-001', type: 'FNOL', name: 'First Notice of Loss', uploadDate: '2024-01-15T07:30:00Z' },
-      { id: 'doc-002', type: 'Photos', name: 'Damage Photos', uploadDate: '2024-01-15T08:30:00Z' },
-      { id: 'doc-003', type: 'Invoice', name: 'Inventory Loss List', uploadDate: '2024-01-15T10:00:00Z' }
+      { id: 'doc-001', type: 'FNOL', name: 'First Notice of Loss', uploadDate: '2026-01-15T07:30:00Z' },
+      { id: 'doc-002', type: 'Photos', name: 'Damage Photos', uploadDate: '2026-01-15T08:30:00Z' },
+      { id: 'doc-003', type: 'Invoice', name: 'Inventory Loss List', uploadDate: '2026-01-15T10:00:00Z' }
     ],
 
     timeline: [
-      { date: '2024-01-15T02:30:00Z', event: 'IoT temperature alert triggered', actor: 'System' },
-      { date: '2024-01-15T03:45:00Z', event: 'Water leak sensor activated', actor: 'System' },
-      { date: '2024-01-15T07:30:00Z', event: 'Claim reported via mobile app', actor: 'Maria Rodriguez' },
-      { date: '2024-01-15T09:00:00Z', event: 'Claim assigned to adjuster', actor: 'System' },
-      { date: '2024-01-15T10:00:00Z', event: 'Initial reserve set', actor: 'James Mitchell' }
+      { date: '2026-01-15T02:30:00Z', event: 'IoT temperature alert triggered', actor: 'System' },
+      { date: '2026-01-15T03:45:00Z', event: 'Water leak sensor activated', actor: 'System' },
+      { date: '2026-01-15T07:30:00Z', event: 'Claim reported via mobile app', actor: 'Maria Rodriguez' },
+      { date: '2026-01-15T09:00:00Z', event: 'Claim assigned to adjuster', actor: 'System' },
+      { date: '2026-01-15T10:00:00Z', event: 'Initial reserve set', actor: 'James Mitchell' }
     ]
   },
 
   // Additional P&C Claims for Demo Variety
   {
     id: 'pc-claim-002',
-    claimNumber: 'PC-2024-002',
+    claimNumber: 'PC-2026-002',
     type: 'auto_collision',
     lineOfBusiness: 'property_casualty',
     subType: 'collision',
@@ -222,8 +222,8 @@ const pcDemoData = [
     },
     lossEvent: {
       eventType: 'auto_collision',
-      lossDate: '2024-01-10T14:30:00Z',
-      reportedDate: '2024-01-10T15:00:00Z',
+      lossDate: '2026-01-10T14:30:00Z',
+      reportedDate: '2026-01-10T15:00:00Z',
       causeOfLoss: 'Multi-vehicle collision on I-25',
       location: {
         address: 'I-25 & Arapahoe Road',
@@ -278,7 +278,7 @@ const pcDemoData = [
 
   {
     id: 'pc-claim-003',
-    claimNumber: 'PC-2024-003',
+    claimNumber: 'PC-2026-003',
     type: 'homeowners',
     lineOfBusiness: 'property_casualty',
     subType: 'fire_damage',
@@ -292,8 +292,8 @@ const pcDemoData = [
     },
     lossEvent: {
       eventType: 'fire',
-      lossDate: '2024-01-12T22:00:00Z',
-      reportedDate: '2024-01-12T23:30:00Z',
+      lossDate: '2026-01-12T22:00:00Z',
+      reportedDate: '2026-01-12T23:30:00Z',
       causeOfLoss: 'Kitchen fire from unattended cooking',
       location: {
         address: '3421 Maple Drive',
@@ -349,7 +349,7 @@ const pcDemoData = [
 
   {
     id: 'pc-claim-004',
-    claimNumber: 'PC-2024-004',
+    claimNumber: 'PC-2026-004',
     type: 'liability',
     lineOfBusiness: 'property_casualty',
     subType: 'general_liability',
@@ -364,8 +364,8 @@ const pcDemoData = [
     },
     lossEvent: {
       eventType: 'property_damage',
-      lossDate: '2024-01-08T11:00:00Z',
-      reportedDate: '2024-01-09T09:00:00Z',
+      lossDate: '2026-01-08T11:00:00Z',
+      reportedDate: '2026-01-09T09:00:00Z',
       causeOfLoss: 'Equipment damage to client property',
       location: {
         address: '5678 Construction Site Ave',
@@ -420,7 +420,7 @@ const pcDemoData = [
 
   {
     id: 'pc-claim-005',
-    claimNumber: 'PC-2024-005',
+    claimNumber: 'PC-2026-005',
     type: 'auto_comprehensive',
     lineOfBusiness: 'property_casualty',
     subType: 'theft',
@@ -434,8 +434,8 @@ const pcDemoData = [
     },
     lossEvent: {
       eventType: 'theft',
-      lossDate: '2024-01-14T02:00:00Z',
-      reportedDate: '2024-01-14T07:30:00Z',
+      lossDate: '2026-01-14T02:00:00Z',
+      reportedDate: '2026-01-14T07:30:00Z',
       causeOfLoss: 'Vehicle theft from parking garage',
       location: {
         address: '1500 Parking Garage Lane',
