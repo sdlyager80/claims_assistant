@@ -352,7 +352,7 @@ const createShowcaseClaims = () => {
         dateOfBirth: '1965-12-08',
         dateOfDeath: null,
         age: 60
-      }
+      },
       claimant: {
         name: 'Patricia Williams',
         relationship: 'Policy Owner',
