@@ -1140,10 +1140,50 @@ const Dashboard = ({ onClaimSelect }) => {
                 const isClaim = submission.claimNumber !== undefined;
                 const isServiceNow = submission.source === 'servicenow';
                 const displayId = isClaim ? (submission.fnolNumber || submission.claimNumber) : submission.id;
-                const displayName = isClaim ? (submission.claimant?.name || submission.insured?.name) : submission.name;
+
+                // Helper to get claimant/insured name (handles different data structures)
+                const getClaimantName = (claim) => {
+                  // Try standard name field (L&A)
+                  if (claim.claimant?.name) return claim.claimant.name;
+                  if (claim.insured?.name) return claim.insured.name;
+                  // Try P&C structure with firstName/lastName
+                  if (claim.claimant?.firstName || claim.claimant?.lastName) {
+                    const first = claim.claimant.firstName || '';
+                    const last = claim.claimant.lastName || '';
+                    return `${first} ${last}`.trim();
+                  }
+                  // Try business name for commercial claims
+                  if (claim.claimant?.businessName) return claim.claimant.businessName;
+                  return 'N/A';
+                };
+
+                const displayName = isClaim ? getClaimantName(submission) : submission.name;
                 const displayStatus = isClaim ? submission.status : submission.status;
+
+                // Helper to get claim type display label
+                const getClaimTypeLabel = (type) => {
+                  const typeLabels = {
+                    // L&A Types
+                    'death': 'LOB: Life',
+                    'maturity': 'LOB: Annuity',
+                    'surrender': 'LOB: Annuity',
+                    'withdrawal': 'LOB: Annuity',
+                    'disability': 'LOB: Disability',
+                    // P&C Types
+                    'property_damage': 'LOB: Property',
+                    'commercial_property': 'LOB: Commercial Property',
+                    'homeowners': 'LOB: Homeowners',
+                    'auto_collision': 'LOB: Auto',
+                    'auto_comprehensive': 'LOB: Auto',
+                    'liability': 'LOB: Liability',
+                    'general_liability': 'LOB: General Liability',
+                    'workers_comp': 'LOB: Workers Comp'
+                  };
+                  return typeLabels[type] || `LOB: ${type}`;
+                };
+
                 const displayType = isClaim
-                  ? `LOB: ${submission.type === 'death' ? 'Life' : 'Annuity'}`
+                  ? getClaimTypeLabel(submission.type)
                   : submission.type;
                 const displaySubmitted = isClaim
                   ? new Date(submission.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
