@@ -332,8 +332,27 @@ const createShowcaseClaims = () => {
     const claim = {
       id: 'claim-0c', claimNumber: 'CLM-000052', status: ClaimStatus.APPROVED, type: ClaimType.SURRENDER,
       createdAt: createdDate.toISOString(), updatedAt: approvedDate.toISOString(), closedAt: null,
-      deathEvent: null, // No death event for surrender
-      insured: null, // Owner is alive
+      deathEvent: {
+        dateOfDeath: null,
+        mannerOfDeath: 'N/A - Surrender',
+        causeOfDeath: 'N/A - No Death',
+        deathInUSA: null,
+        countryOfDeath: null,
+        stateOfDeath: null,
+        proofOfDeathSourceType: 'N/A',
+        proofOfDeathDate: null,
+        certifiedDOB: '1965-12-08',
+        verificationSource: 'Policy Admin',
+        verificationScore: 98,
+        specialEvent: 'Annuity Surrender'
+      },
+      insured: {
+        name: 'Patricia Williams',
+        ssn: maskedSSN('8524'),
+        dateOfBirth: '1965-12-08',
+        dateOfDeath: null,
+        age: 60
+      }
       claimant: {
         name: 'Patricia Williams',
         relationship: 'Policy Owner',
