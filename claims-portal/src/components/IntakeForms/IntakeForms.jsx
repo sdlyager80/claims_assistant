@@ -404,7 +404,7 @@ const IntakeForms = () => {
                       padding: "var(--spacing-padding-l)",
                       borderRadius: "var(--border-radius-m)",
                       border: selectedProduct === 'life'
-                        ? "2px solid color="#000000"
+                        ? "2px solid #000000"
                         : "1px solid var(--border-color-neutral-lighter)",
                       backgroundColor: "var(--color-bg-neutral-lighter)",
                       cursor: "pointer",
@@ -431,7 +431,7 @@ const IntakeForms = () => {
                       padding: "var(--spacing-padding-l)",
                       borderRadius: "var(--border-radius-m)",
                       border: selectedProduct === 'annuity'
-                        ? "2px solid color="#000000"
+                        ? "2px solid #000000"
                         : "1px solid var(--border-color-neutral-lighter)",
                       backgroundColor: "var(--color-bg-neutral-lighter)",
                       cursor: "pointer",

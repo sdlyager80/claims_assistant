@@ -424,7 +424,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                     borderRadius: "var(--border-radius-m)",
                     boxShadow: "var(--shadow-mid-02)",
                     padding: "var(--spacing-padding-m)",
-                    borderLeft: "4px solid color="#000000"
+                    borderLeft: "4px solid #000000"
                   }}>
                     <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                       {/* Policy Header */}

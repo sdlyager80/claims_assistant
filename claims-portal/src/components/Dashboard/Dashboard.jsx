@@ -891,7 +891,7 @@ const Dashboard = ({ onClaimSelect }) => {
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
                   <thead>
-                    <tr style={{ borderBottom: "2px solid color="#000000", textAlign: "left" }}>
+                    <tr style={{ borderBottom: "2px solid #000000", textAlign: "left" }}>
                       <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>FNOL Number</th>
                       <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</th>
                       <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Insured</th>
@@ -981,7 +981,7 @@ const Dashboard = ({ onClaimSelect }) => {
                     padding: "12px 16px",
                     borderRadius: "var(--border-radius-m)",
                     border: subsetFilter === group.key
-                      ? "2px solid color="#000000"
+                      ? "2px solid #000000"
                       : "1px solid var(--border-color-neutral-lighter)",
                     backgroundColor: subsetFilter === group.key
                       ? "var(--color-bg-neutral-lighter)"
