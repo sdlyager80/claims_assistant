@@ -719,7 +719,7 @@ const Dashboard = ({ onClaimSelect }) => {
             </DxcFlex>
             <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" justifyContent="space-between">
               {/* FastTrack Claims */}
-              <div style={{ borderTop: "4px solid #0095FF", flex: "1" }}>
+              <div style={{ borderTop: "4px solid #000000", flex: "1" }}>
                 <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
                   <DxcFlex
                     direction="column"
@@ -739,7 +739,7 @@ const Dashboard = ({ onClaimSelect }) => {
                     <DxcTypography
                       fontSize="32px"
                       fontWeight="font-weight-semibold"
-                      color="#0095FF"
+                      color="#000000"
                       textAlign="center"
                     >
                       {fastTrackMetrics.count}
@@ -747,7 +747,7 @@ const Dashboard = ({ onClaimSelect }) => {
                     <DxcTypography
                       fontSize="12px"
                       fontWeight="font-weight-regular"
-                      color="#0095FF"
+                      color="#000000"
                       textAlign="center"
                     >
                       {fastTrackMetrics.percentage}% of total

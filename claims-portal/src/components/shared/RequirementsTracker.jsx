@@ -41,7 +41,7 @@ const RequirementItem = ({ requirement, onUpload, onWaive, onOverride, compact =
   };
 
   const getLevelColor = (level) => {
-    return level === RequirementLevel.MANDATORY ? '#D0021B' : '#0095FF';
+    return level === RequirementLevel.MANDATORY ? '#D0021B' : '#000000';
   };
 
   const isOverdue = requirement.isOverdue && requirement.isOverdue();

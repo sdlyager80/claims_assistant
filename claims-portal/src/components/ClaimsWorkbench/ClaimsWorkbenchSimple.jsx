@@ -91,7 +91,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
       status: 'In Review',
       dueDate: '01/25/2026',
       receivedDate: '01/17/2026',
-      color: '#0095FF'
+      color: '#000000'
     },
     {
       id: 4,
@@ -116,7 +116,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
       case 'Pending Review':
         return '#FF6B00';
       case 'In Review':
-        return '#0095FF';
+        return '#000000';
       case 'FastTrack Eligible':
         return '#24A148';
       case 'Approved':
@@ -183,8 +183,8 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#0095FF';
-                e.currentTarget.style.color = '#0095FF';
+                e.currentTarget.style.borderColor = '#000000';
+                e.currentTarget.style.color = '#000000';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = '#d0d0d0';
@@ -201,7 +201,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
           <DxcCard style={{ flex: '1 1 22%', minWidth: '180px' }}>
             <DxcFlex direction="column" gap="0.5rem">
               <span style={{ fontSize: '12px', color: '#666', fontWeight: 600 }}>CLAIM AMOUNT</span>
-              <span style={{ fontSize: '28px', fontWeight: 700, color: '#0095FF' }}>
+              <span style={{ fontSize: '28px', fontWeight: 700, color: '#000000' }}>
                 {claim?.claimAmount || '$500,000'}
               </span>
             </DxcFlex>
@@ -243,11 +243,11 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                   padding: '0.75rem 1.5rem',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: activeTab === tab ? '#0095FF' : '#666',
+                  color: activeTab === tab ? '#000000' : '#666',
                   fontWeight: activeTab === tab ? 600 : 400,
                   fontSize: '14px',
                   cursor: 'pointer',
-                  borderBottom: activeTab === tab ? '3px solid #0095FF' : '3px solid transparent',
+                  borderBottom: activeTab === tab ? '3px solid #000000' : '3px solid transparent',
                   marginBottom: '-2px',
                   textTransform: 'capitalize'
                 }}
@@ -308,7 +308,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                   <button
                     style={{
                       padding: '0.5rem 1.25rem',
-                      backgroundColor: '#0095FF',
+                      backgroundColor: '#000000',
                       color: '#fff',
                       border: 'none',
                       borderRadius: '4px',
@@ -318,7 +318,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                       transition: 'background-color 0.2s'
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0077CC'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0095FF'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#000000'}
                   >
                     Add Note
                   </button>
@@ -440,7 +440,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                 <button
                   style={{
                     padding: '0.5rem 1.25rem',
-                    backgroundColor: '#0095FF',
+                    backgroundColor: '#000000',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '4px',
@@ -450,7 +450,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                     transition: 'background-color 0.2s'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0077CC'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0095FF'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#000000'}
                 >
                   Upload Document
                 </button>
@@ -475,7 +475,7 @@ const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
                   <tbody>
                     {documents.map((doc, index) => (
                       <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                        <td style={{ padding: '1rem', fontSize: '14px', color: '#0095FF', fontWeight: 500 }}>{doc.name}</td>
+                        <td style={{ padding: '1rem', fontSize: '14px', color: '#000000', fontWeight: 500 }}>{doc.name}</td>
                         <td style={{ padding: '1rem', fontSize: '14px' }}>{doc.type}</td>
                         <td style={{ padding: '1rem', fontSize: '14px' }}>{doc.uploadDate}</td>
                         <td style={{ padding: '1rem', fontSize: '14px', textAlign: 'right' }}>{doc.size}</td>

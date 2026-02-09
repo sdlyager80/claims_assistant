@@ -39,7 +39,7 @@ const FastTrackBadge = ({
         <span
           className="material-icons"
           style={{
-            color: '#0095FF',
+            color: '#000000',
             fontSize: size === 'small' ? '16px' : '20px'
           }}
         >
