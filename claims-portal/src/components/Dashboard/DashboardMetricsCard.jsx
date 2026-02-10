@@ -5,6 +5,7 @@
 
 import { DxcFlex, DxcContainer, DxcTypography } from '@dxc-technology/halstack-react';
 import MetricCard from '../shared/MetricCard';
+import { ClaimStatus } from '../../types/claim.types';
 
 const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
   // Helper function to format currency
@@ -18,15 +19,19 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
   };
 
   // Calculate metrics
-  const claimsPaidYTD = claims?.filter(c => c.status === 'CLOSED' && c.closedAt)
-    .reduce((sum, claim) => sum + (claim.financial?.claimAmount || 0), 0) || 0;
+  const claimsPaidYTD = claims?.filter(c => c.status === ClaimStatus.CLOSED && c.closedAt)
+    .reduce((sum, claim) => {
+      // Handle both LA (amountPaid) and P&C (paidToDate) financial fields
+      const paidAmount = claim.financial?.amountPaid || claim.financial?.paidToDate || claim.financial?.claimAmount || 0;
+      return sum + paidAmount;
+    }, 0) || 0;
 
   const pendingReview = claims?.filter(c =>
-    ['UNDER_REVIEW', 'IN_REVIEW', 'PENDING_INFO', 'PENDING_REQUIREMENTS'].includes(c.status)
+    [ClaimStatus.UNDER_REVIEW, ClaimStatus.IN_REVIEW, ClaimStatus.PENDING_REQUIREMENTS, 'pending_info'].includes(c.status)
   ).length || 0;
 
   const approvedThisMonth = claims?.filter(c => {
-    if (c.status !== 'APPROVED' && c.status !== 'CLOSED') return false;
+    if (c.status !== ClaimStatus.APPROVED && c.status !== ClaimStatus.CLOSED) return false;
     const approvedDate = new Date(c.approvedAt || c.closedAt);
     const now = new Date();
     return approvedDate.getMonth() === now.getMonth() &&
@@ -34,7 +39,7 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
   }).length || 0;
 
   const declinedThisMonth = claims?.filter(c => {
-    if (c.status !== 'DENIED') return false;
+    if (c.status !== ClaimStatus.DENIED) return false;
     const deniedDate = new Date(c.deniedAt);
     const now = new Date();
     return deniedDate?.getMonth() === now.getMonth() &&

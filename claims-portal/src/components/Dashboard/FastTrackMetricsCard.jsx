@@ -17,8 +17,8 @@ const FastTrackMetricsCard = ({ claims }) => {
       };
     }
 
-    const fastTrackClaims = claims.filter(c => c.routing?.type === RoutingType.FASTTRACK);
-    const closedFastTrackClaims = fastTrackClaims.filter(c => c.status === ClaimStatus.CLOSED);
+    const fastTrackClaims = claims.filter(c => c.routing?.type === RoutingType.FASTTRACK || c.routing?.type === 'FASTTRACK');
+    const closedFastTrackClaims = fastTrackClaims.filter(c => c.status === ClaimStatus.CLOSED || c.status === ClaimStatus.APPROVED);
 
     // Calculate average days to close
     let totalDays = 0;
