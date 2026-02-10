@@ -485,6 +485,805 @@ const pcDemoData = [
       averageSettlementTime: '25 days',
       settlementPrediction: '$27,000 or Denial'
     }
+  },
+
+  // Hail Damage - Auto
+  {
+    id: 'pc-claim-006',
+    claimNumber: 'PC-2026-006',
+    type: 'auto_comprehensive',
+    lineOfBusiness: 'property_casualty',
+    subType: 'hail_damage',
+    status: 'new',
+    priority: 'low',
+    createdAt: '2026-02-08T10:00:00Z',
+    routing: { type: 'FASTTRACK', reason: 'Low complexity, clear causation, weather-verified' },
+    claimant: {
+      firstName: 'Steven',
+      lastName: 'Parker',
+      email: 'sparker@email.com',
+      phone: '303-555-0199'
+    },
+    lossEvent: {
+      eventType: 'hail_storm',
+      lossDate: '2026-02-07T16:45:00Z',
+      reportedDate: '2026-02-08T10:00:00Z',
+      causeOfLoss: 'Hail damage during severe thunderstorm',
+      location: {
+        address: '2341 Cherry Creek Dr',
+        city: 'Denver',
+        state: 'CO',
+        zip: '80209'
+      },
+      weatherData: {
+        conditions: 'Severe Thunderstorm with Hail',
+        hailSize: '1.5 inches',
+        source: 'NOAA Weather Service',
+        alertLevel: 'moderate'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Hood', 'Roof', 'Trunk'],
+      damageCategories: [
+        { category: 'Hail Dents', severity: 'Minor', estimatedCost: 3200, description: 'Multiple hail dents across vehicle' }
+      ],
+      totalEstimatedLoss: 3200
+    },
+    intelligentFNOL: {
+      riskScore: 8,
+      fraudIndicators: [],
+      autoApproval: true,
+      straightThroughProcessing: true,
+      aiRecommendedActions: ['Auto-approve for paintless dent repair', 'Schedule PDR appointment']
+    },
+    financial: {
+      claimAmount: 3200,
+      initialReserve: 3500,
+      currentReserve: 3500,
+      policyLimit: 50000,
+      deductible: 500,
+      totalExposure: 3200,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'AUTO-CO-678901',
+      policyType: 'Personal Auto',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'new',
+      assignedTo: null,
+      sla: {
+        dueDate: '2026-02-15T10:00:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    aiInsights: {
+      claimSummary: 'FastTrack eligible hail damage claim. Weather verified, low fraud risk, quick settlement expected.',
+      recommendedActions: ['Auto-approve', 'Schedule PDR service'],
+      similarClaims: 342,
+      averageSettlementTime: '2 days',
+      settlementPrediction: '$3,200'
+    }
+  },
+
+  // Workers Compensation
+  {
+    id: 'pc-claim-007',
+    claimNumber: 'PC-2026-007',
+    type: 'workers_comp',
+    lineOfBusiness: 'property_casualty',
+    subType: 'injury',
+    status: 'under_review',
+    priority: 'high',
+    createdAt: '2026-02-05T14:30:00Z',
+    claimant: {
+      firstName: 'Michelle',
+      lastName: 'Johnson',
+      email: 'mjohnson@mountainbuilders.com',
+      phone: '720-555-0145'
+    },
+    lossEvent: {
+      eventType: 'workplace_injury',
+      lossDate: '2026-02-05T11:00:00Z',
+      reportedDate: '2026-02-05T14:30:00Z',
+      causeOfLoss: 'Slip and fall from ladder',
+      location: {
+        address: '4500 Construction Site Rd',
+        city: 'Lakewood',
+        state: 'CO',
+        zip: '80227'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Medical treatment', 'Lost wages'],
+      damageCategories: [
+        { category: 'Medical Expenses', severity: 'Moderate', estimatedCost: 8500, description: 'ER visit, X-rays, follow-up care' },
+        { category: 'Lost Wages', severity: 'Moderate', estimatedCost: 4200, description: 'Estimated 2 weeks recovery time' }
+      ],
+      totalEstimatedLoss: 12700
+    },
+    intelligentFNOL: {
+      riskScore: 22,
+      fraudIndicators: [],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Verify incident report', 'Schedule IME if necessary', 'Coordinate with medical provider']
+    },
+    financial: {
+      claimAmount: 12700,
+      initialReserve: 15000,
+      currentReserve: 15000,
+      policyLimit: 500000,
+      deductible: 0,
+      totalExposure: 12700,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'WC-CO-345678',
+      policyType: 'Workers Compensation',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'medical_review',
+      assignedTo: 'Patricia Davis',
+      sla: {
+        dueDate: '2026-02-19T14:30:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    aiInsights: {
+      claimSummary: 'Workers compensation claim for ladder fall. Requires medical review and wage verification.',
+      recommendedActions: ['Review medical records', 'Verify employment', 'Coordinate care'],
+      similarClaims: 89,
+      averageSettlementTime: '21 days',
+      settlementPrediction: '$12,000 - $14,000'
+    }
+  },
+
+  // Commercial Property - Closed/Paid
+  {
+    id: 'pc-claim-008',
+    claimNumber: 'PC-2026-008',
+    type: 'commercial_property',
+    lineOfBusiness: 'property_casualty',
+    subType: 'wind_damage',
+    status: 'closed',
+    priority: 'medium',
+    createdAt: '2026-01-20T09:00:00Z',
+    closedAt: '2026-02-03T16:00:00Z',
+    routing: { type: 'FASTTRACK', reason: 'Weather-verified, straightforward causation' },
+    claimant: {
+      firstName: 'Thomas',
+      lastName: 'Wright',
+      businessName: 'Mile High Cafe',
+      email: 'twright@milehighcafe.com',
+      phone: '303-555-0167'
+    },
+    lossEvent: {
+      eventType: 'windstorm',
+      lossDate: '2026-01-19T21:00:00Z',
+      reportedDate: '2026-01-20T09:00:00Z',
+      causeOfLoss: 'Wind damage to roof and signage',
+      location: {
+        address: '789 Main Street',
+        city: 'Longmont',
+        state: 'CO',
+        zip: '80501'
+      },
+      weatherData: {
+        conditions: 'High Wind Warning',
+        windSpeed: '65 mph gusts',
+        source: 'NOAA Weather Service',
+        alertLevel: 'severe'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Roof', 'Exterior signage', 'Awning'],
+      damageCategories: [
+        { category: 'Roof Damage', severity: 'Moderate', estimatedCost: 12000, description: 'Shingle and flashing damage' },
+        { category: 'Sign Replacement', severity: 'Major', estimatedCost: 4500, description: 'Complete sign replacement required' }
+      ],
+      totalEstimatedLoss: 16500
+    },
+    intelligentFNOL: {
+      riskScore: 12,
+      fraudIndicators: [],
+      autoApproval: false,
+      straightThroughProcessing: false,
+      aiRecommendedActions: ['Authorize emergency roof repairs', 'Schedule contractor inspection']
+    },
+    financial: {
+      claimAmount: 16500,
+      initialReserve: 18000,
+      currentReserve: 0,
+      policyLimit: 500000,
+      deductible: 2500,
+      totalExposure: 16500,
+      paidToDate: 16500,
+      reserveAdequacy: 'closed',
+      payments: [
+        {
+          id: 'PAY-008-001',
+          amount: 16500,
+          payee: 'Thomas Wright',
+          status: 'Paid',
+          date: '2026-02-03',
+          type: 'Claim Settlement',
+          method: 'ACH Transfer',
+          checkNumber: 'ACH-234567'
+        }
+      ]
+    },
+    policy: {
+      policyNumber: 'BOP-CO-456789',
+      policyType: 'Business Owners Policy',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'closed',
+      assignedTo: 'James Mitchell',
+      sla: { currentStatus: 'completed' }
+    },
+    aiInsights: {
+      claimSummary: 'Wind damage claim successfully closed. Weather-verified, quick settlement.',
+      recommendedActions: ['Claim closed'],
+      similarClaims: 178,
+      averageSettlementTime: '14 days',
+      settlementPrediction: '$16,500'
+    }
+  },
+
+  // Homeowners - Water Damage
+  {
+    id: 'pc-claim-009',
+    claimNumber: 'PC-2026-009',
+    type: 'homeowners',
+    lineOfBusiness: 'property_casualty',
+    subType: 'water_damage',
+    status: 'pending_requirements',
+    priority: 'medium',
+    createdAt: '2026-02-06T13:00:00Z',
+    claimant: {
+      firstName: 'Patricia',
+      lastName: 'Anderson',
+      email: 'panderson@email.com',
+      phone: '720-555-0123'
+    },
+    lossEvent: {
+      eventType: 'plumbing_failure',
+      lossDate: '2026-02-06T06:00:00Z',
+      reportedDate: '2026-02-06T13:00:00Z',
+      causeOfLoss: 'Hot water heater failure',
+      location: {
+        address: '5621 Willow Lane',
+        city: 'Fort Collins',
+        state: 'CO',
+        zip: '80525'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Basement', 'Laundry room', 'Storage area'],
+      damageCategories: [
+        { category: 'Water Damage', severity: 'Moderate', estimatedCost: 8500, description: 'Flooring and drywall damage' },
+        { category: 'Equipment Replacement', severity: 'Major', estimatedCost: 2200, description: 'Hot water heater replacement' },
+        { category: 'Personal Property', severity: 'Minor', estimatedCost: 1800, description: 'Damaged stored items' }
+      ],
+      totalEstimatedLoss: 12500
+    },
+    intelligentFNOL: {
+      riskScore: 18,
+      fraudIndicators: [],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Request plumber invoice', 'Document damaged personal property', 'Schedule adjuster visit']
+    },
+    financial: {
+      claimAmount: 12500,
+      initialReserve: 14000,
+      currentReserve: 14000,
+      policyLimit: 250000,
+      deductible: 1000,
+      totalExposure: 12500,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'HO-CO-890123',
+      policyType: 'Homeowners',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'awaiting_documents',
+      assignedTo: 'Sarah Williams',
+      sla: {
+        dueDate: '2026-02-20T13:00:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    requirements: [
+      { id: 'req-001', type: 'Plumber Invoice', status: 'PENDING', dueDate: '2026-02-13T00:00:00Z' },
+      { id: 'req-002', type: 'Photos of Damage', status: 'SATISFIED', receivedDate: '2026-02-06T15:00:00Z' },
+      { id: 'req-003', type: 'Personal Property List', status: 'PENDING', dueDate: '2026-02-13T00:00:00Z' }
+    ],
+    aiInsights: {
+      claimSummary: 'Homeowners water damage from hot water heater failure. Awaiting documentation.',
+      recommendedActions: ['Follow up on missing invoices', 'Review personal property list when received'],
+      similarClaims: 234,
+      averageSettlementTime: '11 days',
+      settlementPrediction: '$11,500 - $13,000'
+    }
+  },
+
+  // Auto Collision - At Risk SLA
+  {
+    id: 'pc-claim-010',
+    claimNumber: 'PC-2026-010',
+    type: 'auto_collision',
+    lineOfBusiness: 'property_casualty',
+    subType: 'rear_end',
+    status: 'under_review',
+    priority: 'high',
+    createdAt: '2026-01-28T11:00:00Z',
+    claimant: {
+      firstName: 'Kevin',
+      lastName: 'Martinez',
+      email: 'kmartinez@email.com',
+      phone: '303-555-0188'
+    },
+    lossEvent: {
+      eventType: 'auto_collision',
+      lossDate: '2026-01-27T17:30:00Z',
+      reportedDate: '2026-01-28T11:00:00Z',
+      causeOfLoss: 'Rear-end collision at stoplight',
+      location: {
+        address: 'Broadway & Evans Ave',
+        city: 'Denver',
+        state: 'CO',
+        zip: '80210'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Rear bumper', 'Trunk', 'Tail lights'],
+      damageCategories: [
+        { category: 'Body Damage', severity: 'Moderate', estimatedCost: 5200, description: 'Rear-end collision damage' },
+        { category: 'Frame Check', severity: 'Moderate', estimatedCost: 800, description: 'Frame alignment inspection' }
+      ],
+      totalEstimatedLoss: 6000
+    },
+    intelligentFNOL: {
+      riskScore: 32,
+      fraudIndicators: ['Conflicting statements'],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Review police report', 'Interview witnesses', 'Inspect vehicle']
+    },
+    financial: {
+      claimAmount: 6000,
+      initialReserve: 7000,
+      currentReserve: 7000,
+      policyLimit: 100000,
+      deductible: 500,
+      totalExposure: 6000,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'AUTO-CO-789012',
+      policyType: 'Personal Auto',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'liability_review',
+      assignedTo: 'Michael Torres',
+      sla: {
+        dueDate: '2026-02-11T11:00:00Z',
+        currentStatus: 'at_risk'
+      }
+    },
+    aiInsights: {
+      claimSummary: 'Auto collision with liability questions. Delayed due to conflicting statements.',
+      recommendedActions: ['Expedite investigation', 'Request additional witness statements'],
+      similarClaims: 456,
+      averageSettlementTime: '16 days',
+      settlementPrediction: '$5,500 - $6,500'
+    }
+  },
+
+  // Commercial Property - Denied
+  {
+    id: 'pc-claim-011',
+    claimNumber: 'PC-2026-011',
+    type: 'commercial_property',
+    lineOfBusiness: 'property_casualty',
+    subType: 'theft',
+    status: 'denied',
+    priority: 'low',
+    createdAt: '2026-01-18T14:00:00Z',
+    closedAt: '2026-02-01T10:00:00Z',
+    claimant: {
+      firstName: 'Brandon',
+      lastName: 'Lee',
+      businessName: 'Tech Solutions Inc',
+      email: 'blee@techsolutions.com',
+      phone: '720-555-0156'
+    },
+    lossEvent: {
+      eventType: 'theft',
+      lossDate: '2026-01-17T00:00:00Z',
+      reportedDate: '2026-01-18T14:00:00Z',
+      causeOfLoss: 'Equipment theft from office',
+      location: {
+        address: '3200 Tech Park Blvd',
+        city: 'Colorado Springs',
+        state: 'CO',
+        zip: '80919'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Office equipment'],
+      damageCategories: [
+        { category: 'Electronics Theft', severity: 'Major', estimatedCost: 15000, description: 'Laptops, monitors, and equipment' }
+      ],
+      totalEstimatedLoss: 15000
+    },
+    intelligentFNOL: {
+      riskScore: 88,
+      fraudIndicators: ['No forced entry', 'No security footage', 'Weekend incident', 'Delayed reporting'],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Fraud investigation required', 'Review security measures', 'Police report verification']
+    },
+    financial: {
+      claimAmount: 15000,
+      initialReserve: 17000,
+      currentReserve: 0,
+      policyLimit: 500000,
+      deductible: 2500,
+      totalExposure: 0,
+      paidToDate: 0,
+      reserveAdequacy: 'closed'
+    },
+    policy: {
+      policyNumber: 'BOP-CO-567890',
+      policyType: 'Business Owners Policy',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'closed',
+      assignedTo: 'Detective Services',
+      sla: { currentStatus: 'completed' }
+    },
+    aiInsights: {
+      claimSummary: 'Claim denied due to fraud indicators and failure to meet security requirements per policy.',
+      recommendedActions: ['Claim denied and closed'],
+      similarClaims: 8,
+      averageSettlementTime: '14 days',
+      settlementPrediction: 'Denied'
+    },
+    denialReason: 'Fraud investigation revealed inconsistencies. Failure to maintain required security measures per policy Section 4.2.3.'
+  },
+
+  // Liability - Slip and Fall
+  {
+    id: 'pc-claim-012',
+    claimNumber: 'PC-2026-012',
+    type: 'liability',
+    lineOfBusiness: 'property_casualty',
+    subType: 'premises_liability',
+    status: 'under_review',
+    priority: 'high',
+    createdAt: '2026-02-04T15:30:00Z',
+    claimant: {
+      firstName: 'Catherine',
+      lastName: 'Miller',
+      businessName: 'Riverside Retail Plaza',
+      email: 'cmiller@riversideplaza.com',
+      phone: '303-555-0134'
+    },
+    lossEvent: {
+      eventType: 'slip_and_fall',
+      lossDate: '2026-02-03T12:00:00Z',
+      reportedDate: '2026-02-04T15:30:00Z',
+      causeOfLoss: 'Customer slip and fall in retail store',
+      location: {
+        address: '8900 Riverside Dr',
+        city: 'Denver',
+        state: 'CO',
+        zip: '80219'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Medical treatment', 'Liability exposure'],
+      damageCategories: [
+        { category: 'Medical Expenses', severity: 'Moderate', estimatedCost: 12000, description: 'ER treatment for fractured wrist' },
+        { category: 'Pain & Suffering', severity: 'Unknown', estimatedCost: 25000, description: 'Potential liability exposure' }
+      ],
+      totalEstimatedLoss: 37000
+    },
+    intelligentFNOL: {
+      riskScore: 45,
+      fraudIndicators: ['High medical claims immediately', 'Attorney involved'],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Assign defense attorney', 'Document scene conditions', 'Review security footage']
+    },
+    financial: {
+      claimAmount: 37000,
+      initialReserve: 45000,
+      currentReserve: 45000,
+      policyLimit: 2000000,
+      deductible: 5000,
+      totalExposure: 37000,
+      paidToDate: 0,
+      reserveAdequacy: 'monitoring'
+    },
+    policy: {
+      policyNumber: 'GL-CO-678901',
+      policyType: 'General Liability',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'legal_review',
+      assignedTo: 'Legal Department',
+      sla: {
+        dueDate: '2026-02-18T15:30:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    aiInsights: {
+      claimSummary: 'Premises liability claim with attorney involvement. Requires legal review and investigation.',
+      recommendedActions: ['Coordinate with legal counsel', 'Preserve evidence', 'Review maintenance records'],
+      similarClaims: 34,
+      averageSettlementTime: '45 days',
+      settlementPrediction: '$30,000 - $50,000'
+    }
+  },
+
+  // Auto Comprehensive - Vandalism (Closed/FastTrack)
+  {
+    id: 'pc-claim-013',
+    claimNumber: 'PC-2026-013',
+    type: 'auto_comprehensive',
+    lineOfBusiness: 'property_casualty',
+    subType: 'vandalism',
+    status: 'closed',
+    priority: 'low',
+    createdAt: '2026-01-25T08:00:00Z',
+    closedAt: '2026-01-30T14:00:00Z',
+    routing: { type: 'FASTTRACK', reason: 'Police verified, low cost, clear documentation' },
+    claimant: {
+      firstName: 'Eric',
+      lastName: 'Thompson',
+      email: 'ethompson@email.com',
+      phone: '720-555-0191'
+    },
+    lossEvent: {
+      eventType: 'vandalism',
+      lossDate: '2026-01-24T23:00:00Z',
+      reportedDate: '2026-01-25T08:00:00Z',
+      causeOfLoss: 'Keyed vehicle in parking lot',
+      location: {
+        address: '4500 Apartment Complex Dr',
+        city: 'Arvada',
+        state: 'CO',
+        zip: '80002'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Driver side doors', 'Rear quarter panel'],
+      damageCategories: [
+        { category: 'Paint Damage', severity: 'Minor', estimatedCost: 2100, description: 'Deep scratches requiring repaint' }
+      ],
+      totalEstimatedLoss: 2100
+    },
+    intelligentFNOL: {
+      riskScore: 10,
+      fraudIndicators: [],
+      autoApproval: true,
+      straightThroughProcessing: true,
+      aiRecommendedActions: ['Auto-approve for repair', 'Schedule paint shop appointment']
+    },
+    financial: {
+      claimAmount: 2100,
+      initialReserve: 2500,
+      currentReserve: 0,
+      policyLimit: 50000,
+      deductible: 500,
+      totalExposure: 2100,
+      paidToDate: 2100,
+      reserveAdequacy: 'closed',
+      payments: [
+        {
+          id: 'PAY-013-001',
+          amount: 2100,
+          payee: 'Eric Thompson',
+          status: 'Paid',
+          date: '2026-01-30',
+          type: 'Claim Settlement',
+          method: 'Check',
+          checkNumber: 'CHK-123456'
+        }
+      ]
+    },
+    policy: {
+      policyNumber: 'AUTO-CO-890123',
+      policyType: 'Personal Auto',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'closed',
+      assignedTo: 'Sarah Williams',
+      sla: { currentStatus: 'completed' }
+    },
+    aiInsights: {
+      claimSummary: 'FastTrack vandalism claim. Police report verified, quick settlement.',
+      recommendedActions: ['Claim closed'],
+      similarClaims: 567,
+      averageSettlementTime: '5 days',
+      settlementPrediction: '$2,100'
+    }
+  },
+
+  // Homeowners - Burglary
+  {
+    id: 'pc-claim-014',
+    claimNumber: 'PC-2026-014',
+    type: 'homeowners',
+    lineOfBusiness: 'property_casualty',
+    subType: 'theft',
+    status: 'under_review',
+    priority: 'high',
+    createdAt: '2026-02-07T10:30:00Z',
+    claimant: {
+      firstName: 'Rachel',
+      lastName: 'Garcia',
+      email: 'rgarcia@email.com',
+      phone: '303-555-0177'
+    },
+    lossEvent: {
+      eventType: 'burglary',
+      lossDate: '2026-02-06T14:00:00Z',
+      reportedDate: '2026-02-07T10:30:00Z',
+      causeOfLoss: 'Home burglary during daytime',
+      location: {
+        address: '7823 Highland Ave',
+        city: 'Thornton',
+        state: 'CO',
+        zip: '80229'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Master bedroom', 'Living room', 'Home office'],
+      damageCategories: [
+        { category: 'Electronics Theft', severity: 'Major', estimatedCost: 8500, description: 'TVs, laptop, gaming systems' },
+        { category: 'Jewelry Theft', severity: 'Critical', estimatedCost: 12000, description: 'Wedding rings, watches, heirlooms' },
+        { category: 'Forced Entry Damage', severity: 'Moderate', estimatedCost: 1800, description: 'Broken door lock and frame' }
+      ],
+      totalEstimatedLoss: 22300
+    },
+    intelligentFNOL: {
+      riskScore: 38,
+      fraudIndicators: ['High-value jewelry claim', 'No receipts provided yet'],
+      autoApproval: false,
+      requiresAdjuster: true,
+      aiRecommendedActions: ['Verify police report', 'Request receipts for high-value items', 'Schedule adjuster visit']
+    },
+    financial: {
+      claimAmount: 22300,
+      initialReserve: 25000,
+      currentReserve: 25000,
+      policyLimit: 250000,
+      deductible: 1000,
+      totalExposure: 22300,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'HO-CO-901234',
+      policyType: 'Homeowners',
+      carrier: 'Assure Insurance Group'
+    },
+    workflow: {
+      currentStage: 'documentation_review',
+      assignedTo: 'Michael Torres',
+      sla: {
+        dueDate: '2026-02-21T10:30:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    requirements: [
+      { id: 'req-001', type: 'Police Report', status: 'SATISFIED', receivedDate: '2026-02-07T11:00:00Z' },
+      { id: 'req-002', type: 'Electronics Receipts', status: 'PENDING', dueDate: '2026-02-14T00:00:00Z' },
+      { id: 'req-003', type: 'Jewelry Appraisals', status: 'PENDING', dueDate: '2026-02-14T00:00:00Z' },
+      { id: 'req-004', type: 'Photos of Damage', status: 'SATISFIED', receivedDate: '2026-02-07T12:00:00Z' }
+    ],
+    aiInsights: {
+      claimSummary: 'Burglary claim with high-value items. Awaiting documentation for jewelry and electronics.',
+      recommendedActions: ['Follow up on receipts', 'Verify jewelry appraisals', 'Coordinate repair for forced entry'],
+      similarClaims: 78,
+      averageSettlementTime: '19 days',
+      settlementPrediction: '$18,000 - $23,000'
+    }
+  },
+
+  // Commercial Auto - Fleet Vehicle
+  {
+    id: 'pc-claim-015',
+    claimNumber: 'PC-2026-015',
+    type: 'auto_collision',
+    lineOfBusiness: 'property_casualty',
+    subType: 'commercial_auto',
+    status: 'new',
+    priority: 'medium',
+    createdAt: '2026-02-09T07:00:00Z',
+    routing: { type: 'FASTTRACK', reason: 'Commercial fleet account, clear liability' },
+    claimant: {
+      firstName: 'Daniel',
+      lastName: 'Rodriguez',
+      businessName: 'Rocky Mountain Delivery Services',
+      email: 'drodriguez@rmdelivery.com',
+      phone: '303-555-0159'
+    },
+    lossEvent: {
+      eventType: 'auto_collision',
+      lossDate: '2026-02-08T16:45:00Z',
+      reportedDate: '2026-02-09T07:00:00Z',
+      causeOfLoss: 'Delivery van backed into loading dock',
+      location: {
+        address: '3300 Warehouse Blvd',
+        city: 'Commerce City',
+        state: 'CO',
+        zip: '80022'
+      }
+    },
+    propertyDamage: {
+      affectedAreas: ['Rear doors', 'Rear bumper'],
+      damageCategories: [
+        { category: 'Body Damage', severity: 'Moderate', estimatedCost: 3800, description: 'Rear-end collision with loading dock' }
+      ],
+      totalEstimatedLoss: 3800
+    },
+    intelligentFNOL: {
+      riskScore: 5,
+      fraudIndicators: [],
+      autoApproval: true,
+      straightThroughProcessing: true,
+      aiRecommendedActions: ['Auto-approve commercial fleet claim', 'Schedule shop appointment']
+    },
+    financial: {
+      claimAmount: 3800,
+      initialReserve: 4000,
+      currentReserve: 4000,
+      policyLimit: 500000,
+      deductible: 1000,
+      totalExposure: 3800,
+      paidToDate: 0,
+      reserveAdequacy: 'adequate'
+    },
+    policy: {
+      policyNumber: 'CA-CO-123456',
+      policyType: 'Commercial Auto',
+      carrier: 'Assure Insurance Group',
+      fleetAccount: true
+    },
+    workflow: {
+      currentStage: 'new',
+      assignedTo: null,
+      sla: {
+        dueDate: '2026-02-16T07:00:00Z',
+        currentStatus: 'on_track'
+      }
+    },
+    aiInsights: {
+      claimSummary: 'Commercial fleet FastTrack claim. Simple backing incident, quick settlement expected.',
+      recommendedActions: ['Auto-approve', 'Coordinate with fleet manager'],
+      similarClaims: 892,
+      averageSettlementTime: '4 days',
+      settlementPrediction: '$3,800'
+    }
   }
 ];
 
