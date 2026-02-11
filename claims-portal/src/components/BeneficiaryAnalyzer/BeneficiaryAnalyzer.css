@@ -1,17 +1,10 @@
-/* Ensure cards can display full content */
+/* Ensure cards can display full content without height constraints */
 .beneficiary-analyzer-grid {
   width: 100%;
 }
 
 .beneficiary-analyzer-grid .dxc-card {
   height: auto;
-  min-height: 400px;
-}
-
-/* Make card content scrollable if needed */
-.beneficiary-analyzer-grid .dxc-card > div {
-  max-height: 600px;
-  overflow-y: auto;
 }
 
 /* Responsive overrides for DxcGrid — collapse to single column on narrow viewports */
