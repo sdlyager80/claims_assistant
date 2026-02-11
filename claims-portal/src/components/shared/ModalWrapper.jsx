@@ -58,7 +58,7 @@ const ModalWrapper = ({
         style={{
           maxHeight: '90vh',
           overflowY: 'auto',
-          width: '100%'
+          overflowX: 'hidden'
         }}
       >
         {children}

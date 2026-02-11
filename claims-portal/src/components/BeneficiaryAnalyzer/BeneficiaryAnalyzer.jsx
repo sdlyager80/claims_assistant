@@ -242,7 +242,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
   }
 
   return (
-    <DxcContainer style={{ backgroundColor: 'var(--color-bg-secondary-lightest)', maxHeight: '90vh', overflowY: 'auto' }}>
+    <DxcContainer style={{ backgroundColor: 'var(--color-bg-secondary-lightest)' }}>
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
         <DxcFlex direction="column" gap="var(--spacing-gap-xs)">

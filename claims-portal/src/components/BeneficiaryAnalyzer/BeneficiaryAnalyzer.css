@@ -1,10 +1,18 @@
-/* Ensure cards can display full content without height constraints */
+/* Ensure dialog and cards can display full content without height constraints */
 .beneficiary-analyzer-grid {
   width: 100%;
 }
 
-.beneficiary-analyzer-grid .dxc-card {
-  height: auto;
+/* Remove all height constraints from grid and cards */
+.beneficiary-analyzer-grid > div,
+.beneficiary-analyzer-grid .dxc-grid-item,
+.beneficiary-analyzer-grid .dxc-card,
+.beneficiary-analyzer-grid .dxc-card > *,
+.beneficiary-analyzer-grid .dxc-inset {
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 /* Responsive overrides for DxcGrid — collapse to single column on narrow viewports */
