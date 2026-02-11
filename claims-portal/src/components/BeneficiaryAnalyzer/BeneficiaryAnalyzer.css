@@ -1,20 +1,26 @@
-/* Make cards independently scrollable */
+/* Ensure wrapper and all children display full content */
+.beneficiary-analyzer-wrapper {
+  width: 100%;
+  height: auto;
+}
+
+/* Remove all height constraints - let content flow naturally */
 .beneficiary-analyzer-grid {
   width: 100%;
 }
 
-/* Set max height for cards and make them scrollable */
 .beneficiary-analyzer-grid .dxc-card {
-  max-height: 70vh;
-  display: flex;
-  flex-direction: column;
+  height: auto;
 }
 
-/* Make the inner content scrollable */
-.beneficiary-analyzer-grid .dxc-card .dxc-inset {
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
+/* Ensure all grid and flex containers don't constrain height */
+.beneficiary-analyzer-wrapper * {
+  max-height: none;
+}
+
+/* But ensure modal dialog can scroll the entire content */
+.beneficiary-analyzer-wrapper {
+  min-height: min-content;
 }
 
 /* Responsive overrides for DxcGrid — collapse to single column on narrow viewports */
