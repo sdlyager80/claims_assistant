@@ -317,8 +317,8 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
             {/* Left Column: AI-Extracted Beneficiaries */}
             <DxcGrid.Item>
               <DxcCard outlined>
-                <DxcInset space="var(--spacing-padding-l)">
-                  <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                <DxcInset space="var(--spacing-padding-s)">
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="AI-Extracted Beneficiaries" />
                       <DxcChip
@@ -330,7 +330,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                     {analysisData.extractedBeneficiaries.map((beneficiary, index) => (
                       <div key={beneficiary.id}>
                         {index > 0 && <DxcDivider />}
-                        <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
                           {/* Beneficiary Header */}
                           <DxcFlex justifyContent="space-between" alignItems="flex-start">
                             <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
@@ -471,8 +471,8 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
             {/* Right Column: Administrative Records Comparison */}
             <DxcGrid.Item>
               <DxcCard outlined>
-                <DxcInset space="var(--spacing-padding-l)">
-                  <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                <DxcInset space="var(--spacing-padding-s)">
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="Administrative Records" />
                       <DxcChip
@@ -484,7 +484,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                     {analysisData.administrativeBeneficiaries.map((beneficiary, index) => (
                       <div key={beneficiary.id}>
                         {index > 0 && <DxcDivider />}
-                        <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
                           {/* Beneficiary Header */}
                           <DxcFlex justifyContent="space-between" alignItems="flex-start">
                             <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
