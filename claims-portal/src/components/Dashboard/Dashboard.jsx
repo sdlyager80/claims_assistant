@@ -33,11 +33,13 @@ import DepartmentInventorySection from './DepartmentInventorySection';
 import ServiceNowClaimsTable from './ServiceNowClaimsTable';
 import MyTasksCard from './MyTasksCard';
 import ClaimCard from './ClaimCard';
+import PhaseInventory from './PhaseInventory';
 import './Dashboard.css';
 
 const Dashboard = ({ onClaimSelect }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0); // 0 = All Open, 1 = Closed
   const [subsetFilter, setSubsetFilter] = useState(null); // Pre-filtered subset
+  const [selectedPhase, setSelectedPhase] = useState(null); // Selected phase for drill-down
   const [searchValue, setSearchValue] = useState('');
   const [isGridView, setIsGridView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -285,8 +287,18 @@ const Dashboard = ({ onClaimSelect }) => {
       );
     }
 
-    // Apply subset filter
-    if (subsetFilter) {
+    // Apply phase filter (takes precedence over subset filter)
+    if (selectedPhase) {
+      filtered = filtered.filter(c => selectedPhase.statuses.includes(c.status));
+
+      // Filter by user assignment if user exists
+      if (user) {
+        filtered = filtered.filter(c =>
+          !c.assignedTo || c.assignedTo === user.name || c.assignedTo === user.id
+        );
+      }
+    } else if (subsetFilter) {
+      // Apply subset filter only if no phase is selected
       switch (subsetFilter) {
         case 'new_fnol':
           filtered = filtered.filter(c => c.status === ClaimStatus.NEW || c.status === ClaimStatus.SUBMITTED);
@@ -356,7 +368,7 @@ const Dashboard = ({ onClaimSelect }) => {
     }
 
     return filtered;
-  }, [allClaims, activeTabIndex, subsetFilter, searchValue, typeFilter, productFilter, amountRangeFilter]);
+  }, [allClaims, activeTabIndex, subsetFilter, selectedPhase, searchValue, typeFilter, productFilter, amountRangeFilter, user]);
 
   // Announce filtered results to screen readers
   useEffect(() => {
@@ -392,6 +404,27 @@ const Dashboard = ({ onClaimSelect }) => {
         // Handle string statuses like 'investigation'
         if (statusLower === 'investigation' || statusLower === 'fraud_investigation') return 'error';
         return 'neutral';
+    }
+  };
+
+  // Handler for phase click - drills into filtered view
+  const handlePhaseClick = (phase) => {
+    if (selectedPhase?.key === phase.key) {
+      // Clicking same phase again clears the filter
+      setSelectedPhase(null);
+    } else {
+      setSelectedPhase(phase);
+      setActiveTabIndex(0); // Switch to open claims tab
+      setSubsetFilter(null); // Clear subset filter
+      setCurrentPage(1); // Reset to first page
+
+      // Scroll to Claims Inventory section
+      setTimeout(() => {
+        const claimsSection = document.querySelector('[aria-label*="Claims Inventory"]');
+        if (claimsSection) {
+          claimsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
@@ -526,6 +559,14 @@ const Dashboard = ({ onClaimSelect }) => {
           </DxcFlex>
         </div>
 
+        {/* Inventory by Phase */}
+        <PhaseInventory
+          claims={allClaims}
+          user={user}
+          onPhaseClick={handlePhaseClick}
+          selectedPhase={selectedPhase}
+        />
+
         {/* Highlights Section - Top Cards */}
         <DxcFlex gap="var(--spacing-gap-m)">
           {/* My Tasks Card */}
@@ -580,7 +621,27 @@ const Dashboard = ({ onClaimSelect }) => {
           padding: "var(--spacing-padding-l)"
         }}>
           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-            <DxcHeading level={3} text="Claims Inventory" />
+            <DxcFlex justifyContent="space-between" alignItems="center">
+              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                <DxcHeading level={3} text="Claims Inventory" />
+                {selectedPhase && (
+                  <DxcBadge
+                    label={`Filtered: ${selectedPhase.label}`}
+                    mode="contextual"
+                    color="info"
+                  />
+                )}
+              </DxcFlex>
+              {selectedPhase && (
+                <DxcButton
+                  label="Clear Filter"
+                  mode="secondary"
+                  size="small"
+                  icon="close"
+                  onClick={() => setSelectedPhase(null)}
+                />
+              )}
+            </DxcFlex>
 
             {/* Main Tabs: All Open vs Closed */}
             <DxcTabs iconPosition="left">

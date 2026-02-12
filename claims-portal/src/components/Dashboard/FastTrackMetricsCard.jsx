@@ -121,7 +121,7 @@ const FastTrackMetricsCard = ({ claims }) => {
               <DxcTypography
                 fontSize="font-scale-05"
                 fontWeight="font-weight-semibold"
-                color={fastTrackMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
+                color="#000000"
               >
                 {fastTrackMetrics.percentage}%
               </DxcTypography>
