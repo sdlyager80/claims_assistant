@@ -26,6 +26,7 @@ const ServiceNowClaimsTable = ({
 }) => {
   // Helper function to map claim status to badge color
   const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase();
     switch (status) {
       case ClaimStatus.NEW:
         return 'info';
@@ -38,6 +39,8 @@ const ServiceNowClaimsTable = ({
       case ClaimStatus.CLOSED:
         return 'neutral';
       default:
+        // Handle string statuses like 'investigation'
+        if (statusLower === 'investigation' || statusLower === 'fraud_investigation') return 'error';
         return 'neutral';
     }
   };

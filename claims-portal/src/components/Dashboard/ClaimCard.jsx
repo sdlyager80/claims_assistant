@@ -60,6 +60,7 @@ const ClaimCard = ({ submission, isGridView, onSelect }) => {
     const statusLower = status?.toLowerCase();
     if (statusLower === 'approved' || statusLower === 'approved_payment') return 'success';
     if (statusLower === 'denied' || statusLower === 'declined') return 'error';
+    if (statusLower === 'investigation' || statusLower === 'fraud_investigation') return 'error';
     if (statusLower === 'under_review' || statusLower === 'pending') return 'warning';
     if (statusLower === 'new' || statusLower === 'submitted') return 'info';
     if (statusLower === 'closed') return 'neutral';

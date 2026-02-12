@@ -72,7 +72,7 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
             label={demoLineOfBusiness === 'PC' ? 'CLAIMS PAID YTD' : 'CLAIMS PAID YTD'}
             value={formatCurrency(claimsPaidYTD)}
             variant="success"
-            valueColor="var(--color-fg-secondary-medium)"
+            valueColor="#000000"
           />
 
           {/* Pending Review */}
@@ -80,7 +80,7 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
             label="PENDING REVIEW"
             value={pendingReview}
             variant="warning"
-            valueColor="var(--color-fg-warning-medium)"
+            valueColor="#000000"
           />
 
           {/* Approved This Month */}
@@ -88,7 +88,7 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
             label="APPROVED THIS MONTH"
             value={approvedThisMonth}
             variant="success"
-            valueColor="var(--color-fg-success-medium)"
+            valueColor="#000000"
           />
 
           {/* Declined This Month */}
@@ -96,7 +96,7 @@ const DashboardMetricsCard = ({ claims, demoLineOfBusiness }) => {
             label="DECLINED THIS MONTH"
             value={declinedThisMonth}
             variant="error"
-            valueColor="var(--color-fg-error-medium)"
+            valueColor="#000000"
           />
         </div>
       </DxcFlex>
