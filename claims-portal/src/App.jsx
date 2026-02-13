@@ -357,10 +357,12 @@ function AppContent() {
         // Theme applied successfully
       }}
     />
-    <ContactPreferences
-      isOpen={isContactPreferencesOpen}
-      onClose={() => setIsContactPreferencesOpen(false)}
-    />
+    {isContactPreferencesOpen && (
+      <ContactPreferences
+        isOpen={isContactPreferencesOpen}
+        onClose={() => setIsContactPreferencesOpen(false)}
+      />
+    )}
     </>
   );
 }

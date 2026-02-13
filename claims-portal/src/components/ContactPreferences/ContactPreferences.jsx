@@ -148,7 +148,7 @@ const ContactPreferences = ({ isOpen, onClose }) => {
       overlay={true}
       padding="medium"
     >
-      <DxcFlex direction="column" gap="16px" style={{ minWidth: '500px', maxWidth: '600px' }}>
+      <DxcFlex direction="column" gap="16px" style={{ minWidth: '500px', maxWidth: '600px', padding: '0 8px' }}>
         {/* Header */}
         <DxcFlex direction="column" gap="4px">
           <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-bold">
