@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import useAriaLiveRegion from '../../hooks/useAriaLiveRegion.jsx';
 import {
   DxcHeading,
   DxcFlex,
@@ -16,37 +15,23 @@ import {
   DxcAccordion,
   DxcChip,
   DxcSelect,
-  DxcAlert,
 } from '@dxc-technology/halstack-react';
 import { useClaims } from '../../contexts/ClaimsContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
-import { useDemoMode } from '../../contexts/DemoModeContext';
-import { useApp } from '../../contexts/AppContext';
 import FastTrackBadge from '../shared/FastTrackBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
 import serviceNowService from '../../services/api/serviceNowService';
-import { sanitizeInput } from '../../utils/validation';
-import DashboardMetricsCard from './DashboardMetricsCard';
-import FastTrackMetricsCard from './FastTrackMetricsCard';
-import DepartmentInventorySection from './DepartmentInventorySection';
-import ServiceNowClaimsTable from './ServiceNowClaimsTable';
-import MyTasksCard from './MyTasksCard';
-import ClaimCard from './ClaimCard';
-import PhaseInventory from './PhaseInventory';
-import MyPerformance from './MyPerformance';
 import './Dashboard.css';
 
 const Dashboard = ({ onClaimSelect }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0); // 0 = All Open, 1 = Closed
   const [subsetFilter, setSubsetFilter] = useState(null); // Pre-filtered subset
-  const [selectedPhase, setSelectedPhase] = useState(null); // Selected phase for drill-down
   const [searchValue, setSearchValue] = useState('');
   const [isGridView, setIsGridView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [snowClaims, setSnowClaims] = useState([]);
   const [snowLoading, setSnowLoading] = useState(false);
-  const [snowError, setSnowError] = useState(null);
   const [snowConnected, setSnowConnected] = useState(serviceNowService.isAuthenticated());
   // Multi-attribute filters
   const [typeFilter, setTypeFilter] = useState('');
@@ -69,25 +54,17 @@ const Dashboard = ({ onClaimSelect }) => {
     fetchSLAAtRiskCases
   } = useWorkflow();
 
-  const { demoLineOfBusiness } = useDemoMode();
-
-  const { user } = useApp();
-
-  // ARIA live region for announcing changes
-  const [announce, LiveRegion] = useAriaLiveRegion();
-
   // Fetch ServiceNow claims when authenticated
   const fetchServiceNowClaims = async () => {
     if (!serviceNowService.isAuthenticated()) return;
     try {
       setSnowLoading(true);
-      setSnowError(null);
       const fnolRecords = await serviceNowService.getFNOLsGlobal({ limit: 50 });
       const mappedClaims = fnolRecords.map(fnol => serviceNowService.mapFNOLToClaim(fnol));
       setSnowClaims(mappedClaims);
+      console.log('[Dashboard] ServiceNow FNOL claims loaded:', mappedClaims.length);
     } catch (err) {
-      console.error('[Dashboard] Failed to fetch ServiceNow claims:', err);
-      setSnowError(`Failed to load ServiceNow claims: ${err.message}`);
+      console.warn('[Dashboard] Could not fetch ServiceNow claims:', err.message);
       setSnowClaims([]);
     } finally {
       setSnowLoading(false);
@@ -110,12 +87,6 @@ const Dashboard = ({ onClaimSelect }) => {
 
     return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
   }, []);
-
-  // Refresh claims when demo mode changes
-  useEffect(() => {
-    fetchClaims();
-    fetchSLAAtRiskCases();
-  }, [demoLineOfBusiness]);
 
   // Merge demo claims with ServiceNow claims (deduplicate by sysId)
   const allClaims = useMemo(() => {
@@ -158,24 +129,6 @@ const Dashboard = ({ onClaimSelect }) => {
       avgDaysToClose
     };
   }, [allClaims]);
-
-  // Calculate Total Open Inventory for logged-in user
-  const totalOpenInventory = useMemo(() => {
-    if (!allClaims || allClaims.length === 0) return 0;
-
-    // Count all open claims assigned to the current user
-    // If user is not logged in or claims don't have assignedTo, show all open claims
-    return allClaims.filter(c => {
-      const isOpen = c.status !== ClaimStatus.CLOSED && c.status !== ClaimStatus.DENIED;
-
-      // If no user context or claim has no assignedTo field, include all open claims
-      if (!user || !c.assignedTo) return isOpen;
-
-      // Otherwise, filter by assignment
-      const isAssignedToUser = c.assignedTo === user.name || c.assignedTo === user.id;
-      return isOpen && isAssignedToUser;
-    }).length;
-  }, [allClaims, user]);
 
   // Calculate general metrics
   const metrics = useMemo(() => {
@@ -288,18 +241,8 @@ const Dashboard = ({ onClaimSelect }) => {
       );
     }
 
-    // Apply phase filter (takes precedence over subset filter)
-    if (selectedPhase) {
-      filtered = filtered.filter(c => selectedPhase.statuses.includes(c.status));
-
-      // Filter by user assignment if user exists
-      if (user) {
-        filtered = filtered.filter(c =>
-          !c.assignedTo || c.assignedTo === user.name || c.assignedTo === user.id
-        );
-      }
-    } else if (subsetFilter) {
-      // Apply subset filter only if no phase is selected
+    // Apply subset filter
+    if (subsetFilter) {
       switch (subsetFilter) {
         case 'new_fnol':
           filtered = filtered.filter(c => c.status === ClaimStatus.NEW || c.status === ClaimStatus.SUBMITTED);
@@ -369,17 +312,7 @@ const Dashboard = ({ onClaimSelect }) => {
     }
 
     return filtered;
-  }, [allClaims, activeTabIndex, subsetFilter, selectedPhase, searchValue, typeFilter, productFilter, amountRangeFilter, user]);
-
-  // Announce filtered results to screen readers
-  useEffect(() => {
-    if (filteredClaims.length === 0) {
-      announce('No claims found matching your criteria');
-    } else {
-      const tabName = activeTabIndex === 0 ? 'open' : 'closed';
-      announce(`Showing ${filteredClaims.length} ${tabName} ${filteredClaims.length === 1 ? 'claim' : 'claims'}`);
-    }
-  }, [filteredClaims.length, activeTabIndex, announce]);
+  }, [allClaims, activeTabIndex, subsetFilter, searchValue, typeFilter, productFilter, amountRangeFilter]);
 
   // Paginate claims
   const paginatedClaims = useMemo(() => {
@@ -389,7 +322,6 @@ const Dashboard = ({ onClaimSelect }) => {
 
   // Helper to get status color
   const getStatusColor = (status) => {
-    const statusLower = status?.toLowerCase();
     switch (status) {
       case ClaimStatus.NEW:
         return 'info';
@@ -402,30 +334,7 @@ const Dashboard = ({ onClaimSelect }) => {
       case ClaimStatus.CLOSED:
         return 'neutral';
       default:
-        // Handle string statuses like 'investigation'
-        if (statusLower === 'investigation' || statusLower === 'fraud_investigation') return 'error';
         return 'neutral';
-    }
-  };
-
-  // Handler for phase click - drills into filtered view
-  const handlePhaseClick = (phase) => {
-    if (selectedPhase?.key === phase.key) {
-      // Clicking same phase again clears the filter
-      setSelectedPhase(null);
-    } else {
-      setSelectedPhase(phase);
-      setActiveTabIndex(0); // Switch to open claims tab
-      setSubsetFilter(null); // Clear subset filter
-      setCurrentPage(1); // Reset to first page
-
-      // Scroll to Claims Inventory section
-      setTimeout(() => {
-        const claimsSection = document.querySelector('[aria-label*="Claims Inventory"]');
-        if (claimsSection) {
-          claimsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
     }
   };
 
@@ -496,128 +405,617 @@ const Dashboard = ({ onClaimSelect }) => {
   const displayData = paginatedClaims.length > 0 ? paginatedClaims : submissionsData;
 
   return (
-    <div style={{ padding: '16px', width: '100%', backgroundColor: '#f5f5f5' }}>
-      <DxcFlex direction="column" gap="12px">
+    <div style={{ padding: '24px', width: '100%', backgroundColor: '#f5f5f5' }}>
+      <DxcFlex direction="column" gap="var(--spacing-gap-m)">
         {/* Page Title */}
         <DxcHeading level={1} text="Dashboard" />
-
-        {/* ARIA Live Region for announcements */}
-        <LiveRegion />
-
-        {/* Error Alert */}
-        {claimsError && (
-          <DxcAlert
-            type="error"
-            inlineText={`Failed to load claims: ${claimsError}`}
-            size="fillParent"
-            closable
-            onClose={() => {}}
-          >
-            <DxcButton
-              label="Retry"
-              mode="secondary"
-              size="small"
-              icon="refresh"
-              onClick={() => fetchClaims()}
-            />
-          </DxcAlert>
-        )}
-
-        {/* Total Open Inventory - Compact */}
-        <div style={{
-          backgroundColor: 'var(--color-bg-info-lighter)',
-          borderRadius: 'var(--border-radius-m)',
-          boxShadow: 'var(--shadow-mid-02)',
-          padding: '12px 16px',
-          border: '1px solid var(--color-border-info-medium)'
-        }}>
-          <DxcFlex justifyContent="space-between" alignItems="center">
-            <DxcFlex direction="column" gap="4px">
-              <DxcTypography
-                fontSize="10px"
-                fontWeight="font-weight-semibold"
-                color="var(--color-fg-neutral-stronger)"
-                style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}
-              >
-                Total Open Inventory
-              </DxcTypography>
-              <DxcTypography
-                fontSize="11px"
-                color="var(--color-fg-neutral-strong)"
-              >
-                {user ? `Assigned to ${user.name}` : 'Assigned to you'}
-              </DxcTypography>
-            </DxcFlex>
-            <DxcTypography
-              fontSize="42px"
-              fontWeight="font-weight-bold"
-              color="var(--color-fg-info-dark)"
-              style={{ lineHeight: '1' }}
-            >
-              {totalOpenInventory}
-            </DxcTypography>
-          </DxcFlex>
-        </div>
 
         {/* Highlights Section - Top Cards */}
         <DxcFlex gap="var(--spacing-gap-m)">
           {/* My Tasks Card */}
-          <div style={{ flex: 1 }}>
-            <MyTasksCard claims={allClaims} />
+          <div style={{
+            backgroundColor: "var(--color-bg-neutral-lightest)",
+            borderRadius: "var(--border-radius-m)",
+            boxShadow: "var(--shadow-mid-04)",
+            flex: 1,
+            height: "240px",
+            boxSizing: "border-box",
+            padding: "var(--spacing-padding-m)"
+          }}>
+            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+              <DxcHeading level={3} text="My Tasks" />
+              <DxcFlex gap="var(--spacing-gap-none)" alignItems="center">
+                {/* Open Claims */}
+                <DxcFlex
+                  direction="column"
+                  gap="var(--spacing-gap-s)"
+                  alignItems="center"
+                  justifyContent="center"
+                  grow={1}
+                  basis="0"
+                >
+                  <DxcTypography
+                    fontSize="32px"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-secondary-strong)"
+                    textAlign="center"
+                  >
+                    {metrics.openClaims}
+                  </DxcTypography>
+                  <DxcTypography
+                    fontSize="font-scale-03"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-neutral-stronger)"
+                    textAlign="center"
+                  >
+                    Open Claims
+                  </DxcTypography>
+                </DxcFlex>
+
+                {/* Divider */}
+                <div style={{ padding: "var(--spacing-padding-xs)" }}>
+                  <div style={{
+                    height: "97px",
+                    width: "1px",
+                    backgroundColor: "var(--color-bg-neutral-light)"
+                  }} />
+                </div>
+
+                {/* New Today */}
+                <DxcFlex
+                  direction="column"
+                  gap="var(--spacing-gap-s)"
+                  alignItems="center"
+                  justifyContent="center"
+                  grow={1}
+                  basis="0"
+                >
+                  <DxcTypography
+                    fontSize="32px"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-error-medium)"
+                    textAlign="center"
+                  >
+                    {metrics.newToday}
+                  </DxcTypography>
+                  <DxcTypography
+                    fontSize="font-scale-03"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-neutral-stronger)"
+                    textAlign="center"
+                  >
+                    New Today
+                  </DxcTypography>
+                </DxcFlex>
+
+                {/* Divider */}
+                <div style={{ padding: "var(--spacing-padding-xs)" }}>
+                  <div style={{
+                    height: "97px",
+                    width: "1px",
+                    backgroundColor: "var(--color-bg-neutral-light)"
+                  }} />
+                </div>
+
+                {/* New This Week */}
+                <DxcFlex
+                  direction="column"
+                  gap="var(--spacing-gap-s)"
+                  alignItems="center"
+                  justifyContent="center"
+                  grow={1}
+                  basis="0"
+                >
+                  <DxcTypography
+                    fontSize="32px"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-warning-medium)"
+                    textAlign="center"
+                  >
+                    {metrics.newThisWeek}
+                  </DxcTypography>
+                  <DxcTypography
+                    fontSize="font-scale-03"
+                    fontWeight="font-weight-semibold"
+                    color="var(--color-fg-neutral-stronger)"
+                    textAlign="center"
+                  >
+                    New This Week
+                  </DxcTypography>
+                </DxcFlex>
+              </DxcFlex>
+            </DxcFlex>
           </div>
 
           {/* Key Metrics Card */}
-          <div style={{ flex: 2 }}>
-            <DashboardMetricsCard claims={allClaims} demoLineOfBusiness={demoLineOfBusiness} />
-          </div>
+          <div style={{
+            backgroundColor: "var(--color-bg-neutral-lightest)",
+            borderRadius: "var(--border-radius-m)",
+            boxShadow: "var(--shadow-mid-04)",
+            flex: 2,
+            height: "240px",
+            boxSizing: "border-box",
+            padding: "var(--spacing-padding-m)"
+          }}>
+            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+              <DxcHeading level={3} text="Key Metrics" />
+              <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" justifyContent="space-between">
+                {/* Claims Paid YTD */}
+                <div style={{ borderTop: "4px solid var(--border-color-info-medium)", flex: "1" }}>
+                  <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                    <DxcFlex
+                      direction="column"
+                      gap="var(--spacing-gap-xxs)"
+                      alignItems="center"
+                      justifyContent="center"
+                      fullHeight
+                    >
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-neutral-stronger)"
+                        textAlign="center"
+                      >
+                        CLAIMS PAID YTD
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="32px"
+                        fontWeight="font-weight-semibold"
+                        color="var(--color-fg-secondary-medium)"
+                        textAlign="center"
+                      >
+                        {metrics.claimsPaidYTD}
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-secondary-medium)"
+                        textAlign="center"
+                      >
+                        +12% vs last year
+                      </DxcTypography>
+                    </DxcFlex>
+                  </div>
+                </div>
 
-          {/* Department Inventory - Compact */}
-          <div style={{ flex: 1.5 }}>
-            <DepartmentInventorySection
-              claims={allClaims}
-              demoLineOfBusiness={demoLineOfBusiness}
-              subsetFilter={subsetFilter}
-              onFilterChange={(newFilter) => {
-                setSubsetFilter(newFilter);
-                setActiveTabIndex(0);
-                setCurrentPage(1);
-              }}
-              compact={true}
-            />
+                {/* Pending Review */}
+                <div style={{ borderTop: "4px solid var(--color-semantic03-400)", flex: "1" }}>
+                  <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                    <DxcFlex
+                      direction="column"
+                      gap="var(--spacing-gap-xxs)"
+                      alignItems="center"
+                      justifyContent="center"
+                      fullHeight
+                    >
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-neutral-stronger)"
+                        textAlign="center"
+                      >
+                        PENDING REVIEW
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="32px"
+                        fontWeight="font-weight-semibold"
+                        color="var(--color-fg-warning-medium)"
+                        textAlign="center"
+                      >
+                        {metrics.pendingReview}
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-warning-medium)"
+                        textAlign="center"
+                      >
+                        {slaAtRiskCases?.length || 0} at risk
+                      </DxcTypography>
+                    </DxcFlex>
+                  </div>
+                </div>
+
+                {/* Approved This Month */}
+                <div style={{ borderTop: "4px solid var(--color-semantic02-500)", flex: "1" }}>
+                  <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                    <DxcFlex
+                      direction="column"
+                      gap="var(--spacing-gap-xxs)"
+                      alignItems="center"
+                      justifyContent="center"
+                      fullHeight
+                    >
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-neutral-stronger)"
+                        textAlign="center"
+                      >
+                        APPROVED THIS MONTH
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="32px"
+                        fontWeight="font-weight-semibold"
+                        color="var(--color-fg-success-medium)"
+                        textAlign="center"
+                      >
+                        {metrics.approvedThisMonth}
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-success-medium)"
+                        textAlign="center"
+                      >
+                        {metrics.approvalRate}% approval rate
+                      </DxcTypography>
+                    </DxcFlex>
+                  </div>
+                </div>
+
+                {/* Declined This Month */}
+                <div style={{ borderTop: "4px solid var(--color-semantic04-500)", flex: "1" }}>
+                  <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                    <DxcFlex
+                      direction="column"
+                      gap="var(--spacing-gap-xxs)"
+                      alignItems="center"
+                      justifyContent="center"
+                      fullHeight
+                    >
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-neutral-stronger)"
+                        textAlign="center"
+                      >
+                        DECLINED THIS MONTH
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="32px"
+                        fontWeight="font-weight-semibold"
+                        color="var(--color-fg-error-medium)"
+                        textAlign="center"
+                      >
+                        {metrics.declinedThisMonth}
+                      </DxcTypography>
+                      <DxcTypography
+                        fontSize="12px"
+                        fontWeight="font-weight-regular"
+                        color="var(--color-fg-error-medium)"
+                        textAlign="center"
+                      >
+                        {100 - metrics.approvalRate}% decline rate
+                      </DxcTypography>
+                    </DxcFlex>
+                  </div>
+                </div>
+              </DxcFlex>
+            </DxcFlex>
           </div>
         </DxcFlex>
 
         {/* FastTrack Metrics Card */}
-        <FastTrackMetricsCard claims={allClaims} />
+        <div style={{
+          backgroundColor: "var(--color-bg-neutral-lightest)",
+          borderRadius: "var(--border-radius-m)",
+          boxShadow: "var(--shadow-mid-04)",
+          padding: "var(--spacing-padding-m)"
+        }}>
+          <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+            <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+              <DxcHeading level={3} text="FastTrack Performance" />
+              <FastTrackBadge eligible={true} showLabel={false} size="small" />
+            </DxcFlex>
+            <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" justifyContent="space-between">
+              {/* FastTrack Claims */}
+              <div style={{ borderTop: "4px solid #0095FF", flex: "1" }}>
+                <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                  <DxcFlex
+                    direction="column"
+                    gap="var(--spacing-gap-xxs)"
+                    alignItems="center"
+                    justifyContent="center"
+                    fullHeight
+                  >
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color="var(--color-fg-neutral-stronger)"
+                      textAlign="center"
+                    >
+                      FASTTRACK CLAIMS
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="32px"
+                      fontWeight="font-weight-semibold"
+                      color="#0095FF"
+                      textAlign="center"
+                    >
+                      {fastTrackMetrics.count}
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color="#0095FF"
+                      textAlign="center"
+                    >
+                      {fastTrackMetrics.percentage}% of total
+                    </DxcTypography>
+                  </DxcFlex>
+                </div>
+              </div>
 
-        {/* Inventory by Phase */}
-        <PhaseInventory
-          claims={allClaims}
-          user={user}
-          onPhaseClick={handlePhaseClick}
-          selectedPhase={selectedPhase}
-        />
+              {/* Avg Days to Close */}
+              <div style={{ borderTop: "4px solid var(--color-semantic02-500)", flex: "1" }}>
+                <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                  <DxcFlex
+                    direction="column"
+                    gap="var(--spacing-gap-xxs)"
+                    alignItems="center"
+                    justifyContent="center"
+                    fullHeight
+                  >
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color="var(--color-fg-neutral-stronger)"
+                      textAlign="center"
+                    >
+                      AVG DAYS TO CLOSE
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="32px"
+                      fontWeight="font-weight-semibold"
+                      color="var(--color-fg-success-medium)"
+                      textAlign="center"
+                    >
+                      {fastTrackMetrics.avgDaysToClose}
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color="var(--color-fg-success-medium)"
+                      textAlign="center"
+                    >
+                      Target: ≤10 days
+                    </DxcTypography>
+                  </DxcFlex>
+                </div>
+              </div>
 
-        {/* My Performance */}
-        <MyPerformance claims={allClaims} user={user} />
+              {/* Target Achievement */}
+              <div style={{ borderTop: "4px solid var(--color-semantic03-400)", flex: "1" }}>
+                <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
+                  <DxcFlex
+                    direction="column"
+                    gap="var(--spacing-gap-xxs)"
+                    alignItems="center"
+                    justifyContent="center"
+                    fullHeight
+                  >
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color="var(--color-fg-neutral-stronger)"
+                      textAlign="center"
+                    >
+                      TARGET ACHIEVEMENT
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="32px"
+                      fontWeight="font-weight-semibold"
+                      color={fastTrackMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
+                      textAlign="center"
+                    >
+                      {fastTrackMetrics.percentage >= 40 ? '✓' : '○'}
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-regular"
+                      color={fastTrackMetrics.percentage >= 40 ? "var(--color-fg-success-medium)" : "var(--color-fg-warning-medium)"}
+                      textAlign="center"
+                    >
+                      {fastTrackMetrics.percentage >= 40 ? 'Meeting goal' : 'Below target'}
+                    </DxcTypography>
+                  </DxcFlex>
+                </div>
+              </div>
+            </DxcFlex>
+          </DxcFlex>
+        </div>
 
-        {/* ServiceNow FNOL Claims Table - DISABLED */}
-        {/* Uncomment below to re-enable ServiceNow integration
-        {(snowClaims.length > 0 || snowLoading || snowError) && (
-          <ServiceNowClaimsTable
-            snowClaims={snowClaims}
-            snowLoading={snowLoading}
-            snowError={snowError}
-            snowConnected={snowConnected}
-            onClaimSelect={onClaimSelect}
-            onRetry={fetchServiceNowClaims}
-            onDisconnect={() => {
-              serviceNowService.clearAuth();
-              setSnowClaims([]);
-            }}
-          />
-        )}
-        */}
+        {/* ServiceNow FNOL Claims Table */}
+        <div style={{
+          backgroundColor: "var(--color-bg-neutral-lightest)",
+          borderRadius: "var(--border-radius-m)",
+          boxShadow: "var(--shadow-mid-04)",
+          padding: "var(--spacing-padding-m)"
+        }}>
+          <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+            <DxcFlex justifyContent="space-between" alignItems="center">
+              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                <DxcHeading level={3} text="ServiceNow FNOL Claims" />
+                {snowConnected && <DxcBadge label={String(snowClaims.length)} notificationBadge />}
+              </DxcFlex>
+              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                {snowLoading && (
+                  <DxcSpinner label="Loading..." mode="small" />
+                )}
+                {serviceNowService.useOAuth && (
+                  snowConnected ? (
+                    <DxcButton
+                      label="Disconnect"
+                      mode="tertiary"
+                      icon="link_off"
+                      size="small"
+                      onClick={() => { serviceNowService.clearAuth(); setSnowClaims([]); }}
+                    />
+                  ) : (
+                    <DxcButton
+                      label="Connect to ServiceNow"
+                      mode="secondary"
+                      icon="link"
+                      onClick={() => serviceNowService.startOAuthLogin()}
+                    />
+                  )
+                )}
+              </DxcFlex>
+            </DxcFlex>
+
+            {!snowConnected && serviceNowService.useOAuth ? (
+              <DxcContainer padding="var(--spacing-padding-m)" style={{ backgroundColor: "var(--color-bg-neutral-lighter)", borderRadius: "var(--border-radius-m)" }}>
+                <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
+                  <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                    Connect to ServiceNow to view FNOL claims from the global domain.
+                  </DxcTypography>
+                </DxcFlex>
+              </DxcContainer>
+            ) : snowClaims.length === 0 && !snowLoading ? (
+              <DxcContainer padding="var(--spacing-padding-m)" style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}>
+                <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                  No ServiceNow FNOL records found. Check your ServiceNow connection configuration.
+                </DxcTypography>
+              </DxcContainer>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid var(--color-fg-secondary-medium)", textAlign: "left" }}>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>FNOL Number</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Status</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Insured</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Claimant</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Policy</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Opened</th>
+                      <th style={{ padding: "12px 16px", color: "var(--color-fg-neutral-stronger)", fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {snowClaims.map((claim, index) => (
+                      <tr
+                        key={claim.sysId || index}
+                        style={{
+                          borderBottom: "1px solid var(--border-color-neutral-lighter)",
+                          cursor: "pointer",
+                          backgroundColor: index % 2 === 0 ? "var(--color-bg-neutral-lightest)" : "var(--color-bg-neutral-lighter)"
+                        }}
+                        onClick={() => onClaimSelect(claim)}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-bg-neutral-light)"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? "var(--color-bg-neutral-lightest)" : "var(--color-bg-neutral-lighter)"}
+                      >
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                            {claim.fnolNumber || claim.claimNumber || 'N/A'}
+                          </DxcTypography>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcBadge label={claim.status || 'unknown'} mode="contextual" color={getStatusColor(claim.status)} />
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcTypography fontSize="font-scale-03">{claim.insured?.name || 'N/A'}</DxcTypography>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcTypography fontSize="font-scale-03">{claim.claimant?.name || 'N/A'}</DxcTypography>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcTypography fontSize="font-scale-03">{claim.policy?.policyNumber || 'N/A'}</DxcTypography>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                            {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                          </DxcTypography>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <DxcFlex gap="var(--spacing-gap-xs)">
+                            <DxcButton
+                              icon="open_in_new"
+                              mode="tertiary"
+                              size="small"
+                              title="Open Claim"
+                              onClick={(e) => { e.stopPropagation(); onClaimSelect(claim); }}
+                            />
+                          </DxcFlex>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </DxcFlex>
+        </div>
+
+        {/* Department Inventory */}
+        <div style={{
+          backgroundColor: "var(--color-bg-neutral-lightest)",
+          borderRadius: "var(--border-radius-m)",
+          boxShadow: "var(--shadow-mid-04)",
+          padding: "var(--spacing-padding-m)"
+        }}>
+          <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+            <DxcHeading level={3} text="Department Inventory" />
+            <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+              Inventory organized by workflow group. Click a group to filter the claims list below.
+            </DxcTypography>
+            <DxcFlex gap="var(--spacing-gap-s)" wrap="wrap">
+              {workflowGroups.map(group => (
+                <div
+                  key={group.key}
+                  onClick={() => {
+                    setSubsetFilter(subsetFilter === group.key ? null : group.key);
+                    setActiveTabIndex(0);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: "var(--border-radius-m)",
+                    border: subsetFilter === group.key
+                      ? "2px solid var(--color-fg-secondary-medium)"
+                      : "1px solid var(--border-color-neutral-lighter)",
+                    backgroundColor: subsetFilter === group.key
+                      ? "var(--color-bg-neutral-lighter)"
+                      : "var(--color-bg-neutral-lightest)",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    minWidth: "140px",
+                    textAlign: "center"
+                  }}
+                >
+                  <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" alignItems="center">
+                    <DxcTypography
+                      fontSize="24px"
+                      fontWeight="font-weight-semibold"
+                      color={group.count > 0 ? "var(--color-fg-secondary-medium)" : "var(--color-fg-neutral-dark)"}
+                    >
+                      {group.count}
+                    </DxcTypography>
+                    <DxcTypography
+                      fontSize="12px"
+                      fontWeight="font-weight-semibold"
+                      color="var(--color-fg-neutral-stronger)"
+                      textAlign="center"
+                    >
+                      {group.label}
+                    </DxcTypography>
+                  </DxcFlex>
+                </div>
+              ))}
+            </DxcFlex>
+            {subsetFilter && (
+              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                  Filtering by:
+                </DxcTypography>
+                <DxcChip
+                  label={workflowGroups.find(g => g.key === subsetFilter)?.label || subsetFilter}
+                  onClose={() => setSubsetFilter(null)}
+                />
+              </DxcFlex>
+            )}
+          </DxcFlex>
+        </div>
 
         {/* Main Content Card - Claims Inventory */}
         <div style={{
@@ -627,27 +1025,7 @@ const Dashboard = ({ onClaimSelect }) => {
           padding: "var(--spacing-padding-l)"
         }}>
           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-            <DxcFlex justifyContent="space-between" alignItems="center">
-              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                <DxcHeading level={3} text="Claims Inventory" />
-                {selectedPhase && (
-                  <DxcBadge
-                    label={`Filtered: ${selectedPhase.label}`}
-                    mode="contextual"
-                    color="info"
-                  />
-                )}
-              </DxcFlex>
-              {selectedPhase && (
-                <DxcButton
-                  label="Clear Filter"
-                  mode="secondary"
-                  size="small"
-                  icon="close"
-                  onClick={() => setSelectedPhase(null)}
-                />
-              )}
-            </DxcFlex>
+            <DxcHeading level={3} text="Claims Inventory" />
 
             {/* Main Tabs: All Open vs Closed */}
             <DxcTabs iconPosition="left">
@@ -674,7 +1052,7 @@ const Dashboard = ({ onClaimSelect }) => {
               <DxcTextInput
                 placeholder="Search for Claim, Policy, or Quote Numbers..."
                 value={searchValue}
-                onChange={({ value }) => setSearchValue(sanitizeInput(value))}
+                onChange={({ value }) => setSearchValue(value)}
                 size="medium"
               />
               <DxcSelect
@@ -682,22 +1060,13 @@ const Dashboard = ({ onClaimSelect }) => {
                 placeholder="All Types"
                 value={typeFilter}
                 onChange={({ value }) => { setTypeFilter(value); setCurrentPage(1); }}
-                options={
-                  demoLineOfBusiness === 'PC' ? [
-                    { label: 'All Types', value: '' },
-                    { label: 'Auto Collision', value: 'auto_collision' },
-                    { label: 'Auto Comprehensive', value: 'auto_comprehensive' },
-                    { label: 'Property Damage', value: 'commercial_property' },
-                    { label: 'Homeowners', value: 'homeowners' },
-                    { label: 'Liability', value: 'liability' }
-                  ] : [
-                    { label: 'All Types', value: '' },
-                    { label: 'Death', value: 'death' },
-                    { label: 'Maturity', value: 'maturity' },
-                    { label: 'Surrender', value: 'surrender' },
-                    { label: 'Annuity', value: 'annuity' }
-                  ]
-                }
+                options={[
+                  { label: 'All Types', value: '' },
+                  { label: 'Death', value: 'death' },
+                  { label: 'Maturity', value: 'maturity' },
+                  { label: 'Surrender', value: 'surrender' },
+                  { label: 'Annuity', value: 'annuity' }
+                ]}
                 size="small"
               />
               <DxcSelect
@@ -719,12 +1088,12 @@ const Dashboard = ({ onClaimSelect }) => {
                   label="Columns"
                   mode="tertiary"
                   icon="view_column"
-                  onClick={() => alert('Column customization feature\n\nThis will allow you to show/hide columns and reorder them to match your workflow preferences.')}
+                  onClick={() => {}}
                 />
                 <DxcFlex gap="var(--spacing-gap-none)" alignItems="center">
                   <DxcTypography
                     fontSize="font-scale-03"
-                    color="#000000"
+                    color="var(--color-fg-secondary-strong)"
                   >
                     Card View
                   </DxcTypography>
@@ -734,7 +1103,7 @@ const Dashboard = ({ onClaimSelect }) => {
                   />
                   <DxcTypography
                     fontSize="font-scale-03"
-                    color="#000000"
+                    color="var(--color-fg-secondary-strong)"
                   >
                     Grid View
                   </DxcTypography>
@@ -748,14 +1117,137 @@ const Dashboard = ({ onClaimSelect }) => {
               gap="var(--spacing-gap-m)"
               wrap={isGridView ? "wrap" : "nowrap"}
             >
-              {displayData && displayData.map((submission, index) => (
-                <ClaimCard
-                  key={index}
-                  submission={submission}
-                  isGridView={isGridView}
-                  onSelect={onClaimSelect}
-                />
-              ))}
+              {displayData && displayData.map((submission, index) => {
+                // For real claims, use the claim data structure
+                const isClaim = submission.claimNumber !== undefined;
+                const isServiceNow = submission.source === 'servicenow';
+                const displayId = isClaim ? (submission.fnolNumber || submission.claimNumber) : submission.id;
+                const displayName = isClaim ? (submission.claimant?.name || submission.insured?.name) : submission.name;
+                const displayStatus = isClaim ? submission.status : submission.status;
+                const displayType = isClaim
+                  ? `LOB: ${submission.type === 'death' ? 'Life' : 'Annuity'}`
+                  : submission.type;
+                const displaySubmitted = isClaim
+                  ? new Date(submission.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
+                  : submission.submitted;
+                const hasFastTrack = isClaim && submission.routing?.type === RoutingType.FASTTRACK;
+                const isClosed = isClaim && (submission.status === 'closed' || submission.status === 'denied' || submission.status === 'approved');
+                const hasSLA = isClaim && submission.workflow?.sla?.dueDate;
+
+                return (
+                  <DxcContainer
+                    key={index}
+                    style={
+                      isGridView
+                        ? { backgroundColor: "var(--color-bg-neutral-lighter)", flex: "1 1 calc(50% - var(--spacing-gap-m) / 2)", minWidth: "400px", cursor: "pointer", borderRadius: "var(--border-radius-m)", border: "1px solid var(--border-color-neutral-lighter)" }
+                        : { backgroundColor: "var(--color-bg-neutral-lighter)", cursor: "pointer", borderRadius: "var(--border-radius-m)", border: "1px solid var(--border-color-neutral-lighter)" }
+                    }
+                    onClick={() => onClaimSelect(submission)}
+                  >
+                    <DxcInset space="var(--spacing-padding-m)">
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                        <DxcFlex justifyContent="space-between" alignItems="center">
+                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                            <DxcTypography
+                              fontSize="font-scale-03"
+                              fontWeight="font-weight-semibold"
+                              color="var(--color-fg-secondary-medium)"
+                            >
+                              {displayId}
+                            </DxcTypography>
+                            <DxcTypography fontSize="font-scale-03">
+                              {displayName}
+                            </DxcTypography>
+                            {hasFastTrack && (
+                              <FastTrackBadge eligible={true} showLabel={true} size="small" />
+                            )}
+                            {isServiceNow && (
+                              <DxcBadge label="ServiceNow" mode="contextual" color="info" />
+                            )}
+                          </DxcFlex>
+                        <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
+                          <DxcButton
+                            icon="check"
+                            mode="tertiary"
+                            title="Approve"
+                            onClick={() => {}}
+                          />
+                          <DxcButton
+                            icon="cancel"
+                            mode="tertiary"
+                            title="Decline"
+                            onClick={() => {}}
+                          />
+                          <DxcButton
+                            icon="swap_horiz"
+                            mode="tertiary"
+                            title="Transfer"
+                            onClick={() => {}}
+                          />
+                        </DxcFlex>
+                      </DxcFlex>
+
+                        <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
+                          <DxcBadge
+                            label={displayStatus}
+                            mode="contextual"
+                            color={isClaim ? getStatusColor(displayStatus) : submission.statusColor}
+                          />
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                            {displayType}
+                          </DxcTypography>
+                          <div style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            backgroundColor: "var(--color-fg-neutral-strong)"
+                          }} />
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                            Submitted: {displaySubmitted}
+                          </DxcTypography>
+                          {hasSLA && (
+                            <>
+                              <div style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                backgroundColor: "var(--color-fg-neutral-strong)"
+                              }} />
+                              <SLAIndicator
+                                slaDate={submission.workflow.sla.dueDate}
+                                claimStatus={submission.status}
+                                compact={true}
+                              />
+                            </>
+                          )}
+                          {!isClaim && (
+                            <>
+                              <div style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                backgroundColor: "var(--color-fg-neutral-strong)"
+                              }} />
+                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                                Received: {submission.received}
+                              </DxcTypography>
+                              <div style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                backgroundColor: "var(--color-fg-neutral-strong)"
+                              }} />
+                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                                Effective: {submission.effective}
+                              </DxcTypography>
+                            </>
+                          )}
+                        </DxcFlex>
+                      </DxcFlex>
+                    </DxcInset>
+                  </DxcContainer>
+                );
+              })}
             </DxcFlex>
 
             {/* Paginator */}

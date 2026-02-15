@@ -9,10 +9,6 @@ import {
   DxcInset,
   DxcAlert
 } from '@dxc-technology/halstack-react';
-import {
-  validateAmount,
-  validateDateRange
-} from '../../utils/validation';
 import './PMICalculator.css';
 
 /**
@@ -72,18 +68,6 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
       // Validation
       if (!formData.dateOfDeath || !formData.settlementDate || !formData.claimAmount) {
         throw new Error('Please fill in all required fields');
-      }
-
-      // Validate claim amount
-      const amountValidation = validateAmount(formData.claimAmount, 0);
-      if (!amountValidation.isValid) {
-        throw new Error(amountValidation.error);
-      }
-
-      // Validate date range
-      const dateValidation = validateDateRange(formData.dateOfDeath, formData.settlementDate);
-      if (!dateValidation.isValid) {
-        throw new Error(dateValidation.error);
       }
 
       const dod = new Date(formData.dateOfDeath);
@@ -263,7 +247,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
           >
             <DxcFlex direction="column" gap="var(--spacing-gap-m)">
               <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                <span className="material-icons" style={{ color: '#000000', fontSize: '20px' }}>
+                <span className="material-icons" style={{ color: 'var(--color-fg-success-medium)', fontSize: '20px' }}>
                   check_circle
                 </span>
                 <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
@@ -303,7 +287,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                   <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                     Interest Amount
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
+                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
                     {formatCurrency(calculationResult.interestAmount)}
                   </DxcTypography>
                 </DxcFlex>
@@ -318,7 +302,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                     <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
                       Total Amount (Principal + Interest)
                     </DxcTypography>
-                    <DxcTypography fontSize="font-scale-05" fontWeight="font-weight-semibold" color="#000000">
+                    <DxcTypography fontSize="font-scale-05" fontWeight="font-weight-semibold" color="var(--color-fg-success-darker)">
                       {formatCurrency(calculationResult.totalAmount)}
                     </DxcTypography>
                   </DxcFlex>

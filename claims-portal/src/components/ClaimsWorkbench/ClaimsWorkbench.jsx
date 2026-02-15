@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDemoMode } from '../../contexts/DemoModeContext';
 import {
   DxcHeading,
   DxcFlex,
@@ -15,19 +14,13 @@ import {
   DxcDialog
 } from '@dxc-technology/halstack-react';
 import FastTrackBadge from '../shared/FastTrackBadge';
-import ProcessTracker from '../shared/ProcessTracker';
 import DocumentUpload from '../shared/DocumentUpload';
-import MetricCard from '../shared/MetricCard';
 import DocumentViewer from '../shared/DocumentViewer';
 import BeneficiaryAnalyzer from '../BeneficiaryAnalyzer/BeneficiaryAnalyzer';
 import DeathEventPanel from '../DeathEventPanel/DeathEventPanel';
 import PolicySummaryPanel from '../PolicySummaryPanel/PolicySummaryPanel';
 import PartyManagementPanel from '../PartyManagementPanel/PartyManagementPanel';
 import AIInsightsPanel from '../AIInsightsPanel/AIInsightsPanel';
-import LossEventPanel from '../LossEventPanel/LossEventPanel';
-import PropertyDamagePanel from '../PropertyDamagePanel/PropertyDamagePanel';
-import FraudDetectionPanel from '../FraudDetectionPanel/FraudDetectionPanel';
-import ReserveManagementPanel from '../ReserveManagementPanel/ReserveManagementPanel';
 import ClaimHeader from '../ClaimHeader/ClaimHeader';
 import PMICalculator from '../PMICalculator/PMICalculator';
 import TaxWithholdingCalculator from '../TaxWithholdingCalculator/TaxWithholdingCalculator';
@@ -36,15 +29,11 @@ import PolicyDetailView from '../PolicyDetailView/PolicyDetailView';
 import PartyForm from '../PartyForm/PartyForm';
 import RequirementsEngine from '../RequirementsEngine/RequirementsEngine';
 import WorkNotes from '../WorkNotes/WorkNotes';
-import ClaimProgressCard from './ClaimProgressCard';
-import FinancialsTab from './FinancialsTab';
-import ModalWrapper from '../shared/ModalWrapper';
 import './ClaimsWorkbench.css';
 
 const ClaimsWorkbench = ({ claim, onBack }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showBeneficiaryAnalyzer, setShowBeneficiaryAnalyzer] = useState(false);
-  const { demoLineOfBusiness } = useDemoMode();
 
   // Modal states
   const [showPMICalculator, setShowPMICalculator] = useState(false);
@@ -56,7 +45,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [showPartyForm, setShowPartyForm] = useState(false);
   const [selectedParty, setSelectedParty] = useState(null);
 
+  console.log('[ClaimsWorkbench] Received claim:', claim);
+
   if (!claim) {
+    console.log('[ClaimsWorkbench] No claim provided, showing alert');
     return (
       <DxcContainer
         padding="var(--spacing-padding-xl)"
@@ -78,20 +70,6 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
-  };
-
-  const getBeneficiaryStatusColor = (status) => {
-    const statusUpper = (status || '').toUpperCase();
-    if (statusUpper === 'VERIFIED' || statusUpper === 'APPROVED') {
-      return 'green';
-    }
-    if (statusUpper === 'PENDING' || statusUpper === 'UNDER REVIEW') {
-      return 'orange';
-    }
-    if (statusUpper === 'REJECTED' || statusUpper === 'INVALID') {
-      return 'red';
-    }
-    return 'grey';
   };
 
   // Extract financial data from claim
@@ -164,7 +142,58 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
         <DxcContainer padding="var(--spacing-padding-l)">
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             {/* Progress Card */}
-            <ClaimProgressCard claim={claim} requirements={requirements} />
+            <DxcContainer
+          padding="var(--spacing-padding-l)"
+          style={{ backgroundColor: "var(--color-bg-neutral-lightest)" }}
+        >
+          <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+            <DxcHeading level={3} text="Claim Progress" />
+            {requirements.length > 0 && (
+              <DxcProgressBar
+                label="Requirements Complete"
+                value={Math.round((requirements.filter(r => r.status === 'SATISFIED' || r.status === 'Completed').length / requirements.length) * 100)}
+                showValue
+              />
+            )}
+            <DxcFlex gap="var(--spacing-gap-xl)">
+              {claim.workflow?.sla?.dueDate && (() => {
+                const dueDate = new Date(claim.workflow.sla.dueDate);
+                const today = new Date();
+                const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                const color = daysRemaining <= 3 ? 'var(--color-fg-error-medium)' : daysRemaining <= 7 ? 'var(--color-fg-warning-medium)' : 'var(--color-fg-success-medium)';
+
+                return (
+                  <>
+                    <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                        SLA DAYS REMAINING
+                      </DxcTypography>
+                      <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color={color}>
+                        {daysRemaining}
+                      </DxcTypography>
+                    </DxcFlex>
+                    <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                        TARGET CLOSE DATE
+                      </DxcTypography>
+                      <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
+                        {dueDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                      </DxcTypography>
+                    </DxcFlex>
+                  </>
+                );
+              })()}
+              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                  FASTTRACK ELIGIBLE
+                </DxcTypography>
+                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'FASTTRACK' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
+                  {claim.routing?.type === 'FASTTRACK' ? 'Yes' : 'No'}
+                </DxcTypography>
+              </DxcFlex>
+            </DxcFlex>
+          </DxcFlex>
+        </DxcContainer>
 
         {/* Tabs */}
         <DxcContainer
@@ -221,17 +250,14 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 >
                   <div />
                 </DxcTabs.Tab>
-                {/* Only show Beneficiary Analyzer tab for death claims */}
-                {claim.type === 'death' && (
-                  <DxcTabs.Tab
-                    label="Beneficiary Analyzer"
-                    icon="psychology"
-                    active={activeTab === 6}
-                    onClick={() => setActiveTab(6)}
-                  >
-                    <div />
-                  </DxcTabs.Tab>
-                )}
+                <DxcTabs.Tab
+                  label="Beneficiary Analyzer"
+                  icon="psychology"
+                  active={activeTab === 6}
+                  onClick={() => setActiveTab(6)}
+                >
+                  <div />
+                </DxcTabs.Tab>
               </DxcTabs>
             </DxcInset>
 
@@ -239,50 +265,33 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
               {activeTab === 0 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                  {demoLineOfBusiness === 'LA' ? (
-                    <>
-                      {/* L&A Mode: Conditional panels based on claim type */}
-                      <div className="dashboard-grid-top">
-                        {/* Only show Death Event Panel for death claims */}
-                        {claim.type === 'death' && (
-                          <DeathEventPanel
-                            claimData={{
-                              dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
-                              mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
-                              causeOfDeath: claim.deathEvent?.causeOfDeath,
-                              deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
-                              countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
-                              proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
-                              proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
-                              certifiedDOB: claim.insured?.dateOfBirth,
-                              verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
-                              verificationScore: claim.deathEvent?.verificationScore || 95,
-                              specialEvent: claim.deathEvent?.specialEvent
-                            }}
-                            onEdit={() => console.log('Edit death event')}
-                          />
-                        )}
-                        <AIInsightsPanel
-                          claimData={{
-                            riskScore: claim.aiInsights?.riskScore || 0
-                          }}
-                          insights={claim.aiInsights?.alerts || []}
-                          onViewDetail={(insight) => console.log('View insight:', insight)}
-                          onDismiss={(insight) => console.log('Dismiss insight:', insight)}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* P&C Mode: Loss Event and Fraud Detection */}
-                      <div className="dashboard-grid-top">
-                        <LossEventPanel claimData={claim} />
-                        <FraudDetectionPanel fraudData={claim.intelligentFNOL} claimData={claim} />
-                      </div>
-                      {/* P&C: Property Damage Panel */}
-                      <PropertyDamagePanel damageData={claim.propertyDamage} />
-                    </>
-                  )}
+                  {/* Top Row: Death Event and AI Insights */}
+                  <div className="dashboard-grid-top">
+                    <DeathEventPanel
+                      claimData={{
+                        dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
+                        mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
+                        causeOfDeath: claim.deathEvent?.causeOfDeath,
+                        deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
+                        countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
+                        proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
+                        proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
+                        certifiedDOB: claim.insured?.dateOfBirth,
+                        verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
+                        verificationScore: claim.deathEvent?.verificationScore || 95,
+                        specialEvent: claim.deathEvent?.specialEvent
+                      }}
+                      onEdit={() => console.log('Edit death event')}
+                    />
+                    <AIInsightsPanel
+                      claimData={{
+                        riskScore: claim.aiInsights?.riskScore || 0
+                      }}
+                      insights={claim.aiInsights?.alerts || []}
+                      onViewDetail={(insight) => console.log('View insight:', insight)}
+                      onDismiss={(insight) => console.log('Dismiss insight:', insight)}
+                    />
+                  </div>
 
                   {/* Middle Row: Policy Summary and Party Management */}
                   <div className="dashboard-grid-middle">
@@ -341,15 +350,12 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         icon="upload_file"
                         onClick={() => setActiveTab(5)}
                       />
-                      {/* Only show Beneficiary Analyzer for death claims */}
-                      {claim.type === 'death' && (
-                        <DxcButton
-                          label="Analyze Beneficiaries"
-                          mode="primary"
-                          icon="psychology"
-                          onClick={() => setActiveTab(6)}
-                        />
-                      )}
+                      <DxcButton
+                        label="Analyze Beneficiaries"
+                        mode="primary"
+                        icon="psychology"
+                        onClick={() => setActiveTab(6)}
+                      />
                     </DxcFlex>
                   </DxcContainer>
                 </DxcFlex>
@@ -357,18 +363,223 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
               {/* Financials Tab */}
               {activeTab === 1 && (
-                <FinancialsTab
-                  demoLineOfBusiness={demoLineOfBusiness}
-                  claim={claim}
-                  financialData={financialData}
-                  formatCurrency={formatCurrency}
-                  onShowPMICalculator={() => setShowPMICalculator(true)}
-                  onShowTaxCalculator={() => setShowTaxCalculator(true)}
-                  onPaymentClick={(payment) => {
-                    setSelectedPayment(payment);
-                    setShowPaymentModal(true);
-                  }}
-                />
+                <DxcFlex direction="column" gap="var(--spacing-gap-l)">
+                  {/* Reserve Summary */}
+                  <DxcFlex gap="var(--spacing-gap-m)">
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{ backgroundColor: "var(--color-bg-info-lighter)" }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+                        <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
+                          TOTAL CLAIM AMOUNT
+                        </DxcTypography>
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                          {formatCurrency(financialData.totalClaimAmount)}
+                        </DxcTypography>
+                      </DxcFlex>
+                    </DxcContainer>
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{ backgroundColor: "var(--color-bg-success-lighter)" }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+                        <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
+                          TOTAL PAID
+                        </DxcTypography>
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                          {formatCurrency(financialData.reserves.paid)}
+                        </DxcTypography>
+                      </DxcFlex>
+                    </DxcContainer>
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{ backgroundColor: "var(--color-bg-warning-lighter)" }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+                        <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
+                          OUTSTANDING RESERVE
+                        </DxcTypography>
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                          {formatCurrency(financialData.reserves.outstanding)}
+                        </DxcTypography>
+                      </DxcFlex>
+                    </DxcContainer>
+                  </DxcFlex>
+
+                  {/* Reserve Details */}
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                    <DxcHeading level={4} text="Reserve History" />
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
+                      border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcFlex justifyContent="space-between">
+                          <DxcTypography fontSize="font-scale-03">Initial Reserve Set</DxcTypography>
+                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+                            {formatCurrency(financialData.reserves.initial)}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex justifyContent="space-between">
+                          <DxcTypography fontSize="font-scale-03">Payments Issued</DxcTypography>
+                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+                            -{formatCurrency(financialData.reserves.paid)}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <div style={{ borderTop: "1px solid var(--border-color-neutral-light)", paddingTop: "var(--spacing-gap-s)" }}>
+                          <DxcFlex justifyContent="space-between">
+                            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">Current Reserve</DxcTypography>
+                            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                              {formatCurrency(financialData.reserves.current)}
+                            </DxcTypography>
+                          </DxcFlex>
+                        </div>
+                      </DxcFlex>
+                    </DxcContainer>
+                  </DxcFlex>
+
+                  {/* Payment History */}
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                    <DxcFlex justifyContent="space-between" alignItems="center">
+                      <DxcHeading level={4} text="Payment History" />
+                      <DxcFlex gap="var(--spacing-gap-s)">
+                        <DxcButton
+                          label="Calculate PMI"
+                          mode="secondary"
+                          size="small"
+                          icon="calculate"
+                          onClick={() => setShowPMICalculator(true)}
+                        />
+                        <DxcButton
+                          label="Tax Withholding"
+                          mode="secondary"
+                          size="small"
+                          icon="account_balance"
+                          onClick={() => setShowTaxCalculator(true)}
+                        />
+                        <DxcButton label="View EOB" mode="tertiary" size="small" icon="description" />
+                      </DxcFlex>
+                    </DxcFlex>
+                    {financialData.payments.map((payment, index) => (
+                      <DxcContainer
+                        key={index}
+                        style={{ backgroundColor: "var(--color-bg-neutral-lighter)", cursor: "pointer" }}
+                        border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
+                        onClick={() => {
+                          setSelectedPayment(payment);
+                          setShowPaymentModal(true);
+                        }}
+                      >
+                        <DxcInset space="var(--spacing-padding-m)">
+                          <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                            <DxcFlex justifyContent="space-between" alignItems="center">
+                              <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                                  {payment.id}
+                                </DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.payee}</DxcTypography>
+                                <DxcBadge label={payment.status} />
+                              </DxcFlex>
+                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                                {formatCurrency(payment.amount)}
+                              </DxcTypography>
+                            </DxcFlex>
+                            <div className="payment-details-grid">
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Payment Type</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.type}</DxcTypography>
+                              </DxcFlex>
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Date Paid</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.date}</DxcTypography>
+                              </DxcFlex>
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Payment Method</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.method}</DxcTypography>
+                              </DxcFlex>
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Check/Reference #</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.checkNumber || 'N/A'}</DxcTypography>
+                              </DxcFlex>
+                              {payment.netBenefitProceeds && (
+                                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Net Benefit Proceeds</DxcTypography>
+                                  <DxcTypography fontSize="font-scale-03">{formatCurrency(payment.netBenefitProceeds)}</DxcTypography>
+                                </DxcFlex>
+                              )}
+                              {payment.netBenefitPMI && (
+                                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Net Benefit PMI</DxcTypography>
+                                  <DxcTypography fontSize="font-scale-03">{formatCurrency(payment.netBenefitPMI)}</DxcTypography>
+                                </DxcFlex>
+                              )}
+                              {payment.taxWithheld && (
+                                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Tax Withheld</DxcTypography>
+                                  <DxcTypography fontSize="font-scale-03">{formatCurrency(payment.taxWithheld)}</DxcTypography>
+                                </DxcFlex>
+                              )}
+                              {payment.percentage && (
+                                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Percent</DxcTypography>
+                                  <DxcTypography fontSize="font-scale-03">{payment.percentage}%</DxcTypography>
+                                </DxcFlex>
+                              )}
+                            </div>
+                          </DxcFlex>
+                        </DxcInset>
+                      </DxcContainer>
+                    ))}
+                  </DxcFlex>
+
+                  {/* Pending Payments */}
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                    <DxcFlex justifyContent="space-between" alignItems="center">
+                      <DxcHeading level={4} text="Pending Payments" />
+                      <DxcButton label="Schedule Payment" mode="primary" icon="add" />
+                    </DxcFlex>
+                    {financialData.pendingPayments.map((payment, index) => (
+                      <DxcContainer
+                        key={index}
+                        style={{ backgroundColor: "var(--color-bg-warning-lightest)" }}
+                        border={{ color: "var(--border-color-warning-lighter)", style: "solid", width: "1px" }}
+                      >
+                        <DxcInset space="var(--spacing-padding-m)">
+                          <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                            <DxcFlex justifyContent="space-between" alignItems="center">
+                              <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                                  {payment.id}
+                                </DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.payee}</DxcTypography>
+                                <DxcBadge label={payment.status} />
+                              </DxcFlex>
+                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                                {formatCurrency(payment.amount)}
+                              </DxcTypography>
+                            </DxcFlex>
+                            <DxcFlex gap="var(--spacing-gap-l)" alignItems="center">
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Payment Type</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.type}</DxcTypography>
+                              </DxcFlex>
+                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Scheduled Date</DxcTypography>
+                                <DxcTypography fontSize="font-scale-03">{payment.scheduledDate}</DxcTypography>
+                              </DxcFlex>
+                              <DxcFlex gap="var(--spacing-gap-s)" style={{ marginLeft: "auto" }}>
+                                <DxcButton label="Approve" mode="primary" size="small" />
+                                <DxcButton label="Reject" mode="secondary" size="small" />
+                              </DxcFlex>
+                            </DxcFlex>
+                          </DxcFlex>
+                        </DxcInset>
+                      </DxcContainer>
+                    ))}
+                  </DxcFlex>
+                </DxcFlex>
               )}
 
               {/* Policy 360 Tab */}
@@ -470,9 +681,9 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                               </DxcFlex>
                               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Amount</DxcTypography>
-                                <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000">{ben.amount}</DxcTypography>
+                                <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">{ben.amount}</DxcTypography>
                               </DxcFlex>
-                              <DxcBadge label={ben.status} color={getBeneficiaryStatusColor(ben.status)} />
+                              <DxcBadge label={ben.status} />
                             </DxcFlex>
                           </DxcFlex>
                         </DxcInset>
@@ -484,10 +695,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
               {/* Timeline Tab - SA-010 Activity Timeline */}
               {activeTab === 3 && (
-                <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                  {/* Pizza Tracker Style Progress */}
-                  <ProcessTracker claim={claim} />
-
+                <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                   <DxcFlex justifyContent="space-between" alignItems="center">
                     <DxcHeading level={4} text="Activity Timeline" />
                     <DxcFlex gap="var(--spacing-gap-s)">
@@ -607,6 +815,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   claimId={claim.claimNumber || claim.id}
                   claim={claim}
                   onApproveBeneficiaries={(beneficiaries) => {
+                    console.log('[ClaimsWorkbench] Beneficiaries approved:', beneficiaries);
                     // TODO: Update claim with approved beneficiaries
                     // Switch back to Policy 360 tab to see updated beneficiaries
                     setActiveTab(2);
@@ -636,54 +845,43 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Modal Dialogs */}
       {/* PMI Calculator Modal */}
-      <ModalWrapper
-        isOpen={showPMICalculator}
-        onClose={() => setShowPMICalculator(false)}
-        ariaLabel="PMI Calculator"
-      >
-        <PMICalculator
-          claimData={claim}
-          onCalculate={(result) => {
-            console.log('PMI calculated:', result);
-          }}
-          onApply={(result) => {
-            console.log('PMI applied:', result);
-            setShowPMICalculator(false);
-          }}
-          onClose={() => setShowPMICalculator(false)}
-        />
-      </ModalWrapper>
+      {showPMICalculator && (
+        <DxcDialog isCloseVisible={false}>
+          <PMICalculator
+            claimData={claim}
+            onCalculate={(result) => {
+              console.log('PMI calculated:', result);
+            }}
+            onApply={(result) => {
+              console.log('PMI applied:', result);
+              setShowPMICalculator(false);
+            }}
+            onClose={() => setShowPMICalculator(false)}
+          />
+        </DxcDialog>
+      )}
 
       {/* Tax Withholding Calculator Modal */}
-      <ModalWrapper
-        isOpen={showTaxCalculator}
-        onClose={() => setShowTaxCalculator(false)}
-        ariaLabel="Tax Withholding Calculator"
-      >
-        <TaxWithholdingCalculator
-          claimData={claim}
-          paymentData={claim.financial?.payments?.[0]}
-          onCalculate={(result) => {
-            console.log('Tax calculated:', result);
-          }}
-          onApply={(result) => {
-            console.log('Tax applied:', result);
-            setShowTaxCalculator(false);
-          }}
-          onClose={() => setShowTaxCalculator(false)}
-        />
-      </ModalWrapper>
+      {showTaxCalculator && (
+        <DxcDialog isCloseVisible={false}>
+          <TaxWithholdingCalculator
+            claimData={claim}
+            paymentData={claim.financial?.payments?.[0]}
+            onCalculate={(result) => {
+              console.log('Tax calculated:', result);
+            }}
+            onApply={(result) => {
+              console.log('Tax applied:', result);
+              setShowTaxCalculator(false);
+            }}
+            onClose={() => setShowTaxCalculator(false)}
+          />
+        </DxcDialog>
+      )}
 
       {/* Payment Quick View Modal */}
-      <ModalWrapper
-        isOpen={showPaymentModal && !!selectedPayment}
-        onClose={() => {
-          setShowPaymentModal(false);
-          setSelectedPayment(null);
-        }}
-        ariaLabel={`Payment details for ${selectedPayment?.id || 'payment'}`}
-      >
-        {selectedPayment && (
+      {showPaymentModal && selectedPayment && (
+        <DxcDialog isCloseVisible={false}>
           <PaymentQuickView
             payment={selectedPayment}
             onEdit={(payment) => {
@@ -706,19 +904,12 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               setSelectedPayment(null);
             }}
           />
-        )}
-      </ModalWrapper>
+        </DxcDialog>
+      )}
 
       {/* Policy Detail View Modal */}
-      <ModalWrapper
-        isOpen={showPolicyModal && !!selectedPolicy}
-        onClose={() => {
-          setShowPolicyModal(false);
-          setSelectedPolicy(null);
-        }}
-        ariaLabel={`Policy details for ${selectedPolicy?.policyNumber || 'policy'}`}
-      >
-        {selectedPolicy && (
+      {showPolicyModal && selectedPolicy && (
+        <DxcDialog isCloseVisible={false}>
           <PolicyDetailView
             policy={selectedPolicy}
             onEdit={(policy) => {
@@ -742,55 +933,48 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               setSelectedPolicy(null);
             }}
           />
-        )}
-      </ModalWrapper>
+        </DxcDialog>
+      )}
 
       {/* Party Add/Edit Form Modal */}
-      <ModalWrapper
-        isOpen={showPartyForm}
-        onClose={() => {
-          setShowPartyForm(false);
-          setSelectedParty(null);
-        }}
-        ariaLabel={selectedParty ? `Edit party ${selectedParty.name}` : 'Add new party'}
-      >
-        <PartyForm
-          party={selectedParty}
-          onSave={(partyData) => {
-            console.log('Party saved:', partyData);
-            setShowPartyForm(false);
-            setSelectedParty(null);
-          }}
-          onCancel={() => {
-            setShowPartyForm(false);
-            setSelectedParty(null);
-          }}
-          onCSLNSearch={(partyData) => {
-            console.log('CSLN search for:', partyData);
-          }}
-        />
-      </ModalWrapper>
+      {showPartyForm && (
+        <DxcDialog isCloseVisible={false}>
+          <PartyForm
+            party={selectedParty}
+            onSave={(partyData) => {
+              console.log('Party saved:', partyData);
+              setShowPartyForm(false);
+              setSelectedParty(null);
+            }}
+            onCancel={() => {
+              setShowPartyForm(false);
+              setSelectedParty(null);
+            }}
+            onCSLNSearch={(partyData) => {
+              console.log('CSLN search for:', partyData);
+            }}
+          />
+        </DxcDialog>
+      )}
 
       {/* Beneficiary Analyzer Modal */}
-      <ModalWrapper
-        isOpen={showBeneficiaryAnalyzer}
-        onClose={() => setShowBeneficiaryAnalyzer(false)}
-        ariaLabel="Beneficiary Analyzer"
-      >
-        <BeneficiaryAnalyzer
-          claimId={claim.claimNumber || claim.id}
-          claim={claim}
-          onApproveBeneficiaries={(beneficiaries) => {
-            console.log('Beneficiaries approved:', beneficiaries);
-            setShowBeneficiaryAnalyzer(false);
-          }}
-          onRequestDocuments={(beneficiaries) => {
-            console.log('Request documents for beneficiaries:', beneficiaries);
-            setShowBeneficiaryAnalyzer(false);
-          }}
-          onClose={() => setShowBeneficiaryAnalyzer(false)}
-        />
-      </ModalWrapper>
+      {showBeneficiaryAnalyzer && (
+        <DxcDialog isCloseVisible={false}>
+          <BeneficiaryAnalyzer
+            claimId={claim.claimNumber || claim.id}
+            claim={claim}
+            onApproveBeneficiaries={(beneficiaries) => {
+              console.log('Beneficiaries approved:', beneficiaries);
+              setShowBeneficiaryAnalyzer(false);
+            }}
+            onRequestDocuments={(beneficiaries) => {
+              console.log('Request documents for beneficiaries:', beneficiaries);
+              setShowBeneficiaryAnalyzer(false);
+            }}
+            onClose={() => setShowBeneficiaryAnalyzer(false)}
+          />
+        </DxcDialog>
+      )}
     </DxcContainer>
   );
 };

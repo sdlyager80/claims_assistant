@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { DxcApplicationLayout, DxcFlex, DxcTypography, DxcButton } from '@dxc-technology/halstack-react';
 import Dashboard from './components/Dashboard/Dashboard';
 import ClaimsWorkbench from './components/ClaimsWorkbench/ClaimsWorkbench';
@@ -6,12 +6,11 @@ import IntakeForms from './components/IntakeForms/IntakeForms';
 import FNOLWorkspace from './components/FNOLWorkspace/FNOLWorkspace';
 import PendingClaimsReview from './components/PendingClaimsReview/PendingClaimsReview';
 import RequirementsReceived from './components/RequirementsReceived/RequirementsReceived';
+import ClaimsHandlerDashboard from './components/ClaimsHandlerDashboard/ClaimsHandlerDashboard';
 import ThemeSettings from './components/ThemeSettings/ThemeSettings';
-import ContactPreferences from './components/ContactPreferences/ContactPreferences';
 
 // Context Providers
 import { AppProvider, useApp } from './contexts/AppContext';
-import { DemoModeProvider, useDemoMode } from './contexts/DemoModeContext';
 import { ClaimsProvider } from './contexts/ClaimsContext';
 import { PolicyProvider } from './contexts/PolicyContext';
 import { WorkflowProvider } from './contexts/WorkflowContext';
@@ -26,17 +25,14 @@ function AppContent() {
 
   // Access global app context
   const { user } = useApp();
-  const { demoLineOfBusiness, toggleDemoMode } = useDemoMode();
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedClaim, setSelectedClaim] = useState(null);
-  const [sidenavExpanded, setSidenavExpanded] = useState(true);
+  const [sidenavExpanded, setSidenavExpanded] = useState(false); // Start minimized
   const [isThemeSettingsOpen, setIsThemeSettingsOpen] = useState(false);
-  const [isContactPreferencesOpen, setIsContactPreferencesOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const profileMenuRef = useRef(null);
 
   const handleClaimSelect = (claim) => {
+    console.log('[App] handleClaimSelect called with claim:', claim);
     setSelectedClaim(claim);
     setCurrentView('workbench');
   };
@@ -48,24 +44,12 @@ function AppContent() {
     }
   };
 
-  // Close profile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-        setIsProfileMenuOpen(false);
-      }
-    };
-
-    if (isProfileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isProfileMenuOpen]);
-
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
         return <Dashboard onClaimSelect={handleClaimSelect} />;
+      case 'handlerDashboard':
+        return <ClaimsHandlerDashboard />;
       case 'workbench':
         return <ClaimsWorkbench claim={selectedClaim} onBack={() => handleNavigationClick('dashboard')} />;
       case 'intake':
@@ -87,6 +71,12 @@ function AppContent() {
       icon: "dashboard",
       selected: currentView === 'dashboard',
       onClick: () => handleNavigationClick('dashboard')
+    },
+    {
+      label: "My Claims Workbench",
+      icon: "assignment_ind",
+      selected: currentView === 'handlerDashboard',
+      onClick: () => handleNavigationClick('handlerDashboard')
     },
     {
       label: "New Claim FNOL Party Portal",
@@ -116,52 +106,19 @@ function AppContent() {
 
   return (
     <>
-    {/* Skip to main content link for keyboard navigation */}
-    <a href="#main-content" className="skip-link">
-      Skip to main content
-    </a>
-
     <DxcApplicationLayout
       header={
         <DxcApplicationLayout.Header
           appTitle={
-            <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-              <img
-                src="/bloom-logo.jpg"
-                alt="Bloom Insurance"
-                style={{
-                  height: '36px',
-                  width: 'auto',
-                  objectFit: 'contain'
-                }}
-              />
-              <span style={{ fontSize: '1.25rem', fontWeight: 600 }}>Claims Assistant</span>
-            </DxcFlex>
+            <img
+              src="/Bloom_logo.jpg"
+              alt="Bloom Insurance"
+              style={{ height: '32px', width: 'auto' }}
+            />
           }
           sideContent={(isResponsive) =>
             isResponsive ? null : (
               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
-                <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
-                    Demo Mode:
-                  </DxcTypography>
-                  <DxcButton
-                    label="L&A"
-                    mode={demoLineOfBusiness === 'LA' ? 'primary' : 'tertiary'}
-                    size="small"
-                    aria-label={`Switch to Life and Annuity demo mode${demoLineOfBusiness === 'LA' ? ' (currently selected)' : ''}`}
-                    aria-pressed={demoLineOfBusiness === 'LA'}
-                    onClick={() => toggleDemoMode('LA')}
-                  />
-                  <DxcButton
-                    label="P&C"
-                    mode={demoLineOfBusiness === 'PC' ? 'primary' : 'tertiary'}
-                    size="small"
-                    aria-label={`Switch to Property and Casualty demo mode${demoLineOfBusiness === 'PC' ? ' (currently selected)' : ''}`}
-                    aria-pressed={demoLineOfBusiness === 'PC'}
-                    onClick={() => toggleDemoMode('PC')}
-                  />
-                </DxcFlex>
                 <div
                   onClick={() => {
                     setIsThemeSettingsOpen(true);
@@ -179,15 +136,13 @@ function AppContent() {
                   title="Theme Settings"
                   role="button"
                   tabIndex={0}
-                  aria-label="Open theme settings"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
                       setIsThemeSettingsOpen(true);
                     }
                   }}
                 >
-                  <span className="material-icons" aria-hidden="true">palette</span>
+                  <span className="material-icons">palette</span>
                 </div>
                 <DxcFlex direction="column" gap="var(--spacing-gap-none)">
                   <DxcTypography>{user?.name || 'User'}</DxcTypography>
@@ -198,140 +153,21 @@ function AppContent() {
                     {user?.email || ''}
                   </DxcTypography>
                 </DxcFlex>
-                <div ref={profileMenuRef} style={{ position: 'relative' }}>
-                  <div
-                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Open user menu"
-                    aria-expanded={isProfileMenuOpen}
-                    aria-haspopup="true"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setIsProfileMenuOpen(!isProfileMenuOpen);
-                      }
-                    }}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      backgroundColor: "var(--color-bg-primary-lighter)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--color-fg-primary-stronger)",
-                      fontWeight: "600",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                      transition: "background-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-bg-primary-light)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-bg-primary-lighter)";
-                    }}
-                  >
-                    {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-                  </div>
-
-                  {/* Profile Dropdown Menu */}
-                  {isProfileMenuOpen && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '40px',
-                        right: '0',
-                        minWidth: '200px',
-                        backgroundColor: 'var(--color-bg-neutral-lightest)',
-                        borderRadius: 'var(--border-radius-m)',
-                        boxShadow: 'var(--shadow-high-01)',
-                        border: '1px solid var(--color-border-neutral-lighter)',
-                        zIndex: 1000,
-                        overflow: 'hidden'
-                      }}
-                    >
-                      {/* Menu Item: Contact Preferences */}
-                      <div
-                        onClick={() => {
-                          setIsContactPreferencesOpen(true);
-                          setIsProfileMenuOpen(false);
-                        }}
-                        role="menuitem"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setIsContactPreferencesOpen(true);
-                            setIsProfileMenuOpen(false);
-                          }
-                        }}
-                        style={{
-                          padding: '12px 16px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          transition: 'background-color 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'var(--color-bg-neutral-lighter)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }}
-                      >
-                        <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-neutral-strong)' }}>
-                          contact_phone
-                        </span>
-                        <DxcTypography fontSize="font-scale-02">
-                          Contact Preferences
-                        </DxcTypography>
-                      </div>
-
-                      {/* Divider */}
-                      <div style={{ height: '1px', backgroundColor: 'var(--color-border-neutral-lighter)' }} />
-
-                      {/* Menu Item: Profile Settings (Future) */}
-                      <div
-                        onClick={() => {
-                          // TODO: Implement profile settings
-                          setIsProfileMenuOpen(false);
-                        }}
-                        role="menuitem"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setIsProfileMenuOpen(false);
-                          }
-                        }}
-                        style={{
-                          padding: '12px 16px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          transition: 'background-color 0.2s',
-                          opacity: 0.5
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'var(--color-bg-neutral-lighter)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }}
-                      >
-                        <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-neutral-strong)' }}>
-                          account_circle
-                        </span>
-                        <DxcTypography fontSize="font-scale-02">
-                          Profile Settings
-                        </DxcTypography>
-                      </div>
-                    </div>
-                  )}
+                <div
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--color-bg-primary-lighter)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--color-fg-primary-stronger)",
+                    fontWeight: "600",
+                    fontSize: "14px",
+                  }}
+                >
+                  {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                 </div>
               </DxcFlex>
             )
@@ -346,7 +182,7 @@ function AppContent() {
         />
       }
     >
-      <DxcApplicationLayout.Main id="main-content">
+      <DxcApplicationLayout.Main>
         {renderContent()}
       </DxcApplicationLayout.Main>
     </DxcApplicationLayout>
@@ -357,12 +193,6 @@ function AppContent() {
         // Theme applied successfully
       }}
     />
-    {isContactPreferencesOpen && (
-      <ContactPreferences
-        isOpen={isContactPreferencesOpen}
-        onClose={() => setIsContactPreferencesOpen(false)}
-      />
-    )}
     </>
   );
 }
@@ -375,17 +205,15 @@ function App() {
 
   return (
     <AppProvider>
-      <DemoModeProvider>
-        <ClaimsProvider>
-          <PolicyProvider>
-            <WorkflowProvider>
-              <DocumentProvider>
-                <AppContent />
-              </DocumentProvider>
-            </WorkflowProvider>
-          </PolicyProvider>
-        </ClaimsProvider>
-      </DemoModeProvider>
+      <ClaimsProvider>
+        <PolicyProvider>
+          <WorkflowProvider>
+            <DocumentProvider>
+              <AppContent />
+            </DocumentProvider>
+          </WorkflowProvider>
+        </PolicyProvider>
+      </ClaimsProvider>
     </AppProvider>
   );
 }

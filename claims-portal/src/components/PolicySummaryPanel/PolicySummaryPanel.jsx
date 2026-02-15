@@ -133,7 +133,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                         </DxcFlex>
                       </DxcFlex>
                       <DxcFlex direction="column" alignItems="flex-end" gap="var(--spacing-gap-xs)">
-                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000">
+                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
                           {formatCurrency(policy.faceAmount)}
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">

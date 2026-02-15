@@ -10,7 +10,6 @@ import {
   DxcInset,
   DxcAlert
 } from '@dxc-technology/halstack-react';
-import { validateAmount } from '../../utils/validation';
 import './TaxWithholdingCalculator.css';
 
 /**
@@ -81,20 +80,6 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
       // Validation
       if (!formData.benefitAmount) {
         throw new Error('Benefit amount is required');
-      }
-
-      // Validate benefit amount
-      const benefitValidation = validateAmount(formData.benefitAmount, 0);
-      if (!benefitValidation.isValid) {
-        throw new Error(benefitValidation.error);
-      }
-
-      // Validate interest amount if provided
-      if (formData.interestAmount) {
-        const interestValidation = validateAmount(formData.interestAmount, 0);
-        if (!interestValidation.isValid) {
-          throw new Error(interestValidation.error);
-        }
       }
 
       // Calculate taxable amount (typically only interest portion is taxable)
@@ -309,7 +294,7 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
           >
             <DxcFlex direction="column" gap="var(--spacing-gap-m)">
               <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                <span className="material-icons" style={{ color: '#000000', fontSize: '20px' }}>
+                <span className="material-icons" style={{ color: 'var(--color-fg-success-medium)', fontSize: '20px' }}>
                   check_circle
                 </span>
                 <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
@@ -340,7 +325,7 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
                   <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                     Federal Withholding
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
+                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
                     {formatCurrency(calculationResult.federalWithholding.amount)}
                     {calculationResult.federalWithholding.applied &&
                       ` (${calculationResult.federalWithholding.rate}%)`
@@ -352,7 +337,7 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
                   <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                     State Withholding ({calculationResult.stateWithholding.state})
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
+                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
                     {formatCurrency(calculationResult.stateWithholding.amount)}
                     {calculationResult.stateWithholding.applied &&
                       ` (${calculationResult.stateWithholding.rate}%)`
@@ -379,7 +364,7 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
                       <DxcTypography fontSize="font-scale-01">
                         Total Withholding
                       </DxcTypography>
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#000000">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
                         -{formatCurrency(calculationResult.totalWithheld)}
                       </DxcTypography>
                     </DxcFlex>
@@ -387,7 +372,7 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
                       <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
                         Net Payment to Beneficiary
                       </DxcTypography>
-                      <DxcTypography fontSize="font-scale-05" fontWeight="font-weight-semibold" color="#000000">
+                      <DxcTypography fontSize="font-scale-05" fontWeight="font-weight-semibold" color="var(--color-fg-success-darker)">
                         {formatCurrency(calculationResult.netPayment)}
                       </DxcTypography>
                     </DxcFlex>

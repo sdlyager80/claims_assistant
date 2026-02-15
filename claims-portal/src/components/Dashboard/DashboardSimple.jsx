@@ -19,7 +19,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
       value: '$24.8M',
       change: '+12% vs last year',
       changePositive: true,
-      color: '#000000',
+      color: '#0095FF',
       icon: '💰'
     },
     {
@@ -43,7 +43,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
       value: '15 days',
       change: '30% faster than target',
       changePositive: true,
-      color: '#000000',
+      color: '#0095FF',
       icon: '⚡'
     }
   ];
@@ -111,7 +111,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
       case 'Pending Review':
         return '#FF6B00';
       case 'In Review':
-        return '#000000';
+        return '#0095FF';
       case 'FastTrack Eligible':
         return '#24A148';
       case 'Approved':
@@ -223,7 +223,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
               style={{
                 padding: '1rem 2rem',
                 margin: '0.5rem 0',
-                backgroundColor: '#000000',
+                backgroundColor: '#0095FF',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -237,7 +237,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
                 boxShadow: '0 2px 4px rgba(0, 149, 255, 0.3)'
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0077CC'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#000000'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0095FF'}
             >
               <span style={{ fontSize: '18px' }}>+</span>
               New Claim (FNOL)
@@ -262,9 +262,9 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
                   onClick={() => setStatusFilter(option.value)}
                   style={{
                     padding: '0.5rem 1rem',
-                    backgroundColor: statusFilter === option.value ? '#000000' : '#fff',
+                    backgroundColor: statusFilter === option.value ? '#0095FF' : '#fff',
                     color: statusFilter === option.value ? '#fff' : '#666',
-                    border: `1px solid ${statusFilter === option.value ? '#000000' : '#d0d0d0'}`,
+                    border: `1px solid ${statusFilter === option.value ? '#0095FF' : '#d0d0d0'}`,
                     borderRadius: '4px',
                     fontSize: '13px',
                     fontWeight: statusFilter === option.value ? 600 : 400,
@@ -273,8 +273,8 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
                   }}
                   onMouseEnter={(e) => {
                     if (statusFilter !== option.value) {
-                      e.currentTarget.style.borderColor = '#000000';
-                      e.currentTarget.style.color = '#000000';
+                      e.currentTarget.style.borderColor = '#0095FF';
+                      e.currentTarget.style.color = '#0095FF';
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -370,7 +370,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td style={{ padding: '1rem' }}>
                         <span style={{
-                          color: '#000000',
+                          color: '#0095FF',
                           fontWeight: 600,
                           fontSize: '14px'
                         }}>

@@ -18,14 +18,6 @@ import {
   DxcTabs
 } from '@dxc-technology/halstack-react';
 import serviceNowService from '../../services/api/serviceNowService';
-import {
-  sanitizeInput,
-  validateEmail,
-  validatePhone,
-  validateSSN,
-  validatePolicyNumber,
-  validateRequired
-} from '../../utils/validation';
 import './IntakeForms.css';
 
 /**
@@ -89,17 +81,10 @@ const IntakeForms = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [fnolNumber, setFnolNumber] = useState(null);
-  const [validationErrors, setValidationErrors] = useState({});
 
   // Auth handlers
   const handleAuthChange = (field, value) => {
-    // Sanitize text inputs
-    let sanitizedValue = value;
-    if (typeof value === 'string' && ['firstName', 'lastName', 'email'].includes(field)) {
-      sanitizedValue = sanitizeInput(value);
-    }
-
-    setAuthData(prev => ({ ...prev, [field]: sanitizedValue }));
+    setAuthData(prev => ({ ...prev, [field]: value }));
     setAuthError(null);
   };
 
@@ -108,14 +93,6 @@ const IntakeForms = () => {
       setAuthError('Please enter both email and password.');
       return;
     }
-
-    // Validate email format
-    const emailValidation = validateEmail(authData.email);
-    if (!emailValidation.isValid) {
-      setAuthError(emailValidation.error);
-      return;
-    }
-
     // Simulated login
     setIsAuthenticated(true);
   };
@@ -125,49 +102,16 @@ const IntakeForms = () => {
       setAuthError('Please fill in all required fields.');
       return;
     }
-
-    // Validate email format
-    const emailValidation = validateEmail(authData.email);
-    if (!emailValidation.isValid) {
-      setAuthError(emailValidation.error);
-      return;
-    }
-
-    // Validate phone format if provided
-    if (authData.phone) {
-      const phoneValidation = validatePhone(authData.phone);
-      if (!phoneValidation.isValid) {
-        setAuthError(phoneValidation.error);
-        return;
-      }
-    }
-
     if (authData.password !== authData.confirmPassword) {
       setAuthError('Passwords do not match.');
       return;
     }
-
     // Simulated registration
     setIsAuthenticated(true);
   };
 
   const handleInputChange = (field, value) => {
-    // Sanitize text inputs to prevent XSS
-    let sanitizedValue = value;
-    if (typeof value === 'string' && [
-      'policyNumber', 'insuredName', 'claimantName', 'claimantAddress',
-      'causeOfDeath', 'description', 'relationship', 'annuityContractNumber'
-    ].includes(field)) {
-      sanitizedValue = sanitizeInput(value);
-    }
-
-    setFormData(prev => ({ ...prev, [field]: sanitizedValue }));
-
-    // Clear validation error for this field
-    setValidationErrors(prev => ({
-      ...prev,
-      [field]: null
-    }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleProductSelect = (product) => {
@@ -192,59 +136,8 @@ const IntakeForms = () => {
   };
 
   const handleSubmit = async () => {
-    // Validate all form inputs before submission
-    const errors = {};
-
-    // Validate policy number
-    if (formData.policyNumber) {
-      const policyValidation = validatePolicyNumber(formData.policyNumber);
-      if (!policyValidation.isValid) {
-        errors.policyNumber = policyValidation.error;
-      }
-    }
-
-    // Validate insured SSN
-    if (formData.insuredSSN) {
-      const ssnValidation = validateSSN(formData.insuredSSN);
-      if (!ssnValidation.isValid) {
-        errors.insuredSSN = ssnValidation.error;
-      }
-    }
-
-    // Validate claimant email
-    if (formData.claimantEmail) {
-      const emailValidation = validateEmail(formData.claimantEmail);
-      if (!emailValidation.isValid) {
-        errors.claimantEmail = emailValidation.error;
-      }
-    }
-
-    // Validate claimant phone
-    if (formData.claimantPhone) {
-      const phoneValidation = validatePhone(formData.claimantPhone);
-      if (!phoneValidation.isValid) {
-        errors.claimantPhone = phoneValidation.error;
-      }
-    }
-
-    // Validate claimant SSN
-    if (formData.claimantSSN) {
-      const claimantSSNValidation = validateSSN(formData.claimantSSN);
-      if (!claimantSSNValidation.isValid) {
-        errors.claimantSSN = claimantSSNValidation.error;
-      }
-    }
-
-    // If there are validation errors, don't proceed with submission
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      setError('Please correct the validation errors before submitting.');
-      return;
-    }
-
     setSubmitting(true);
     setError(null);
-    setValidationErrors({});
 
     try {
       const fnolData = {
@@ -511,7 +404,7 @@ const IntakeForms = () => {
                       padding: "var(--spacing-padding-l)",
                       borderRadius: "var(--border-radius-m)",
                       border: selectedProduct === 'life'
-                        ? "2px solid #000000"
+                        ? "2px solid var(--color-fg-secondary-medium)"
                         : "1px solid var(--border-color-neutral-lighter)",
                       backgroundColor: "var(--color-bg-neutral-lighter)",
                       cursor: "pointer",
@@ -519,7 +412,7 @@ const IntakeForms = () => {
                     }}
                   >
                     <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                      <span className="material-icons" style={{ fontSize: "48px", color: "#000000" }}>favorite</span>
+                      <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>favorite</span>
                       <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
                         Life Insurance
                       </DxcTypography>
@@ -538,7 +431,7 @@ const IntakeForms = () => {
                       padding: "var(--spacing-padding-l)",
                       borderRadius: "var(--border-radius-m)",
                       border: selectedProduct === 'annuity'
-                        ? "2px solid #000000"
+                        ? "2px solid var(--color-fg-secondary-medium)"
                         : "1px solid var(--border-color-neutral-lighter)",
                       backgroundColor: "var(--color-bg-neutral-lighter)",
                       cursor: "pointer",
@@ -546,7 +439,7 @@ const IntakeForms = () => {
                     }}
                   >
                     <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                      <span className="material-icons" style={{ fontSize: "48px", color: "#000000" }}>account_balance</span>
+                      <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>account_balance</span>
                       <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
                         Annuity
                       </DxcTypography>
@@ -605,7 +498,6 @@ const IntakeForms = () => {
                   placeholder="Enter policy number"
                   value={formData.policyNumber}
                   onChange={({ value }) => handleInputChange('policyNumber', value)}
-                  error={validationErrors.policyNumber}
                   size="fillParent"
                 />
 
@@ -625,7 +517,6 @@ const IntakeForms = () => {
                       placeholder="XXX-XX-XXXX"
                       value={formData.insuredSSN}
                       onChange={({ value }) => handleInputChange('insuredSSN', value)}
-                      error={validationErrors.insuredSSN}
                       size="fillParent"
                     />
                   </div>
@@ -778,7 +669,6 @@ const IntakeForms = () => {
                       placeholder="XXX-XX-XXXX"
                       value={formData.claimantSSN}
                       onChange={({ value }) => handleInputChange('claimantSSN', value)}
-                      error={validationErrors.claimantSSN}
                       size="fillParent"
                     />
                   </div>
@@ -797,7 +687,6 @@ const IntakeForms = () => {
                   placeholder="claimant@email.com"
                   value={formData.claimantEmail}
                   onChange={({ value }) => handleInputChange('claimantEmail', value)}
-                  error={validationErrors.claimantEmail}
                   size="fillParent"
                 />
 
@@ -806,7 +695,6 @@ const IntakeForms = () => {
                   placeholder="(555) 123-4567"
                   value={formData.claimantPhone}
                   onChange={({ value }) => handleInputChange('claimantPhone', value)}
-                  error={validationErrors.claimantPhone}
                   size="fillParent"
                 />
 

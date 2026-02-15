@@ -182,8 +182,7 @@ const generateWorkNotes = (claim) => {
 // ============================================================
 // Constants
 // ============================================================
-// Set to March 1, 2026 for Connect demo dates
-const NOW = new Date('2026-03-01T12:00:00');
+const NOW = new Date();
 const DAY = 86400000;
 
 // ============================================================
@@ -191,218 +190,6 @@ const DAY = 86400000;
 // ============================================================
 const createShowcaseClaims = () => {
   const claims = [];
-
-  // ---- CLAIM 0A: $50K STP - APPROVED (Straight Through Processing) ----
-  {
-    const createdDate = new Date(NOW.getTime() - 3 * DAY);
-    const deathDate = new Date(NOW.getTime() - 8 * DAY);
-    const approvedDate = new Date(createdDate.getTime() + 6 * 3600000); // 6 hours later
-    const slaDate = new Date(createdDate.getTime() + 10 * DAY);
-    const daysOpen = Math.floor((approvedDate - createdDate) / DAY);
-    const claimAmount = 50000;
-
-    const claim = {
-      id: 'claim-0a', claimNumber: 'CLM-000050', status: ClaimStatus.APPROVED, type: ClaimType.DEATH,
-      createdAt: createdDate.toISOString(), updatedAt: approvedDate.toISOString(), closedAt: null,
-      deathEvent: {
-        dateOfDeath: deathDate.toISOString().split('T')[0], mannerOfDeath: 'Natural', causeOfDeath: 'Natural Causes',
-        deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: 'CA', proofOfDeathSourceType: 'Death Certificate',
-        proofOfDeathDate: new Date(deathDate.getTime() + 2 * DAY).toISOString().split('T')[0],
-        certifiedDOB: '1960-08-14', verificationSource: 'LexisNexis', verificationScore: 98, specialEvent: null
-      },
-      insured: { name: 'Thomas Chen', ssn: maskedSSN('5892'), dateOfBirth: '1960-08-14', dateOfDeath: deathDate.toISOString().split('T')[0], age: 65 },
-      claimant: { name: 'Lisa Chen', relationship: 'Spouse', contactInfo: { email: 'lisa.chen@email.com', phone: '415-555-0892' } },
-      policies: [{
-        policyNumber: 'POL-892456', policyType: 'Term Life', policyStatus: 'In Force', issueDate: '2015-06-20',
-        issueState: 'CA', region: 'West', companyCode: 'BLM', planCode: 'TL50', faceAmount: claimAmount,
-        currentCashValue: 30000, loanBalance: 0, paidToDate: new Date(deathDate.getTime() - 20 * DAY).toISOString().split('T')[0],
-        source: 'Policy Admin', owner: 'Thomas Chen'
-      }],
-      policy: { policyNumber: 'POL-892456', type: 'Term Life', status: 'In Force', issueDate: '2015-06-20', faceAmount: claimAmount, owner: 'Thomas Chen' },
-      parties: [
-        { id: 'party-0a-1', name: 'Thomas Chen', role: 'Insured', source: 'Policy Admin', resState: 'CA', dateOfBirth: '1960-08-14', ssn: maskedSSN('5892'), phone: '415-555-0891', email: 'thomas.chen@email.com', address: '2840 Market Street, San Francisco, CA 94114', verificationStatus: 'Verified', verificationScore: 98, cslnAction: 'Verified', cslnResult: 'Match' },
-        { id: 'party-0a-2', name: 'Lisa Chen', role: 'Primary Beneficiary', source: 'Policy Admin', resState: 'CA', dateOfBirth: '1962-11-30', ssn: maskedSSN('4107'), phone: '415-555-0892', email: 'lisa.chen@email.com', address: '2840 Market Street, San Francisco, CA 94114', verificationStatus: 'Verified', verificationScore: 97, cslnAction: 'Verified', cslnResult: 'Match' },
-        { id: 'party-0a-3', name: 'Lisa Chen', role: 'Notifier', source: 'FNOL', resState: 'CA', phone: '415-555-0892', email: 'lisa.chen@email.com', verificationStatus: 'Verified' }
-      ],
-      aiInsights: {
-        riskScore: 8,
-        alerts: [],
-        stpEligible: true,
-        stpReason: 'All verification criteria met: Death certificate verified, beneficiary matches, policy in force, no contestability issues, amount under $100K threshold'
-      },
-      financial: {
-        claimAmount, reserve: claimAmount, amountPaid: 0, pmiState: 'CA', pmiRate: 0.10, pmiDays: 0,
-        interestAmount: 0, netBenefitProceeds: claimAmount, netBenefitPMI: 0,
-        federalTaxRate: 0, stateTaxRate: 0, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0,
-        percentage: 100, currency: 'USD', payments: []
-      },
-      routing: {
-        type: RoutingType.FASTTRACK, score: 98, eligible: true,
-        evaluatedAt: new Date(createdDate.getTime() + 5 * 60000).toISOString(),
-        criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true }
-      },
-      workflow: {
-        fsoCase: 'FSO-CLM-000050', currentTask: 'Payment Scheduled', assignedTo: 'Automated System', daysOpen,
-        sla: { dueDate: slaDate.toISOString(), daysRemaining: Math.ceil((slaDate - approvedDate) / DAY), atRisk: false }
-      }
-    };
-    claim.sysId = 'demo-sys-id-0a'; claim.fnolNumber = 'FNOL0000050';
-    claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
-    claims.push(claim);
-  }
-
-  // ---- CLAIM 0B: $250K - AI DETECTED SPOUSE NAME MISMATCH (Requires Review) ----
-  {
-    const createdDate = new Date(NOW.getTime() - 5 * DAY);
-    const deathDate = new Date(NOW.getTime() - 10 * DAY);
-    const slaDate = new Date(createdDate.getTime() + 30 * DAY);
-    const daysOpen = Math.floor((NOW - createdDate) / DAY);
-    const daysToSla = Math.ceil((slaDate - NOW) / DAY);
-    const claimAmount = 250000;
-
-    const claim = {
-      id: 'claim-0b', claimNumber: 'CLM-000051', status: ClaimStatus.PENDING_REQUIREMENTS, type: ClaimType.DEATH,
-      createdAt: createdDate.toISOString(), updatedAt: new Date(createdDate.getTime() + 2 * DAY).toISOString(), closedAt: null,
-      deathEvent: {
-        dateOfDeath: deathDate.toISOString().split('T')[0], mannerOfDeath: 'Natural', causeOfDeath: 'Natural Causes',
-        deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: 'NY', proofOfDeathSourceType: 'Death Certificate',
-        proofOfDeathDate: new Date(deathDate.getTime() + 3 * DAY).toISOString().split('T')[0],
-        certifiedDOB: '1958-03-22', verificationSource: 'LexisNexis', verificationScore: 95, specialEvent: null
-      },
-      insured: { name: 'Richard Thompson', ssn: maskedSSN('7293'), dateOfBirth: '1958-03-22', dateOfDeath: deathDate.toISOString().split('T')[0], age: 68 },
-      claimant: { name: 'Jennifer Thompson', relationship: 'Spouse', contactInfo: { email: 'jennifer.thompson@email.com', phone: '212-555-0847' } },
-      policies: [{
-        policyNumber: 'POL-784521', policyType: 'Universal Life', policyStatus: 'In Force', issueDate: '2010-04-15',
-        issueState: 'NY', region: 'Northeast', companyCode: 'BLM', planCode: 'UL250', faceAmount: claimAmount,
-        currentCashValue: 180000, loanBalance: 0, paidToDate: new Date(deathDate.getTime() - 25 * DAY).toISOString().split('T')[0],
-        source: 'Policy Admin', owner: 'Richard Thompson'
-      }],
-      policy: { policyNumber: 'POL-784521', type: 'Universal Life', status: 'In Force', issueDate: '2010-04-15', faceAmount: claimAmount, owner: 'Richard Thompson' },
-      parties: [
-        { id: 'party-0b-1', name: 'Richard Thompson', role: 'Insured', source: 'Policy Admin', resState: 'NY', dateOfBirth: '1958-03-22', ssn: maskedSSN('7293'), phone: '212-555-0846', email: 'richard.thompson@email.com', address: '485 Park Avenue, New York, NY 10022', verificationStatus: 'Verified', verificationScore: 97, cslnAction: 'Verified', cslnResult: 'Match' },
-        { id: 'party-0b-2', name: 'Susan Thompson', role: 'Primary Beneficiary', source: 'Policy Admin', resState: 'NY', dateOfBirth: '1960-07-18', ssn: maskedSSN('4156'), phone: '212-555-0732', email: 'susan.thompson@email.com', address: '485 Park Avenue, New York, NY 10022', verificationStatus: 'Unverified', verificationScore: 45, cslnAction: 'Alert', cslnResult: 'Name Mismatch' },
-        { id: 'party-0b-3', name: 'Jennifer Thompson', role: 'Notifier', source: 'FNOL', resState: 'NY', phone: '212-555-0847', email: 'jennifer.thompson@email.com', verificationStatus: 'Pending', cslnAction: 'Review Required', cslnResult: 'Different Person' }
-      ],
-      aiInsights: {
-        riskScore: 72,
-        alerts: [{
-          id: 'alert-0b-1',
-          severity: 'High',
-          category: 'Beneficiary Mismatch',
-          title: 'Spouse Name Does Not Match Beneficiary',
-          message: 'Current spouse Jennifer Thompson does not match beneficiary Susan Thompson on policy',
-          description: 'The person filing the claim (Jennifer Thompson) identifies as the current spouse, but the policy shows Susan Thompson as the primary beneficiary. This suggests the beneficiary designation was not updated after a divorce/remarriage. Manual review and updated beneficiary designation documentation required.',
-          confidence: 94,
-          recommendation: 'Contact claimant to verify marital status and obtain updated beneficiary designation or divorce decree. May require proof of marriage to current spouse.',
-          timestamp: new Date(createdDate.getTime() + 2 * 3600000).toISOString(),
-          detectedBy: 'AI Beneficiary Verification Engine'
-        }],
-        stpEligible: false,
-        stpReason: 'Beneficiary name mismatch detected - requires manual review'
-      },
-      financial: {
-        claimAmount, reserve: claimAmount, amountPaid: 0, pmiState: 'NY', pmiRate: 0.08, pmiDays: 0,
-        interestAmount: 0, netBenefitProceeds: claimAmount, netBenefitPMI: 0,
-        federalTaxRate: 0, stateTaxRate: 0, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0,
-        percentage: 100, currency: 'USD', payments: []
-      },
-      routing: {
-        type: RoutingType.STANDARD, score: 28, eligible: false,
-        evaluatedAt: new Date(createdDate.getTime() + 2 * 3600000).toISOString(),
-        criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: false, noAnomalies: false }
-      },
-      workflow: {
-        fsoCase: 'FSO-CLM-000051', currentTask: 'Beneficiary Verification', assignedTo: 'Kim Lee', daysOpen,
-        sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 7 }
-      }
-    };
-    claim.sysId = 'demo-sys-id-0b'; claim.fnolNumber = 'FNOL0000051';
-    claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
-    claims.push(claim);
-  }
-
-  // ---- CLAIM 0C: Annuity Surrender - $75K (No death, policy owner request) ----
-  {
-    const createdDate = new Date(NOW.getTime() - 8 * DAY);
-    const approvedDate = new Date(createdDate.getTime() + 4 * DAY);
-    const slaDate = new Date(createdDate.getTime() + 15 * DAY);
-    const daysOpen = Math.floor((approvedDate - createdDate) / DAY);
-    const claimAmount = 75000;
-
-    const claim = {
-      id: 'claim-0c', claimNumber: 'CLM-000052', status: ClaimStatus.APPROVED, type: ClaimType.WITHDRAWAL,
-      createdAt: createdDate.toISOString(), updatedAt: approvedDate.toISOString(), closedAt: null,
-      deathEvent: {
-        dateOfDeath: null,
-        mannerOfDeath: 'N/A - Loan',
-        causeOfDeath: 'N/A - Loan Request',
-        deathInUSA: null,
-        countryOfDeath: null,
-        stateOfDeath: null,
-        proofOfDeathSourceType: 'N/A',
-        proofOfDeathDate: null,
-        certifiedDOB: '1965-12-08',
-        verificationSource: 'Policy Admin',
-        verificationScore: 98,
-        specialEvent: 'Annuity Loan'
-      },
-      insured: {
-        name: 'Patricia Williams',
-        ssn: maskedSSN('8524'),
-        dateOfBirth: '1965-12-08',
-        dateOfDeath: null,
-        age: 60
-      },
-      claimant: {
-        name: 'Patricia Williams',
-        relationship: 'Policy Owner',
-        contactInfo: { email: 'patricia.williams@email.com', phone: '404-555-0734' }
-      },
-      policies: [{
-        policyNumber: 'POL-459123', policyType: 'Variable Annuity', policyStatus: 'In Force', issueDate: '2016-09-10',
-        issueState: 'GA', region: 'Southeast', companyCode: 'ALI', planCode: 'VA-FLEX', faceAmount: 0,
-        currentCashValue: 150000, loanBalance: claimAmount, paidToDate: new Date(createdDate.getTime() - 30 * DAY).toISOString().split('T')[0],
-        source: 'Policy Admin', owner: 'Patricia Williams'
-      }],
-      policy: {
-        policyNumber: 'POL-459123', type: 'Variable Annuity', status: 'In Force', issueDate: '2016-09-10',
-        faceAmount: 0, currentCashValue: 150000, loanBalance: claimAmount, owner: 'Patricia Williams'
-      },
-      parties: [
-        { id: 'party-0c-1', name: 'Patricia Williams', role: 'Policy Owner', source: 'Policy Admin', resState: 'GA', dateOfBirth: '1965-12-08', ssn: maskedSSN('8524'), phone: '404-555-0734', email: 'patricia.williams@email.com', address: '3680 Peachtree Road, Atlanta, GA 30319', verificationStatus: 'Verified', verificationScore: 98, cslnAction: 'Verified', cslnResult: 'Match' }
-      ],
-      aiInsights: {
-        riskScore: 8,
-        alerts: [],
-        stpEligible: true,
-        stpReason: 'Annuity loan request verified. Policy owner identity confirmed, sufficient cash value available, loan within policy limits.'
-      },
-      financial: {
-        claimAmount, reserve: 0, amountPaid: 0, pmiState: null, pmiRate: 0, pmiDays: 0,
-        interestAmount: 0, netBenefitProceeds: claimAmount, netBenefitPMI: 0,
-        loanAmount: claimAmount, // Loan amount
-        loanInterestRate: 5.5, // Annual interest rate
-        netAmount: claimAmount, // Full loan amount disbursed
-        federalTaxRate: 0, stateTaxRate: 0, taxableAmount: 0, // Loans are not taxable
-        federalTaxWithheld: 0,
-        stateTaxWithheld: 0,
-        taxWithheld: 0,
-        percentage: 100, currency: 'USD', payments: []
-      },
-      routing: {
-        type: RoutingType.FASTTRACK, score: 96, eligible: true,
-        evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(),
-        criteria: { deathVerification: null, policyInForce: true, beneficiaryMatch: null, noContestability: true, claimAmountThreshold: true, noAnomalies: true }
-      },
-      workflow: {
-        fsoCase: 'FSO-CLM-000052', currentTask: 'Payment Scheduled', assignedTo: 'Automated System', daysOpen,
-        sla: { dueDate: slaDate.toISOString(), daysRemaining: Math.ceil((slaDate - approvedDate) / DAY), atRisk: false }
-      }
-    };
-    claim.sysId = 'demo-sys-id-0c'; claim.fnolNumber = 'FNOL0000052';
-    claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
-    claims.push(claim);
-  }
 
   // ---- CLAIM 1: Elizabeth Jones (featured, UNDER_REVIEW, Standard) ----
   {
@@ -590,16 +377,12 @@ const generateSeededClaim = (index, isFastTrack) => {
   const deathDate = seededDate(new Date(NOW.getTime() - 45 * DAY), new Date(NOW.getTime() - 3 * DAY));
 
   const statusOptions = isFastTrack
-    ? [ClaimStatus.CLOSED, ClaimStatus.CLOSED, ClaimStatus.CLOSED, ClaimStatus.APPROVED, ClaimStatus.UNDER_REVIEW]
-    : [ClaimStatus.CLOSED, ClaimStatus.CLOSED, ClaimStatus.APPROVED, ClaimStatus.UNDER_REVIEW, ClaimStatus.UNDER_REVIEW, ClaimStatus.PENDING_REQUIREMENTS, ClaimStatus.DENIED];
+    ? [ClaimStatus.CLOSED, ClaimStatus.CLOSED, ClaimStatus.APPROVED, ClaimStatus.UNDER_REVIEW]
+    : [ClaimStatus.NEW, ClaimStatus.UNDER_REVIEW, ClaimStatus.UNDER_REVIEW, ClaimStatus.APPROVED, ClaimStatus.PENDING_REQUIREMENTS];
   const status = seededPick(statusOptions);
   const isClosed = status === ClaimStatus.CLOSED;
-  const isApproved = status === ClaimStatus.APPROVED;
-  const isDenied = status === ClaimStatus.DENIED;
   const closedDate = isClosed ? new Date(createdDate.getTime() + (isFastTrack ? 7 : 25) * DAY) : null;
-  const approvedDate = isApproved ? new Date(createdDate.getTime() + (isFastTrack ? 6 : 20) * DAY) : null;
-  const deniedDate = isDenied ? new Date(createdDate.getTime() + (isFastTrack ? 5 : 15) * DAY) : null;
-  const daysOpen = Math.floor(((isClosed ? closedDate : isApproved ? approvedDate : isDenied ? deniedDate : NOW) - createdDate) / DAY);
+  const daysOpen = Math.floor(((isClosed ? closedDate : NOW) - createdDate) / DAY);
   const slaDays = isFastTrack ? 10 : 30;
   const slaDate = new Date(createdDate.getTime() + slaDays * DAY);
   const daysToSla = isClosed ? Math.ceil((slaDate - closedDate) / DAY) : Math.ceil((slaDate - NOW) / DAY);
@@ -614,11 +397,7 @@ const generateSeededClaim = (index, isFastTrack) => {
 
   const claim = {
     id: `claim-${index}`, claimNumber, status, type: ClaimType.DEATH,
-    createdAt: createdDate.toISOString(),
-    updatedAt: new Date(createdDate.getTime() + seeded() * 24 * 3600000).toISOString(),
-    closedAt: isClosed ? closedDate.toISOString() : null,
-    approvedAt: isApproved ? approvedDate.toISOString() : (isClosed ? closedDate.toISOString() : null),
-    deniedAt: isDenied ? deniedDate.toISOString() : null,
+    createdAt: createdDate.toISOString(), updatedAt: new Date(createdDate.getTime() + seeded() * 24 * 3600000).toISOString(), closedAt: isClosed ? closedDate.toISOString() : null,
     deathEvent: {
       dateOfDeath: deathDate.toISOString().split('T')[0], mannerOfDeath: manner, causeOfDeath: causeMap[manner],
       deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: state, proofOfDeathSourceType: seededPick(PROOF_TYPES),
@@ -636,10 +415,10 @@ const generateSeededClaim = (index, isFastTrack) => {
       { id: `party-${index}-3`, name: claimantName, role: 'Notifier', source: 'FNOL', resState: state, phone: `${Math.floor(seeded() * 900 + 100)}-555-${Math.floor(seeded() * 9000 + 1000)}`, email: `notifier${index}@email.com`, verificationStatus: 'Verified' }
     ],
     aiInsights: { riskScore: isFastTrack ? Math.floor(seeded() * 25 + 10) : Math.floor(seeded() * 30 + 40), alerts: isFastTrack ? [] : (seeded() > 0.5 ? [{ id: `alert-${index}-1`, severity: 'Medium', category: 'Beneficiary Change', title: 'Recent Beneficiary Modification', message: 'Beneficiary was changed within 12 months of death', description: 'Policy beneficiary was updated before date of death, which may require additional review.', confidence: 75, recommendation: 'Review beneficiary change documentation and rationale', timestamp: new Date(deathDate.getTime() - 180 * DAY).toISOString() }] : []) },
-    financial: { claimAmount, reserve: (isClosed || isApproved) ? 0 : (isDenied ? 0 : Math.floor(claimAmount * 0.9)), amountPaid: (isClosed || isApproved) ? claimAmount : 0, pmiState: state, pmiRate: isFastTrack ? 0.10 : 0.08, pmiDays, interestAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, federalTaxRate: 24, stateTaxRate: 5.75, taxableAmount: interestAmount, federalTaxWithheld: Math.floor(interestAmount * 0.24), stateTaxWithheld: Math.floor(interestAmount * 0.0575), taxWithheld: Math.floor(interestAmount * 0.2975), percentage: 100, currency: 'USD',
-      payments: (isClosed || isApproved) ? [{ id: `payment-${index}-1`, paymentNumber: `PAY-${String(index).padStart(6, '0')}`, payeeId: `party-${index}-2`, payeeName: claimantName, payeeSSN: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), payeeAddress: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, benefitAmount: claimAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, pmiCalculation: { state, rate: isFastTrack ? 10 : 8, dateOfDeath: deathDate.toISOString().split('T')[0], settlementDate: (closedDate || approvedDate).toISOString().split('T')[0], days: pmiDays, amount: interestAmount }, taxWithholding: { federalRate: 24, stateRate: 5.75, taxableAmount: interestAmount, federalWithheld: Math.floor(interestAmount * 0.24), stateWithheld: Math.floor(interestAmount * 0.0575), totalWithheld: Math.floor(interestAmount * 0.2975) }, taxWithheld: Math.floor(interestAmount * 0.2975), netPayment: claimAmount + interestAmount - Math.floor(interestAmount * 0.2975), percentage: 100, paymentMethod: seeded() > 0.5 ? 'ACH' : 'Check', bankInfo: { accountType: 'Checking', routingNumber: '021000021', accountNumberLast4: `****${Math.floor(seeded() * 9000 + 1000)}` }, scheduledDate: (closedDate || approvedDate).toISOString().split('T')[0], paymentDate: (closedDate || approvedDate).toISOString().split('T')[0], status: 'Completed', glPosting: { posted: true, postingDate: new Date((closedDate || approvedDate).getTime() + DAY).toISOString().split('T')[0], batchNumber: `GL-${Math.floor(seeded() * 900000 + 100000)}`, accountCodes: { benefit: '5000-1000', pmi: '5000-1100', tax: '2000-3000' } }, tax1099: { generated: true, year: NOW.getFullYear(), formType: '1099-MISC', box3Amount: interestAmount } }] : [] },
+    financial: { claimAmount, reserve: isClosed ? 0 : Math.floor(claimAmount * 0.9), amountPaid: isClosed ? claimAmount : 0, pmiState: state, pmiRate: isFastTrack ? 0.10 : 0.08, pmiDays, interestAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, federalTaxRate: 24, stateTaxRate: 5.75, taxableAmount: interestAmount, federalTaxWithheld: Math.floor(interestAmount * 0.24), stateTaxWithheld: Math.floor(interestAmount * 0.0575), taxWithheld: Math.floor(interestAmount * 0.2975), percentage: 100, currency: 'USD',
+      payments: isClosed ? [{ id: `payment-${index}-1`, paymentNumber: `PAY-${String(index).padStart(6, '0')}`, payeeId: `party-${index}-2`, payeeName: claimantName, payeeSSN: maskedSSN(String(Math.floor(seeded() * 9000 + 1000))), payeeAddress: `${Math.floor(seeded() * 9999)} Oak Ave, Somewhere, ${state} ${Math.floor(seeded() * 90000 + 10000)}`, benefitAmount: claimAmount, netBenefitProceeds: claimAmount, netBenefitPMI: interestAmount, pmiCalculation: { state, rate: isFastTrack ? 10 : 8, dateOfDeath: deathDate.toISOString().split('T')[0], settlementDate: closedDate.toISOString().split('T')[0], days: pmiDays, amount: interestAmount }, taxWithholding: { federalRate: 24, stateRate: 5.75, taxableAmount: interestAmount, federalWithheld: Math.floor(interestAmount * 0.24), stateWithheld: Math.floor(interestAmount * 0.0575), totalWithheld: Math.floor(interestAmount * 0.2975) }, taxWithheld: Math.floor(interestAmount * 0.2975), netPayment: claimAmount + interestAmount - Math.floor(interestAmount * 0.2975), percentage: 100, paymentMethod: seeded() > 0.5 ? 'ACH' : 'Check', bankInfo: { accountType: 'Checking', routingNumber: '021000021', accountNumberLast4: `****${Math.floor(seeded() * 9000 + 1000)}` }, scheduledDate: closedDate.toISOString().split('T')[0], paymentDate: closedDate.toISOString().split('T')[0], status: 'Completed', glPosting: { posted: true, postingDate: new Date(closedDate.getTime() + DAY).toISOString().split('T')[0], batchNumber: `GL-${Math.floor(seeded() * 900000 + 100000)}`, accountCodes: { benefit: '5000-1000', pmi: '5000-1100', tax: '2000-3000' } }, tax1099: { generated: true, year: NOW.getFullYear(), formType: '1099-MISC', box3Amount: interestAmount } }] : [] },
     routing: isFastTrack ? { type: RoutingType.FASTTRACK, score: Math.floor(seeded() * 10 + 85), eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } } : { type: RoutingType.STANDARD, score: Math.floor(seeded() * 15 + 70), eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: seeded() > 0.4, noContestability: true, claimAmountThreshold: true, noAnomalies: seeded() > 0.3 } },
-    workflow: { fsoCase: `FSO-${claimNumber}`, currentTask: (isClosed || isApproved || isDenied) ? null : 'Review Requirements', assignedTo: (isClosed || isApproved || isDenied) ? null : seededPick(['John Smith', 'Sarah Johnson', 'Jane Examiner']), daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: !(isClosed || isApproved || isDenied) && daysToSla < 3 } }
+    workflow: { fsoCase: `FSO-${claimNumber}`, currentTask: isClosed ? null : 'Review Requirements', assignedTo: isClosed ? null : seededPick(['John Smith', 'Sarah Johnson', 'Jane Examiner']), daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: !isClosed && daysToSla < 3 } }
   };
   claim.sysId = `demo-sys-id-${index}`; claim.fnolNumber = `FNOL${String(index).padStart(7, '0')}`;
   claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);

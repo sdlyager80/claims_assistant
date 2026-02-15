@@ -9,14 +9,6 @@ import {
   DxcAlert,
   DxcInset
 } from '@dxc-technology/halstack-react';
-import {
-  sanitizeInput,
-  normalizeText,
-  validateSSN,
-  validateEmail,
-  validatePhone,
-  validateRequired
-} from '../../utils/validation';
 import './PartyForm.css';
 
 /**
@@ -81,15 +73,9 @@ const PartyForm = ({ party, onSave, onCancel, onCSLNSearch }) => {
   ].map(state => ({ label: state, value: state }));
 
   const handleInputChange = (field, value) => {
-    // Sanitize text inputs to prevent XSS
-    let sanitizedValue = value;
-    if (typeof value === 'string' && ['name', 'address', 'relationship'].includes(field)) {
-      sanitizedValue = sanitizeInput(value);
-    }
-
     setFormData(prev => ({
       ...prev,
-      [field]: sanitizedValue
+      [field]: value
     }));
     // Clear error for this field
     setErrors(prev => ({
@@ -101,22 +87,18 @@ const PartyForm = ({ party, onSave, onCancel, onCSLNSearch }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Validate required name field
-    const nameValidation = validateRequired(formData.name, 'Name');
-    if (!nameValidation.isValid) {
-      newErrors.name = nameValidation.error;
+    // Required fields
+    if (!formData.name || formData.name.trim() === '') {
+      newErrors.name = 'Name is required';
     }
 
-    // Validate required role field
-    const roleValidation = validateRequired(formData.role, 'Role');
-    if (!roleValidation.isValid) {
-      newErrors.role = roleValidation.error;
+    if (!formData.role) {
+      newErrors.role = 'Role is required';
     }
 
     // Role-specific validations
     if (['Primary Beneficiary', 'Contingent Beneficiary'].includes(formData.role)) {
-      const relationshipValidation = validateRequired(formData.relationship, 'Relationship');
-      if (!relationshipValidation.isValid) {
+      if (!formData.relationship || formData.relationship.trim() === '') {
         newErrors.relationship = 'Relationship is required for beneficiaries';
       }
       if (!formData.percentage || formData.percentage <= 0 || formData.percentage > 100) {
@@ -124,28 +106,19 @@ const PartyForm = ({ party, onSave, onCancel, onCSLNSearch }) => {
       }
     }
 
-    // SSN validation using utility
-    if (formData.ssn) {
-      const ssnValidation = validateSSN(formData.ssn);
-      if (!ssnValidation.isValid) {
-        newErrors.ssn = ssnValidation.error;
-      }
+    // SSN validation (basic format check)
+    if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
+      newErrors.ssn = 'SSN must be in format XXX-XX-XXXX';
     }
 
-    // Email validation using utility
-    if (formData.email) {
-      const emailValidation = validateEmail(formData.email);
-      if (!emailValidation.isValid) {
-        newErrors.email = emailValidation.error;
-      }
+    // Email validation
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
     }
 
-    // Phone validation using utility
-    if (formData.phone) {
-      const phoneValidation = validatePhone(formData.phone);
-      if (!phoneValidation.isValid) {
-        newErrors.phone = phoneValidation.error;
-      }
+    // Phone validation (basic)
+    if (formData.phone && !/^\d{3}-\d{3}-\d{4}$/.test(formData.phone)) {
+      newErrors.phone = 'Phone must be in format XXX-XXX-XXXX';
     }
 
     setErrors(newErrors);

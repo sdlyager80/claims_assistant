@@ -193,9 +193,9 @@ const QueueManagement = () => {
               onClick={() => setSelectedQueue(queue.value)}
               style={{
                 padding: '0.75rem 1.5rem',
-                backgroundColor: selectedQueue === queue.value ? '#000000' : '#fff',
+                backgroundColor: selectedQueue === queue.value ? '#0095FF' : '#fff',
                 color: selectedQueue === queue.value ? '#fff' : '#666',
-                border: `2px solid ${selectedQueue === queue.value ? '#000000' : '#d0d0d0'}`,
+                border: `2px solid ${selectedQueue === queue.value ? '#0095FF' : '#d0d0d0'}`,
                 borderRadius: '4px',
                 fontSize: '14px',
                 fontWeight: selectedQueue === queue.value ? 600 : 400,
@@ -204,8 +204,8 @@ const QueueManagement = () => {
               }}
               onMouseEnter={(e) => {
                 if (selectedQueue !== queue.value) {
-                  e.currentTarget.style.borderColor = '#000000';
-                  e.currentTarget.style.color = '#000000';
+                  e.currentTarget.style.borderColor = '#0095FF';
+                  e.currentTarget.style.color = '#0095FF';
                 }
               }}
               onMouseLeave={(e) => {
@@ -291,7 +291,7 @@ const QueueManagement = () => {
                     </span>
                   </td>
                   <td style={{ padding: '1rem' }}>
-                    <span style={{ color: '#000000', fontWeight: 600, fontSize: '14px' }}>
+                    <span style={{ color: '#0095FF', fontWeight: 600, fontSize: '14px' }}>
                       {claim.id}
                     </span>
                   </td>

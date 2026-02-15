@@ -7,7 +7,6 @@ import {
   DxcChip
 } from '@dxc-technology/halstack-react';
 import FastTrackBadge from '../shared/FastTrackBadge';
-import ScreenReaderOnly from '../shared/ScreenReaderOnly';
 import './ClaimHeader.css';
 
 /**
@@ -44,26 +43,9 @@ const ClaimHeader = ({
   };
 
   const getSLAColor = (daysRemaining) => {
-    if (daysRemaining <= 3) return '#000000';
-    if (daysRemaining <= 7) return '#000000';
-    return '#000000';
-  };
-
-  const getStatusColor = (status) => {
-    const statusUpper = (status || '').toUpperCase();
-    if (statusUpper === 'APPROVED' || statusUpper === 'CLOSED' || statusUpper === 'PAID') {
-      return 'green';
-    }
-    if (statusUpper === 'DENIED' || statusUpper === 'DECLINED' || statusUpper === 'REJECTED') {
-      return 'red';
-    }
-    if (statusUpper === 'UNDER_REVIEW' || statusUpper === 'PENDING' || statusUpper === 'IN_PROGRESS') {
-      return 'orange';
-    }
-    if (statusUpper === 'ON_HOLD' || statusUpper === 'SUSPENDED') {
-      return 'yellow';
-    }
-    return 'grey'; // default for unknown statuses
+    if (daysRemaining <= 3) return 'var(--color-fg-error-medium)';
+    if (daysRemaining <= 7) return 'var(--color-fg-warning-medium)';
+    return 'var(--color-fg-success-medium)';
   };
 
   const slaDate = claim.workflow?.sla?.dueDate ? new Date(claim.workflow.sla.dueDate) : null;
@@ -81,17 +63,7 @@ const ClaimHeader = ({
         top: 0,
         zIndex: 100
       }}
-      as="header"
-      role="banner"
     >
-      {/* Announce claim status to screen readers */}
-      <ScreenReaderOnly>
-        <div role="status" aria-live="polite" aria-atomic="true">
-          Claim {claim.claimNumber}, Status: {claim.status}
-          {claim.insured?.name && `, Insured: ${claim.insured.name || claim.claimant?.name}`}
-        </div>
-      </ScreenReaderOnly>
-
       <DxcFlex direction="column" gap="var(--spacing-gap-m)">
         {/* Top Row: Claim Info and Actions */}
         <DxcFlex justifyContent="space-between" alignItems="center">
@@ -110,20 +82,20 @@ const ClaimHeader = ({
                 <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
                   {claim.claimNumber}
                 </DxcTypography>
-                <DxcBadge label={claim.status} color={getStatusColor(claim.status)} />
+                <DxcBadge label={claim.status} />
                 {claim.routing && (
                   <FastTrackBadge routing={claim.routing.type} size="medium" />
                 )}
               </DxcFlex>
 
               <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                <span className="material-icons" aria-hidden="true" style={{ fontSize: '16px', color: 'var(--color-fg-neutral-strong)' }}>
+                <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-neutral-strong)' }}>
                   person
                 </span>
                 <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-strong)">
                   {claim.insured?.name || claim.claimant?.name || 'Unknown'}
                 </DxcTypography>
-                <span aria-hidden="true" style={{ color: 'var(--color-fg-neutral-stronger)' }}>|</span>
+                <span style={{ color: 'var(--color-fg-neutral-stronger)' }}>|</span>
                 <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
                   Policy: {claim.policy?.policyNumber || 'N/A'}
                 </DxcTypography>
@@ -205,7 +177,7 @@ const ClaimHeader = ({
                   {daysRemaining}
                 </DxcTypography>
                 {daysRemaining <= 3 && (
-                  <span className="material-icons" role="img" aria-label="SLA warning - urgent" style={{ fontSize: '20px', color: '#000000' }}>
+                  <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-error-medium)' }}>
                     warning
                   </span>
                 )}

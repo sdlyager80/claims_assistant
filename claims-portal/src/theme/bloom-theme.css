@@ -1,0 +1,824 @@
+/* ============================================================================
+   BLOOM INSURANCE DESIGN SYSTEM
+   Complete Brand Theme Implementation
+   ============================================================================ */
+
+/* ============================================================================
+   TYPOGRAPHY SYSTEM
+   ============================================================================ */
+
+:root {
+  /* Font Families */
+  --font-headline: 'Roboto Slab', serif;
+  --font-body: 'Roboto', sans-serif;
+
+  /* Font Weights - Roboto Slab (Headlines) */
+  --font-weight-headline-regular: 400;
+  --font-weight-headline-medium: 500;
+  --font-weight-headline-bold: 700;
+  --font-weight-headline-extrabold: 800;
+  --font-weight-headline-black: 900;
+
+  /* Font Weights - Roboto (Body) */
+  --font-weight-thin: 100;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ============================================================================
+     PRIMARY COLOR PALETTE
+     ============================================================================ */
+
+  /* Blue - PRIMARY BRAND COLOR */
+  --color-blue: #1B75BB;
+  --color-blue-dark: #155A93;
+  --color-blue-darker: #0F4470;
+  --color-blue-light: #2A8FD4;
+  --color-blue-lighter: #5CA9DD;
+  --color-blue-pale: #D6E9F7;
+
+  /* Light Blue */
+  --color-light-blue: #00ADEE;
+  --color-light-blue-dark: #0095CA;
+  --color-light-blue-light: #33BDF2;
+  --color-light-blue-pale: #CCF1FF;
+
+  /* Green */
+  --color-green: #37A526;
+  --color-green-dark: #2B8020;
+  --color-green-light: #4BBF31;
+  --color-green-pale: #D5F2CE;
+
+  /* Light Green */
+  --color-light-green: #8BC53F;
+  --color-light-green-dark: #6FA032;
+  --color-light-green-light: #A3D562;
+  --color-light-green-pale: #E8F5D9;
+
+  /* Orange */
+  --color-orange: #F6921E;
+  --color-orange-dark: #D67810;
+  --color-orange-light: #FFA745;
+  --color-orange-pale: #FFE8CC;
+
+  /* Yellow */
+  --color-yellow: #E8DE23;
+  --color-yellow-dark: #C9BF1F;
+  --color-yellow-light: #F5F08A;
+  --color-yellow-pale: #FFFBE6;
+
+  /* ============================================================================
+     SECONDARY COLORS
+     ============================================================================ */
+
+  /* Red - Error/Destructive */
+  --color-red: #D02E2E;
+  --color-red-dark: #A82424;
+  --color-red-light: #E05555;
+  --color-red-pale: #FFE5E5;
+
+  /* Pale Aqua - Background */
+  --color-pale-aqua: #F2F7F6;
+  --color-pale-aqua-dark: #E5EFED;
+  --color-pale-aqua-light: #F8FBFA;
+
+  /* Grey - Text/Borders */
+  --color-grey: #808285;
+  --color-grey-dark: #4A4A4A;
+  --color-grey-darker: #2C2C2C;
+  --color-grey-light: #C4C4C4;
+  --color-grey-lighter: #E5E5E5;
+  --color-grey-pale: #F5F5F5;
+
+  /* Neutrals */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* ============================================================================
+     SEMANTIC COLORS
+     ============================================================================ */
+
+  --color-primary: var(--color-blue);
+  --color-primary-hover: var(--color-light-blue);
+  --color-primary-active: var(--color-blue-dark);
+  --color-primary-focus: var(--color-blue-light);
+
+  --color-success: var(--color-green);
+  --color-success-light: var(--color-green-pale);
+  --color-warning: var(--color-orange);
+  --color-warning-light: var(--color-orange-pale);
+  --color-error: var(--color-red);
+  --color-error-light: var(--color-red-pale);
+  --color-info: var(--color-light-blue);
+  --color-info-light: var(--color-light-blue-pale);
+
+  /* ============================================================================
+     GRADIENTS
+     ============================================================================ */
+
+  --gradient-primary: linear-gradient(135deg, #1B75BB 0%, #00ADEE 100%);
+  --gradient-primary-vertical: linear-gradient(180deg, #1B75BB 0%, #00ADEE 100%);
+  --gradient-success: linear-gradient(135deg, #37A526 0%, #8BC53F 100%);
+  --gradient-warning: linear-gradient(135deg, #F6921E 0%, #E8DE23 100%);
+  --gradient-subtle: linear-gradient(180deg, #F2F7F6 0%, #FFFFFF 100%);
+
+  /* ============================================================================
+     SHADOWS
+     ============================================================================ */
+
+  --shadow-xs: 0 1px 2px rgba(27, 117, 187, 0.05);
+  --shadow-sm: 0 1px 3px rgba(27, 117, 187, 0.12);
+  --shadow-md: 0 4px 6px rgba(27, 117, 187, 0.16);
+  --shadow-lg: 0 10px 20px rgba(27, 117, 187, 0.2);
+  --shadow-xl: 0 20px 40px rgba(27, 117, 187, 0.25);
+  --shadow-2xl: 0 25px 50px rgba(27, 117, 187, 0.3);
+
+  /* Focus Shadow */
+  --shadow-focus: 0 0 0 3px rgba(27, 117, 187, 0.2);
+  --shadow-focus-error: 0 0 0 3px rgba(208, 46, 46, 0.2);
+
+  /* ============================================================================
+     BORDER RADIUS
+     ============================================================================ */
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ============================================================================
+     SPACING SYSTEM
+     ============================================================================ */
+
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+  --spacing-20: 5rem;     /* 80px */
+
+  /* ============================================================================
+     TRANSITIONS
+     ============================================================================ */
+
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-slower: 500ms ease;
+
+  /* ============================================================================
+     Z-INDEX SCALE
+     ============================================================================ */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ============================================================================ */
+
+body.bloom-theme {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-grey-darker);
+  background-color: var(--color-pale-aqua);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   TYPOGRAPHY COMPONENTS
+   ============================================================================ */
+
+/* Headlines - Roboto Slab */
+h1, h2, h3, h4, h5, h6,
+.bloom-headline,
+.bloom-page-title,
+.bloom-section-title,
+.bloom-card-title,
+.bloom-modal-title {
+  font-family: var(--font-headline);
+  font-weight: var(--font-weight-headline-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-grey-darker);
+  margin: 0;
+}
+
+h1, .bloom-h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-headline-black);
+  margin-bottom: var(--spacing-6);
+}
+
+h2, .bloom-h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-headline-extrabold);
+  margin-bottom: var(--spacing-5);
+}
+
+h3, .bloom-h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-headline-bold);
+  margin-bottom: var(--spacing-4);
+}
+
+h4, .bloom-h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-headline-bold);
+  margin-bottom: var(--spacing-3);
+}
+
+h5, .bloom-h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-headline-medium);
+  margin-bottom: var(--spacing-3);
+}
+
+h6, .bloom-h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-headline-medium);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Body Text - Roboto */
+p, .bloom-text,
+.bloom-body,
+.bloom-label,
+.bloom-input,
+.bloom-table,
+.bloom-card-text {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.bloom-text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.bloom-text-lg {
+  font-size: var(--font-size-lg);
+}
+
+.bloom-text-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.bloom-text-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.bloom-text-light {
+  font-weight: var(--font-weight-light);
+}
+
+/* ============================================================================
+   BUTTON SYSTEM
+   ============================================================================ */
+
+.bloom-btn {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.bloom-btn:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.bloom-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Primary Button - BLUE */
+.bloom-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.bloom-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.bloom-btn-primary:active:not(:disabled) {
+  background: var(--color-primary-active);
+  transform: translateY(0);
+}
+
+/* Secondary Button - Blue Border */
+.bloom-btn-secondary {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.bloom-btn-secondary:hover:not(:disabled) {
+  background: var(--color-blue-pale);
+  border-color: var(--color-primary-hover);
+  color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Success Button - Green */
+.bloom-btn-success {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.bloom-btn-success:hover:not(:disabled) {
+  background: var(--color-green-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Warning Button - Orange */
+.bloom-btn-warning {
+  background: var(--color-warning);
+  color: var(--color-white);
+}
+
+.bloom-btn-warning:hover:not(:disabled) {
+  background: var(--color-orange-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Error Button - Red */
+.bloom-btn-error,
+.bloom-btn-danger {
+  background: var(--color-error);
+  color: var(--color-white);
+}
+
+.bloom-btn-error:hover:not(:disabled),
+.bloom-btn-danger:hover:not(:disabled) {
+  background: var(--color-red-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Button Sizes */
+.bloom-btn-sm {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+}
+
+.bloom-btn-lg {
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: var(--font-size-lg);
+}
+
+/* ============================================================================
+   CARD SYSTEM
+   ============================================================================ */
+
+.bloom-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.bloom-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.bloom-card-header {
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.bloom-card-title {
+  font-family: var(--font-headline);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-headline-bold);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.bloom-card-body {
+  font-family: var(--font-body);
+}
+
+.bloom-card-footer {
+  border-top: 1px solid var(--color-grey-lighter);
+  padding-top: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+/* ============================================================================
+   FORM ELEMENTS
+   ============================================================================ */
+
+.bloom-label {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  color: var(--color-grey-dark);
+  display: block;
+  margin-bottom: var(--spacing-2);
+}
+
+.bloom-input,
+.bloom-textarea,
+.bloom-select {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 2px solid var(--color-grey-lighter);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-grey-darker);
+  transition: all var(--transition-base);
+  width: 100%;
+}
+
+.bloom-input:focus,
+.bloom-textarea:focus,
+.bloom-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.bloom-input:disabled,
+.bloom-textarea:disabled,
+.bloom-select:disabled {
+  background: var(--color-grey-pale);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bloom-input-error {
+  border-color: var(--color-error);
+}
+
+.bloom-input-error:focus {
+  box-shadow: var(--shadow-focus-error);
+}
+
+/* ============================================================================
+   BADGE SYSTEM
+   ============================================================================ */
+
+.bloom-badge {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bloom-badge-primary {
+  background: var(--color-blue-pale);
+  color: var(--color-blue-dark);
+}
+
+.bloom-badge-success {
+  background: var(--color-green-pale);
+  color: var(--color-green-dark);
+}
+
+.bloom-badge-warning {
+  background: var(--color-orange-pale);
+  color: var(--color-orange-dark);
+}
+
+.bloom-badge-error {
+  background: var(--color-red-pale);
+  color: var(--color-red-dark);
+}
+
+.bloom-badge-info {
+  background: var(--color-light-blue-pale);
+  color: var(--color-light-blue-dark);
+}
+
+/* ============================================================================
+   ALERT SYSTEM
+   ============================================================================ */
+
+.bloom-alert {
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+  margin-bottom: var(--spacing-4);
+  font-family: var(--font-body);
+}
+
+.bloom-alert-info {
+  background: var(--color-info-light);
+  border-color: var(--color-info);
+  color: var(--color-blue-darker);
+}
+
+.bloom-alert-success {
+  background: var(--color-success-light);
+  border-color: var(--color-success);
+  color: var(--color-green-dark);
+}
+
+.bloom-alert-warning {
+  background: var(--color-warning-light);
+  border-color: var(--color-warning);
+  color: var(--color-orange-dark);
+}
+
+.bloom-alert-error {
+  background: var(--color-error-light);
+  border-color: var(--color-error);
+  color: var(--color-red-dark);
+}
+
+/* ============================================================================
+   STATUS INDICATORS
+   ============================================================================ */
+
+.bloom-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.bloom-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.bloom-status-active .bloom-status-dot {
+  background: var(--color-success);
+  box-shadow: 0 0 8px rgba(55, 165, 38, 0.5);
+}
+
+.bloom-status-pending .bloom-status-dot {
+  background: var(--color-warning);
+  box-shadow: 0 0 8px rgba(246, 146, 30, 0.5);
+}
+
+.bloom-status-error .bloom-status-dot {
+  background: var(--color-error);
+  box-shadow: 0 0 8px rgba(208, 46, 46, 0.5);
+}
+
+.bloom-status-info .bloom-status-dot {
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(27, 117, 187, 0.5);
+}
+
+/* ============================================================================
+   TABLE STYLING
+   ============================================================================ */
+
+.bloom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.bloom-table thead {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.bloom-table th {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  padding: var(--spacing-4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bloom-table td {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-grey-lighter);
+  font-size: var(--font-size-sm);
+}
+
+.bloom-table tbody tr:hover {
+  background: var(--color-pale-aqua);
+}
+
+/* ============================================================================
+   LINK STYLING
+   ============================================================================ */
+
+a, .bloom-link {
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover, .bloom-link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+a:focus, .bloom-link:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Text Colors */
+.bloom-text-primary { color: var(--color-primary); }
+.bloom-text-success { color: var(--color-success); }
+.bloom-text-warning { color: var(--color-warning); }
+.bloom-text-error { color: var(--color-error); }
+.bloom-text-grey { color: var(--color-grey); }
+.bloom-text-grey-dark { color: var(--color-grey-dark); }
+.bloom-text-white { color: var(--color-white); }
+
+/* Background Colors */
+.bloom-bg-primary { background-color: var(--color-primary); }
+.bloom-bg-success { background-color: var(--color-success); }
+.bloom-bg-warning { background-color: var(--color-warning); }
+.bloom-bg-error { background-color: var(--color-error); }
+.bloom-bg-pale-aqua { background-color: var(--color-pale-aqua); }
+.bloom-bg-white { background-color: var(--color-white); }
+
+/* Gradients */
+.bloom-gradient-primary { background: var(--gradient-primary); }
+.bloom-gradient-success { background: var(--gradient-success); }
+.bloom-gradient-warning { background: var(--gradient-warning); }
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes bloom-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bloom-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bloom-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.bloom-fade-in {
+  animation: bloom-fade-in var(--transition-slow);
+}
+
+.bloom-slide-in {
+  animation: bloom-slide-in var(--transition-base);
+}
+
+.bloom-pulse {
+  animation: bloom-pulse 2s ease-in-out infinite;
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITIES
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-4xl: 1.875rem;
+    --font-size-3xl: 1.5rem;
+    --font-size-2xl: 1.25rem;
+  }
+
+  h1, .bloom-h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  h2, .bloom-h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .bloom-card {
+    padding: var(--spacing-4);
+  }
+
+  .bloom-btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.bloom-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================================
+   REMOVE PURPLE - ENSURE NO PURPLE ANYWHERE
+   ============================================================================ */
+
+/* Override any potential purple colors */
+*[style*="purple"],
+*[style*="#667eea"],
+*[style*="#764ba2"],
+*[class*="purple"] {
+  color: var(--color-primary) !important;
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}

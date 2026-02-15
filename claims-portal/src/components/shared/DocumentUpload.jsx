@@ -214,7 +214,7 @@ const DocumentUpload = ({
               className="material-symbols-outlined"
               style={{
                 fontSize: '48px',
-                color: dragActive ? '#000000' : 'var(--color-fg-neutral-dark)'
+                color: dragActive ? 'var(--color-fg-secondary-medium)' : 'var(--color-fg-neutral-dark)'
               }}
             >
               cloud_upload

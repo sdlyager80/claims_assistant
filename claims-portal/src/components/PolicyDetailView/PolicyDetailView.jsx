@@ -51,9 +51,9 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
 
   const getStatusColor = (status) => {
     const statusUpper = (status || '').toUpperCase();
-    if (statusUpper === 'IN FORCE' || statusUpper === 'ACTIVE') return '#000000';
-    if (statusUpper === 'SUSPENDED') return '#000000';
-    if (statusUpper === 'LAPSED' || statusUpper === 'CANCELLED') return '#000000';
+    if (statusUpper === 'IN FORCE' || statusUpper === 'ACTIVE') return 'var(--color-fg-success-medium)';
+    if (statusUpper === 'SUSPENDED') return 'var(--color-fg-warning-medium)';
+    if (statusUpper === 'LAPSED' || statusUpper === 'CANCELLED') return 'var(--color-fg-error-medium)';
     return 'var(--color-fg-neutral-dark)';
   };
 
@@ -115,7 +115,7 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
                 <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                   CASH VALUE
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000">
+                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
                   {formatCurrency(policy.currentCashValue)}
                 </DxcTypography>
               </DxcFlex>
@@ -131,7 +131,7 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
                 <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                   LOAN BALANCE
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000">
+                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
                   {formatCurrency(policy.loanBalance)}
                 </DxcTypography>
               </DxcFlex>
@@ -281,10 +281,10 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
 
                   {policy.loanBalance > 0 && (
                     <DxcFlex justifyContent="space-between" alignItems="center">
-                      <DxcTypography fontSize="font-scale-01" color="#000000">
+                      <DxcTypography fontSize="font-scale-01" color="var(--color-fg-error-medium)">
                         - Outstanding Loan
                       </DxcTypography>
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#000000">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
                         {formatCurrency(policy.loanBalance)}
                       </DxcTypography>
                     </DxcFlex>
@@ -296,7 +296,7 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
                     <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
                       Net Death Benefit
                     </DxcTypography>
-                    <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000">
+                    <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-darker)">
                       {formatCurrency(policy.faceAmount - (policy.loanBalance || 0))}
                     </DxcTypography>
                   </DxcFlex>

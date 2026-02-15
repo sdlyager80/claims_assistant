@@ -10,7 +10,6 @@ import {
   DxcInset,
   DxcAccordion
 } from '@dxc-technology/halstack-react';
-import MetricCard from '../shared/MetricCard';
 import './RequirementsEngine.css';
 
 /**
@@ -48,9 +47,9 @@ const RequirementsEngine = ({ claim, onGenerateRequirements, onGenerateLetter, o
 
   const getStatusColor = (status) => {
     const statusUpper = (status || '').toUpperCase();
-    if (statusUpper === 'SATISFIED' || statusUpper === 'IGO') return '#000000';
-    if (statusUpper === 'IN_REVIEW' || statusUpper === 'PENDING') return '#000000';
-    if (statusUpper === 'NIGO' || statusUpper === 'NOT_SATISFIED') return '#000000';
+    if (statusUpper === 'SATISFIED' || statusUpper === 'IGO') return 'var(--color-fg-success-medium)';
+    if (statusUpper === 'IN_REVIEW' || statusUpper === 'PENDING') return 'var(--color-fg-warning-medium)';
+    if (statusUpper === 'NIGO' || statusUpper === 'NOT_SATISFIED') return 'var(--color-fg-error-medium)';
     if (statusUpper === 'WAIVED') return 'var(--color-fg-neutral-strong)';
     return 'var(--color-fg-neutral-dark)';
   };
@@ -148,7 +147,7 @@ const RequirementsEngine = ({ claim, onGenerateRequirements, onGenerateLetter, o
                   {Math.round(req.metadata.confidenceScore * 100)}%
                 </DxcTypography>
                 {req.metadata.confidenceScore >= 0.9 && (
-                  <span className="material-icons" style={{ fontSize: '16px', color: '#000000' }}>
+                  <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-success-medium)' }}>
                     verified
                   </span>
                 )}
@@ -236,29 +235,61 @@ const RequirementsEngine = ({ claim, onGenerateRequirements, onGenerateLetter, o
 
         {/* Requirements Summary */}
         <div className="requirements-summary-grid">
-          <MetricCard
-            label="TOTAL REQUIREMENTS"
-            value={totalRequirements}
-            variant="info"
-          />
+          <DxcContainer
+            padding="var(--spacing-padding-m)"
+            style={{ backgroundColor: 'var(--color-bg-info-lighter)' }}
+          >
+            <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                TOTAL REQUIREMENTS
+              </DxcTypography>
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                {totalRequirements}
+              </DxcTypography>
+            </DxcFlex>
+          </DxcContainer>
 
-          <MetricCard
-            label="SATISFIED (IGO)"
-            value={satisfiedRequirements}
-            variant="success"
-          />
+          <DxcContainer
+            padding="var(--spacing-padding-m)"
+            style={{ backgroundColor: 'var(--color-bg-success-lighter)' }}
+          >
+            <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                SATISFIED (IGO)
+              </DxcTypography>
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                {satisfiedRequirements}
+              </DxcTypography>
+            </DxcFlex>
+          </DxcContainer>
 
-          <MetricCard
-            label="PENDING"
-            value={pendingRequirements}
-            variant="warning"
-          />
+          <DxcContainer
+            padding="var(--spacing-padding-m)"
+            style={{ backgroundColor: 'var(--color-bg-warning-lighter)' }}
+          >
+            <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                PENDING
+              </DxcTypography>
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                {pendingRequirements}
+              </DxcTypography>
+            </DxcFlex>
+          </DxcContainer>
 
-          <MetricCard
-            label="NOT GOOD (NIGO)"
-            value={nigoRequirements}
-            variant="error"
-          />
+          <DxcContainer
+            padding="var(--spacing-padding-m)"
+            style={{ backgroundColor: 'var(--color-bg-error-lighter)' }}
+          >
+            <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
+              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                NOT GOOD (NIGO)
+              </DxcTypography>
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+                {nigoRequirements}
+              </DxcTypography>
+            </DxcFlex>
+          </DxcContainer>
         </div>
 
         <DxcDivider />

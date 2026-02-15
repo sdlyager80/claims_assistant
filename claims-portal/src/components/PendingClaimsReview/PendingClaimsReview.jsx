@@ -317,7 +317,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                 <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                   <DxcFlex justifyContent="space-between" alignItems="center">
                     <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
-                      <DxcTypography fontWeight="font-weight-semibold" color="#000000" fontSize="font-scale-04">
+                      <DxcTypography fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)" fontSize="font-scale-04">
                         {claim.claimNumber}
                       </DxcTypography>
                       <DxcBadge label={claim.status.replace(/_/g, ' ')} mode="contextual" color={getStatusColor(claim.status)} />
@@ -367,7 +367,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                     <DxcHeading level={2} text={selectedClaim.claimNumber} />
                     <DxcBadge label={selectedClaim.status.replace(/_/g, ' ')} mode="contextual" color={getStatusColor(selectedClaim.status)} />
                   </DxcFlex>
-                  <DxcTypography fontWeight="font-weight-semibold" fontSize="32px" color="#000000">
+                  <DxcTypography fontWeight="font-weight-semibold" fontSize="32px" color="var(--color-fg-secondary-medium)">
                     {formatCurrency(selectedClaim.totalClaimAmount)}
                   </DxcTypography>
                 </DxcFlex>
@@ -424,13 +424,13 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                     borderRadius: "var(--border-radius-m)",
                     boxShadow: "var(--shadow-mid-02)",
                     padding: "var(--spacing-padding-m)",
-                    borderLeft: "4px solid #000000"
+                    borderLeft: "4px solid var(--color-fg-secondary-medium)"
                   }}>
                     <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                       {/* Policy Header */}
                       <DxcFlex justifyContent="space-between" alignItems="center">
                         <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                          <DxcTypography fontWeight="font-weight-semibold" color="#000000">
+                          <DxcTypography fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
                             {policy.policyNumber}
                           </DxcTypography>
                           <DxcBadge label={policy.type} mode="contextual" color="info" />
@@ -553,7 +553,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                               <DxcBadge label={ben.relationship} mode="contextual" color="info" />
                               <DxcBadge label={ben.status} mode="contextual" color={getStatusColor(ben.status)} />
                             </DxcFlex>
-                            <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="#000000">
+                            <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="var(--color-fg-secondary-medium)">
                               Total: {formatCurrency(ben.totalBenefits)}
                             </DxcTypography>
                           </DxcFlex>
@@ -564,7 +564,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
 
                           {ben.policies.map((pol, pidx) => (
                             <DxcFlex key={pidx} gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap" style={{ paddingLeft: "16px" }}>
-                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
                                 {pol.policyNumber}
                               </DxcTypography>
                               <DxcBadge label={pol.type} mode="contextual" color="info" />

@@ -191,7 +191,7 @@ const ReportsAnalytics = () => {
                 {claimsByProduct.map((item, index) => (
                   <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
                     <td style={{ padding: '0.75rem', fontSize: '14px', color: '#333' }}>{item.product}</td>
-                    <td style={{ padding: '0.75rem', textAlign: 'center', fontSize: '14px', fontWeight: 600, color: '#000000' }}>{item.count}</td>
+                    <td style={{ padding: '0.75rem', textAlign: 'center', fontSize: '14px', fontWeight: 600, color: '#0095FF' }}>{item.count}</td>
                     <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                       <DxcChip
                         label={`${item.percentage}%`}
@@ -286,7 +286,7 @@ const ReportsAnalytics = () => {
                         </span>
                       </DxcFlex>
                     </td>
-                    <td style={{ padding: '0.75rem', textAlign: 'center', fontSize: '14px', color: '#000000', fontWeight: 600 }}>
+                    <td style={{ padding: '0.75rem', textAlign: 'center', fontSize: '14px', color: '#0095FF', fontWeight: 600 }}>
                       {examiner.processed}
                     </td>
                     <td style={{ padding: '0.75rem', textAlign: 'center', fontSize: '14px', color: '#24A148', fontWeight: 600 }}>
@@ -328,7 +328,7 @@ const ReportsAnalytics = () => {
                 padding: '0.75rem 1.5rem',
                 backgroundColor: '#fff',
                 color: 'var(--color-blue-700)',
-                border: '2px solid #000000',
+                border: '2px solid #0095FF',
                 borderRadius: '4px',
                 fontSize: '14px',
                 fontWeight: 600,
@@ -345,7 +345,7 @@ const ReportsAnalytics = () => {
               </button>
               <button style={{
                 padding: '0.75rem 1.5rem',
-                backgroundColor: '#000000',
+                backgroundColor: '#0095FF',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -355,7 +355,7 @@ const ReportsAnalytics = () => {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0077CC'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#000000'}>
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0095FF'}>
                 Generate PDF Report
               </button>
             </DxcFlex>

@@ -32,19 +32,24 @@
   box-shadow: 0 0 0 2px #0095FF;
 }
 
-/* SA-001 Dashboard 360° Layout - Responsive Auto-Fit Grid */
+/* SA-001 Dashboard 360° Layout */
 .dashboard-grid-top {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: var(--spacing-gap-l);
-  align-items: start; /* Prevents height stretching and uneven whitespace */
 }
 
 .dashboard-grid-middle {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: var(--spacing-gap-l);
-  align-items: start; /* Prevents height stretching and uneven whitespace */
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid-top,
+  .dashboard-grid-middle {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Payment Details Grid */
