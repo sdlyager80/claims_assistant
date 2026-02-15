@@ -50,6 +50,17 @@ class ServiceNowService {
     console.log('[ServiceNow] Proxy URL:', this.proxyURL, '(Development mode:', isDevelopment, ')');
     console.log('[ServiceNow] Auth mode:', this.useOAuth ? 'OAuth (Authorization Code)' : 'Basic Auth');
     console.log('[ServiceNow] Authenticated:', this.isAuthenticated());
+    console.log('[ServiceNow] Access Token:', this.accessToken ? 'Present' : 'None');
+    console.log('[ServiceNow] Token Expiry:', this.tokenExpiry ? new Date(this.tokenExpiry).toISOString() : 'None');
+
+    // Expose clearAuth globally for debugging
+    if (typeof window !== 'undefined') {
+      window.clearServiceNowAuth = () => {
+        this.clearAuth();
+        console.log('[ServiceNow] Auth manually cleared. Refresh the page.');
+      };
+      console.log('[ServiceNow] TIP: Run window.clearServiceNowAuth() in console to clear authentication');
+    }
   }
 
   /**
