@@ -56,10 +56,7 @@ const Dashboard = ({ onClaimSelect }) => {
 
   // Fetch ServiceNow claims when authenticated
   const fetchServiceNowClaims = async () => {
-    if (!serviceNowService.isAuthenticated()) {
-      console.log('[Dashboard] Not authenticated, skipping ServiceNow fetch');
-      return;
-    }
+    if (!serviceNowService.isAuthenticated()) return;
     try {
       setSnowLoading(true);
       const fnolRecords = await serviceNowService.getFNOLsGlobal({ limit: 50 });
@@ -67,24 +64,12 @@ const Dashboard = ({ onClaimSelect }) => {
       setSnowClaims(mappedClaims);
       console.log('[Dashboard] ServiceNow FNOL claims loaded:', mappedClaims.length);
     } catch (err) {
-      console.error('[Dashboard] Could not fetch ServiceNow claims:', err.message);
-      // If 401/403, clear auth and update state
-      if (err.message.includes('401') || err.message.includes('403')) {
-        console.log('[Dashboard] Authentication failed, clearing tokens');
-        serviceNowService.clearAuth();
-        setSnowConnected(false);
-      }
+      console.warn('[Dashboard] Could not fetch ServiceNow claims:', err.message);
       setSnowClaims([]);
     } finally {
       setSnowLoading(false);
     }
   };
-
-  // Debug logging
-  console.log('[Dashboard] serviceNowService.useOAuth:', serviceNowService.useOAuth);
-  console.log('[Dashboard] snowConnected:', snowConnected);
-  console.log('[Dashboard] isAuthenticated:', serviceNowService.isAuthenticated());
-  console.log('[Dashboard] Button should be visible:', serviceNowService.useOAuth && !snowConnected);
 
   // Fetch data on mount
   useEffect(() => {
@@ -854,11 +839,11 @@ const Dashboard = ({ onClaimSelect }) => {
                 <DxcHeading level={3} text="ServiceNow FNOL Claims" />
                 {snowConnected && <DxcBadge label={String(snowClaims.length)} notificationBadge />}
               </DxcFlex>
-              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center" style={{ minHeight: '40px' }}>
+              <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
                 {snowLoading && (
                   <DxcSpinner label="Loading..." mode="small" />
                 )}
-                {serviceNowService.useOAuth ? (
+                {serviceNowService.useOAuth && (
                   snowConnected ? (
                     <DxcButton
                       label="Disconnect"
@@ -875,10 +860,6 @@ const Dashboard = ({ onClaimSelect }) => {
                       onClick={() => serviceNowService.startOAuthLogin()}
                     />
                   )
-                ) : (
-                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
-                    OAuth not configured
-                  </DxcTypography>
                 )}
               </DxcFlex>
             </DxcFlex>
