@@ -964,6 +964,224 @@ class ServiceNowService {
   }
 
   /**
+   * Parse beneficiary analysis JSON from worknote
+   * @param {string} worknoteText - Worknote text containing JSON
+   * @returns {Object|null} Parsed beneficiary data or null if parsing fails
+   */
+  parseBeneficiaryAnalysisFromWorknote(worknoteText) {
+    try {
+      // Try to find JSON in the worknote text
+      const jsonMatch = worknoteText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.warn('[ServiceNow] No JSON found in worknote');
+        return null;
+      }
+
+      const jsonData = JSON.parse(jsonMatch[0]);
+      console.log('[ServiceNow] Successfully parsed beneficiary analysis from worknote');
+      return jsonData;
+    } catch (error) {
+      console.error('[ServiceNow] Error parsing beneficiary JSON from worknote:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get beneficiary analysis data from FNOL worknotes
+   * Searches for the latest worknote containing beneficiary analysis JSON
+   * @param {string} fnolSysId - FNOL sys_id
+   * @returns {Promise<Object|null>} Parsed beneficiary analysis data
+   */
+  async getBeneficiaryAnalysisFromWorknotes(fnolSysId) {
+    try {
+      console.log('[ServiceNow] Fetching beneficiary analysis from worknotes for FNOL:', fnolSysId);
+      const workNotes = await this.getWorkNotes(fnolSysId);
+
+      // Search for worknote containing beneficiary analysis
+      for (const note of workNotes) {
+        const noteValue = note.value || note.work_notes || '';
+        if (noteValue.includes('"Output"') || noteValue.includes('"DMS"') || noteValue.includes('"BeneScoring"')) {
+          const analysisData = this.parseBeneficiaryAnalysisFromWorknote(noteValue);
+          if (analysisData) {
+            console.log('[ServiceNow] Found beneficiary analysis in worknote');
+            return analysisData;
+          }
+        }
+      }
+
+      console.warn('[ServiceNow] No beneficiary analysis found in worknotes');
+      return null;
+    } catch (error) {
+      console.error('[ServiceNow] Error getting beneficiary analysis from worknotes:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Trigger beneficiary analyzer subflow
+   * @param {string} fnolSysId - FNOL sys_id
+   * @param {Object} beneficiaryData - Beneficiary analysis JSON data
+   * @returns {Promise<Object>} Subflow execution result
+   */
+  async triggerBeneficiaryAnalyzerSubflow(fnolSysId, beneficiaryData) {
+    try {
+      console.log('[ServiceNow] Triggering Bene Analyzer subflow for FNOL:', fnolSysId);
+
+      // Subflow sys_id for "Bene Analyzer Data Pull"
+      const subflowSysId = '3D680e66961d0bb25062a3fd68f681ce38';
+
+      // Build the workflow execution API path
+      const path = `/api/now/v1/process/subflow/${subflowSysId}/execute`;
+      const url = this.buildProxyURL(path);
+
+      const headers = await this.getAuthHeaders();
+
+      // Prepare subflow inputs - pass data as JSON string or structured object
+      const requestBody = {
+        inputs: {
+          fnol_sys_id: fnolSysId,
+          beneficiary_data: JSON.stringify(beneficiaryData) // Send as JSON string
+        }
+      };
+
+      console.log('[ServiceNow] Subflow request body:', JSON.stringify(requestBody, null, 2));
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('[ServiceNow] Subflow response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ServiceNow] Subflow execution error:', errorText);
+        throw new Error(`Subflow execution failed: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('[ServiceNow] Subflow executed successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('[ServiceNow] Error triggering beneficiary analyzer subflow:', error);
+      throw new Error(`Failed to trigger beneficiary analyzer subflow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Analyze beneficiaries for an FNOL
+   * This method:
+   * 1. Retrieves beneficiary data from worknotes
+   * 2. Triggers the beneficiary analyzer subflow
+   * @param {string} fnolSysId - FNOL sys_id
+   * @returns {Promise<Object>} Analysis results
+   */
+  async analyzeBeneficiaries(fnolSysId) {
+    try {
+      console.log('[ServiceNow] Starting beneficiary analysis for FNOL:', fnolSysId);
+
+      // Step 1: Get beneficiary data from worknotes
+      const beneficiaryData = await this.getBeneficiaryAnalysisFromWorknotes(fnolSysId);
+
+      if (!beneficiaryData) {
+        throw new Error('No beneficiary analysis data found in worknotes');
+      }
+
+      // Step 2: Trigger the analyzer subflow
+      const result = await this.triggerBeneficiaryAnalyzerSubflow(fnolSysId, beneficiaryData);
+
+      console.log('[ServiceNow] Beneficiary analysis completed successfully');
+      return {
+        success: true,
+        fnolSysId,
+        beneficiaryData,
+        subflowResult: result
+      };
+    } catch (error) {
+      console.error('[ServiceNow] Error in analyzeBeneficiaries:', error);
+      throw new Error(`Failed to analyze beneficiaries: ${error.message}`);
+    }
+  }
+
+  /**
+   * Call external policy API with beneficiary data
+   * Properly sends JSON as request body instead of URL
+   * @param {string} policyId - Policy ID
+   * @param {Object} beneficiaryData - Beneficiary data to send
+   * @param {string} apiEndpoint - External API endpoint URL
+   * @returns {Promise<Object>} API response
+   */
+  async callPolicyAPIWithBeneficiaryData(policyId, beneficiaryData, apiEndpoint = 'https://dev-1.hub-1.sai-dev.assure.dxc.com/api/uds/v2/pnc/pncpolicies') {
+    try {
+      console.log('[ServiceNow] Calling external policy API');
+      console.log('[ServiceNow] Policy ID:', policyId);
+      console.log('[ServiceNow] API Endpoint:', apiEndpoint);
+
+      // Build proper URL with policy ID as path parameter, NOT with JSON data
+      const url = `${apiEndpoint}/${policyId}`;
+
+      // Send beneficiary data as JSON request body
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(beneficiaryData) // Send as body, not in URL
+      });
+
+      console.log('[ServiceNow] Policy API response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ServiceNow] Policy API error:', errorText);
+        throw new Error(`Policy API error: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('[ServiceNow] Policy API call successful');
+      return result;
+    } catch (error) {
+      console.error('[ServiceNow] Error calling policy API:', error);
+      throw new Error(`Failed to call policy API: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get beneficiary analyzer data from ServiceNow
+   * @param {string} sysId - FNOL sys_id
+   * @returns {Promise<Object>} Beneficiary analyzer data
+   */
+  async getBeneficiaryAnalyzer(sysId) {
+    try {
+      const path = `/api/x_dxcis_benefici_0/beneficiary_analyzer/${sysId}`;
+      const url = this.buildProxyURL(path);
+      console.log('[ServiceNow] Fetching beneficiary analyzer data for sys_id:', sysId);
+
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, {
+        method: 'GET',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`ServiceNow API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[ServiceNow] Beneficiary analyzer data fetched successfully');
+      return data;
+    } catch (error) {
+      console.error('[ServiceNow] Error fetching beneficiary analyzer data:', error);
+      throw new Error(`Failed to fetch beneficiary analyzer data from ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
    * Test ServiceNow connection
    * @returns {Promise<boolean>} Connection status
    */

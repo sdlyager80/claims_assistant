@@ -1,4 +1,0 @@
-{
-  "buildCommand": "cd claims-portal && npm run build",
-  "installCommand": "cd claims-portal && npm install"
-}

@@ -10,6 +10,7 @@
  */
 
 import apiClient from './apiClient';
+import serviceNowService from './serviceNowService';
 
 class BeneficiaryAnalyzerService {
   constructor() {
@@ -42,6 +43,51 @@ class BeneficiaryAnalyzerService {
     } catch (error) {
       console.error('[BeneficiaryAnalyzerService] Error triggering analysis:', error);
       throw new Error(error.response?.data?.message || 'Failed to trigger beneficiary analysis');
+    }
+  }
+
+  /**
+   * Trigger ServiceNow beneficiary analysis workflow
+   * Retrieves beneficiary data from worknotes and triggers the analyzer subflow
+   *
+   * @param {string} fnolSysId - ServiceNow FNOL sys_id
+   * @returns {Promise<Object>} Analysis results from ServiceNow
+   */
+  async triggerServiceNowAnalysis(fnolSysId) {
+    try {
+      console.log('[BeneficiaryAnalyzerService] Triggering ServiceNow analysis for FNOL:', fnolSysId);
+
+      const result = await serviceNowService.analyzeBeneficiaries(fnolSysId);
+
+      console.log('[BeneficiaryAnalyzerService] ServiceNow analysis completed:', result);
+      return result;
+    } catch (error) {
+      console.error('[BeneficiaryAnalyzerService] Error in ServiceNow analysis:', error);
+      throw new Error(error.message || 'Failed to trigger ServiceNow beneficiary analysis');
+    }
+  }
+
+  /**
+   * Get beneficiary data from ServiceNow worknotes
+   *
+   * @param {string} fnolSysId - ServiceNow FNOL sys_id
+   * @returns {Promise<Object>} Beneficiary analysis data from worknotes
+   */
+  async getBeneficiaryDataFromServiceNow(fnolSysId) {
+    try {
+      console.log('[BeneficiaryAnalyzerService] Fetching beneficiary data from ServiceNow worknotes:', fnolSysId);
+
+      const data = await serviceNowService.getBeneficiaryAnalysisFromWorknotes(fnolSysId);
+
+      if (!data) {
+        throw new Error('No beneficiary analysis data found in worknotes');
+      }
+
+      console.log('[BeneficiaryAnalyzerService] Beneficiary data retrieved from ServiceNow');
+      return data;
+    } catch (error) {
+      console.error('[BeneficiaryAnalyzerService] Error fetching beneficiary data from ServiceNow:', error);
+      throw new Error(error.message || 'Failed to retrieve beneficiary data from ServiceNow');
     }
   }
 
