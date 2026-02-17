@@ -43,30 +43,39 @@ export default defineConfig(({ mode }) => {
           target: SN_TARGET,
           changeOrigin: true,
           secure: true,
-
           rewrite: () => '/oauth_token.do',
-
+        
           configure(proxy) {
-
+        
             proxy.on('proxyReq', (proxyReq, req) => {
-
+        
               console.log('[OAuth Proxy] Forwarding token request');
-
-              // Forward body correctly
-              if (req.body) {
-                const body = req.body.toString();
-                proxyReq.setHeader(
-                  'Content-Length',
-                  Buffer.byteLength(body)
-                );
-                proxyReq.write(body);
+        
+              // ⭐ Properly forward form-urlencoded body
+              if (req.method === 'POST') {
+        
+                let body = '';
+        
+                req.on('data', chunk => {
+                  body += chunk;
+                });
+        
+                req.on('end', () => {
+                  if (body) {
+                    proxyReq.setHeader(
+                      'Content-Length',
+                      Buffer.byteLength(body)
+                    );
+                    proxyReq.write(body);
+                  }
+                });
               }
             });
-
+        
             proxy.on('proxyRes', (proxyRes) => {
-              console.log('[OAuth Proxy] Response:', proxyRes.statusCode);
+              console.log('[OAuth Proxy] Status:', proxyRes.statusCode);
             });
-
+        
             proxy.on('error', (err) => {
               console.error('[OAuth Proxy] Error:', err.message);
             });

@@ -1,75 +1,377 @@
-* {
-  box-sizing: border-box;
-}
+/* ============================================================================
+   BLOOM INSURANCE - APP COMPONENT STYLES
+   Using Official Bloom Design System
+   ============================================================================ */
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff !important;
-}
-
-#root {
-  margin: 0;
-  padding: 0;
+/* Main App Container */
+.app-container {
+  display: flex;
+  min-height: 100vh;
   width: 100%;
+  background: var(--color-pale-aqua, #F2F7F6);
+  font-family: var(--font-body, 'Roboto', sans-serif);
+}
+
+/* Layout Components */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 100vh;
 }
 
-/* Ensure the main content area uses full width */
-.dxc-application-layout-main {
+.app-header {
+  background: var(--color-white, #FFFFFF);
+  border-bottom: 1px solid var(--color-grey-lighter, #E5E5E5);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(27, 117, 187, 0.12));
+  padding: var(--spacing-4, 1rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky, 1020);
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--spacing-6, 1.5rem);
+  overflow-y: auto;
+  background: var(--color-pale-aqua, #F2F7F6);
+}
+
+.app-content {
+  max-width: 1400px;
+  margin: 0 auto;
   width: 100%;
-  max-width: 100%;
 }
 
-/* Hide any default footer elements from Halstack ApplicationLayout */
-.dxc-application-layout-footer,
-[class*="footer"],
-[class*="Footer"] {
-  display: none !important;
+/* Header Components */
+.app-logo {
+  height: 32px;
+  width: auto;
 }
 
-/* Remove any bottom black bars or spacing from layout */
-.dxc-application-layout {
-  padding-bottom: 0 !important;
+.app-title {
+  font-family: var(--font-headline, 'Roboto Slab', serif);
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-headline-bold, 700);
+  color: var(--color-primary, #1B75BB);
+  margin: 0;
 }
 
-/* Target HTML footer elements */
-footer,
-[role="contentinfo"] {
-  display: none !important;
+.app-user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4, 1rem);
 }
 
-/* Hide DXC Technology branding footer by structure */
-footer[class*="styled"],
-footer > div,
-footer nav {
-  display: none !important;
+.app-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--gradient-primary, linear-gradient(135deg, #1B75BB 0%, #00ADEE 100%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white, #FFFFFF);
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+  transition: transform var(--transition-base, 0.2s ease);
 }
 
-/* Remove bottom dark/black sections from DOM */
-body > div > div > footer,
-#root > div > footer,
-#root footer {
-  display: none !important;
+.app-user-avatar:hover {
+  transform: scale(1.05);
 }
 
-/* Hide any DXC-prefixed footer classes */
-[class*="dxc"][class*="footer" i],
-div[class*="FooterContainer"],
-div[class*="StyledFooter"] {
-  display: none !important;
+/* Page Layouts */
+.page-header {
+  margin-bottom: var(--spacing-8, 2rem);
 }
 
-/* Additional broad selector for any footer-like elements */
-div > footer,
-main ~ footer,
-[class*="layout"] > footer {
-  display: none !important;
+.page-title {
+  font-family: var(--font-headline, 'Roboto Slab', serif);
+  font-size: var(--font-size-4xl, 2.25rem);
+  font-weight: var(--font-weight-headline-black, 900);
+  color: var(--color-primary, #1B75BB);
+  margin-bottom: var(--spacing-2, 0.5rem);
 }
 
+.page-subtitle {
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  color: var(--color-grey, #808285);
+  margin: 0;
+}
 
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-6, 1.5rem);
+  margin-bottom: var(--spacing-8, 2rem);
+}
+
+.dashboard-card {
+  background: var(--color-white, #FFFFFF);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--spacing-6, 1.5rem);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(27, 117, 187, 0.12));
+  transition: all var(--transition-base, 0.2s ease);
+  border-left: 4px solid var(--color-primary, #1B75BB);
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(27, 117, 187, 0.16));
+  transform: translateY(-2px);
+}
+
+.dashboard-card-title {
+  font-family: var(--font-headline, 'Roboto Slab', serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-headline-bold, 700);
+  color: var(--color-grey-darker, #2C2C2C);
+  margin-bottom: var(--spacing-3, 0.75rem);
+}
+
+.dashboard-card-value {
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-size: var(--font-size-4xl, 2.25rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-primary, #1B75BB);
+  margin-bottom: var(--spacing-2, 0.5rem);
+}
+
+.dashboard-card-label {
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-grey, #808285);
+}
+
+/* Status Cards */
+.status-card {
+  background: var(--color-white, #FFFFFF);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--spacing-5, 1.25rem);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(27, 117, 187, 0.12));
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4, 1rem);
+}
+
+.status-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.status-card-icon.primary {
+  background: var(--color-blue-pale, #D6E9F7);
+  color: var(--color-primary, #1B75BB);
+}
+
+.status-card-icon.success {
+  background: var(--color-green-pale, #D5F2CE);
+  color: var(--color-success, #37A526);
+}
+
+.status-card-icon.warning {
+  background: var(--color-orange-pale, #FFE8CC);
+  color: var(--color-warning, #F6921E);
+}
+
+.status-card-icon.error {
+  background: var(--color-red-pale, #FFE5E5);
+  color: var(--color-error, #D02E2E);
+}
+
+/* Action Bar */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4, 1rem);
+  margin-bottom: var(--spacing-6, 1.5rem);
+  flex-wrap: wrap;
+}
+
+.action-bar-left,
+.action-bar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 0.75rem);
+}
+
+/* Search Bar */
+.search-bar {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  padding-left: var(--spacing-10, 2.5rem);
+  border: 2px solid var(--color-grey-lighter, #E5E5E5);
+  border-radius: var(--radius-md, 8px);
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  background: var(--color-white, #FFFFFF);
+  transition: all var(--transition-base, 0.2s ease);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #1B75BB);
+  box-shadow: var(--shadow-focus, 0 0 0 3px rgba(27, 117, 187, 0.2));
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--spacing-3, 0.75rem);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-grey, #808285);
+  font-size: 20px;
+}
+
+/* Loading States */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12, 3rem);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-blue-pale, #D6E9F7);
+  border-top-color: var(--color-primary, #1B75BB);
+  border-radius: var(--radius-full, 9999px);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-12, 3rem);
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  color: var(--color-grey-light, #C4C4C4);
+  margin-bottom: var(--spacing-4, 1rem);
+}
+
+.empty-state-title {
+  font-family: var(--font-headline, 'Roboto Slab', serif);
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-headline-bold, 700);
+  color: var(--color-grey-dark, #4A4A4A);
+  margin-bottom: var(--spacing-2, 0.5rem);
+}
+
+.empty-state-text {
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  color: var(--color-grey, #808285);
+  margin-bottom: var(--spacing-4, 1rem);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal, 1050);
+  padding: var(--spacing-4, 1rem);
+}
+
+.modal {
+  background: var(--color-white, #FFFFFF);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: var(--shadow-2xl, 0 25px 50px rgba(27, 117, 187, 0.3));
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: var(--spacing-6, 1.5rem);
+  border-bottom: 2px solid var(--color-primary, #1B75BB);
+}
+
+.modal-title {
+  font-family: var(--font-headline, 'Roboto Slab', serif);
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-headline-bold, 700);
+  color: var(--color-primary, #1B75BB);
+  margin: 0;
+}
+
+.modal-body {
+  padding: var(--spacing-6, 1.5rem);
+}
+
+.modal-footer {
+  padding: var(--spacing-6, 1.5rem);
+  border-top: 1px solid var(--color-grey-lighter, #E5E5E5);
+  display: flex;
+  gap: var(--spacing-3, 0.75rem);
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-main {
+    padding: var(--spacing-4, 1rem);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+
+  .page-title {
+    font-size: var(--font-size-3xl, 1.875rem);
+  }
+}
+
+/* Remove ANY purple colors - enforce blue theme */
+*[class*="purple"],
+*[style*="purple"],
+*[style*="#667eea"],
+*[style*="#764ba2"],
+.purple {
+  color: var(--color-primary, #1B75BB) !important;
+  background-color: var(--color-primary, #1B75BB) !important;
+  border-color: var(--color-primary, #1B75BB) !important;
+}

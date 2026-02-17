@@ -6,6 +6,7 @@ import IntakeForms from './components/IntakeForms/IntakeForms';
 import FNOLWorkspace from './components/FNOLWorkspace/FNOLWorkspace';
 import PendingClaimsReview from './components/PendingClaimsReview/PendingClaimsReview';
 import RequirementsReceived from './components/RequirementsReceived/RequirementsReceived';
+import ClaimsHandlerDashboard from './components/ClaimsHandlerDashboard/ClaimsHandlerDashboard';
 import ThemeSettings from './components/ThemeSettings/ThemeSettings';
 
 // Context Providers
@@ -14,6 +15,9 @@ import { ClaimsProvider } from './contexts/ClaimsContext';
 import { PolicyProvider } from './contexts/PolicyContext';
 import { WorkflowProvider } from './contexts/WorkflowContext';
 import { DocumentProvider } from './contexts/DocumentContext';
+
+// Services
+import serviceNowService from './services/api/serviceNowService';
 
 import './App.css';
 
@@ -27,13 +31,26 @@ function AppContent() {
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedClaim, setSelectedClaim] = useState(null);
-  const [sidenavExpanded, setSidenavExpanded] = useState(true);
+  const [sidenavExpanded, setSidenavExpanded] = useState(false); // Start minimized
   const [isThemeSettingsOpen, setIsThemeSettingsOpen] = useState(false);
 
-  const handleClaimSelect = (claim) => {
+  const handleClaimSelect = async (claim) => {
     console.log('[App] handleClaimSelect called with claim:', claim);
     setSelectedClaim(claim);
     setCurrentView('workbench');
+
+    // Trigger beneficiary analysis API immediately when FNOL is clicked
+    const sysId = claim?.sysId || claim?.sys_id || claim?.servicenow_sys_id;
+    if (sysId && !sysId.startsWith('demo-')) {
+      console.log('[App] Triggering beneficiary analysis for sys_id:', sysId);
+      try {
+        await serviceNowService.getBeneficiaryAnalyzer(sysId);
+        console.log('[App] Beneficiary analysis triggered successfully');
+      } catch (error) {
+        console.error('[App] Error triggering beneficiary analysis:', error);
+        // Don't block navigation on error
+      }
+    }
   };
 
   const handleNavigationClick = (view) => {
@@ -47,6 +64,8 @@ function AppContent() {
     switch (currentView) {
       case 'dashboard':
         return <Dashboard onClaimSelect={handleClaimSelect} />;
+      case 'handlerDashboard':
+        return <ClaimsHandlerDashboard />;
       case 'workbench':
         return <ClaimsWorkbench claim={selectedClaim} onBack={() => handleNavigationClick('dashboard')} />;
       case 'intake':
@@ -68,6 +87,12 @@ function AppContent() {
       icon: "dashboard",
       selected: currentView === 'dashboard',
       onClick: () => handleNavigationClick('dashboard')
+    },
+    {
+      label: "My Claims Workbench",
+      icon: "assignment_ind",
+      selected: currentView === 'handlerDashboard',
+      onClick: () => handleNavigationClick('handlerDashboard')
     },
     {
       label: "New Claim FNOL Party Portal",
@@ -100,7 +125,13 @@ function AppContent() {
     <DxcApplicationLayout
       header={
         <DxcApplicationLayout.Header
-          appTitle="Bloom Claims Assistant"
+          appTitle={
+            <img
+              src="/Bloom_logo.jpg"
+              alt="Bloom Insurance"
+              style={{ height: '32px', width: 'auto' }}
+            />
+          }
           sideContent={(isResponsive) =>
             isResponsive ? null : (
               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">

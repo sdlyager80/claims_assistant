@@ -1,0 +1,30 @@
+/**
+ * Beneficiary Analysis Panel Styles
+ */
+
+.beneficiary-analysis-panel {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.beneficiary-analysis-panel:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.beneficiary-analysis-panel .material-icons {
+  font-size: 24px;
+}
+
+/* Animation for loading spinner */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.beneficiary-analysis-panel [data-loading="true"] {
+  animation: pulse 2s ease-in-out infinite;
+}

@@ -1,0 +1,29 @@
+############################################################################################################
+####################################### MODIFICATION AREA ###################################################
+######################## Modify these values according to your project needs.  ##############################
+### Rest of customizable values are listed in README.md section 2.1.3 Common custom configuration values  ###
+############################## Only modify them is special behaviour is needed ##############################
+#############################################################################################################
+
+#### Name of current repository for validation. It has to match the name of the repository where this file is.
+repositoryName: "assure-smartapps-claims"
+
+#### Artifactory
+artifactRepository: "assure-generic"
+artifactPath: "/smartapps/assure-smartapps-claims/bundle" #i.e: "assure-tools/solution-composer-service/solution-composer/ui/bundle"
+
+##### Zip (zip)
+targetZipName: "assure-smartapps-claims" #i.e: "solution-composer-ui"
+zipSourceFolder: "./claims-portal/dist" #i.e: "./build"
+
+### Tests
+testCommands:
+  - "npm ci"
+
+
+### node version
+nodeVersion: 20
+npmVersion: 10
+#############################################################################################################
+################################### END OF MODIFICATION AREA ################################################
+#############################################################################################################
