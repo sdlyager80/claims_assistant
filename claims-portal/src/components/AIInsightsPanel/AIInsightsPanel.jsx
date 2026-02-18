@@ -63,6 +63,19 @@ const AIInsightsPanel = ({ claimData, insights = [], onViewDetail, onDismiss }) 
     return 'Low Risk';
   };
 
+  const getConfidencePillStyle = (confidence) => {
+    if (confidence >= 90) return { bg: 'var(--color-bg-success-lightest)', color: 'var(--color-fg-success-darker)', border: '1px solid var(--color-border-success-medium)' };
+    if (confidence >= 70) return { bg: 'var(--color-bg-warning-lightest)', color: 'var(--color-fg-warning-darker)', border: '1px solid var(--color-border-warning-medium)' };
+    return { bg: 'var(--color-bg-error-lightest)', color: 'var(--color-fg-error-darker)', border: '1px solid var(--color-border-error-medium)' };
+  };
+
+  const pillStyle = (bg, color, border) => ({
+    display: 'inline-flex', alignItems: 'center', gap: '4px',
+    backgroundColor: bg, color, border,
+    borderRadius: '12px', padding: '2px 10px',
+    fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap', flexShrink: 0
+  });
+
   const highAlerts = insights.filter(i => ['HIGH', 'CRITICAL'].includes((i.severity || '').toUpperCase()));
   const mediumAlerts = insights.filter(i => (i.severity || '').toUpperCase() === 'MEDIUM');
   const lowAlerts = insights.filter(i => (i.severity || '').toUpperCase() === 'LOW');
@@ -200,18 +213,21 @@ const AIInsightsPanel = ({ claimData, insights = [], onViewDetail, onDismiss }) 
                             {insight.title || insight.message}
                           </DxcTypography>
                         </DxcFlex>
-                        <DxcChip
-                          label={`${insight.confidence || 0}%`}
-                          size="small"
-                        />
+                        {(() => {
+                          const cp = getConfidencePillStyle(insight.confidence || 0);
+                          return (
+                            <span style={pillStyle(cp.bg, cp.color, cp.border)}>
+                              {insight.confidence || 0}% confidence
+                            </span>
+                          );
+                        })()}
                       </DxcFlex>
                       {/* Category + description */}
                       <DxcFlex gap="var(--spacing-gap-s)" alignItems="flex-start" wrap="wrap">
-                        <DxcChip
-                          label={insight.category || 'General'}
-                          icon="category"
-                          size="small"
-                        />
+                        <span style={pillStyle('var(--color-bg-info-lightest)', 'var(--color-fg-info-darker)', '1px solid var(--color-border-info-medium)')}>
+                          <span className="material-icons" style={{ fontSize: '11px' }}>category</span>
+                          {insight.category || 'General'}
+                        </span>
                         {insight.description && (
                           <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)" style={{ flex: 1 }}>
                             {insight.description}

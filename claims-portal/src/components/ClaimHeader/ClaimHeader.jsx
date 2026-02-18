@@ -51,6 +51,9 @@ const ClaimHeader = ({
   const slaDate = claim.workflow?.sla?.dueDate ? new Date(claim.workflow.sla.dueDate) : null;
   const today = new Date();
   const daysRemaining = slaDate ? Math.ceil((slaDate - today) / (1000 * 60 * 60 * 24)) : null;
+  const isClosed = !!claim.closedAt;
+  const closeDate = isClosed ? new Date(claim.closedAt) : null;
+  const metSla = isClosed && slaDate ? closeDate <= slaDate : null;
   const daysOpen = claim.workflow?.daysOpen || 0;
 
   return (
@@ -166,35 +169,63 @@ const ClaimHeader = ({
             </DxcTypography>
           </DxcFlex>
 
-          {/* SLA Days Remaining */}
-          {daysRemaining !== null && (
-            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                SLA DAYS REMAINING
-              </DxcTypography>
-              <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: getSLAColor(daysRemaining) }}>
-                  {daysRemaining}
+          {/* SLA — closed claims show Met/Missed; open claims show countdown */}
+          {isClosed ? (
+            <>
+              {slaDate && (
+                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                    SLA STATUS
+                  </DxcTypography>
+                  <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                    <span className="material-icons" style={{ fontSize: '18px', color: metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)' }}>
+                      {metSla ? 'check_circle' : 'cancel'}
+                    </span>
+                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)' }}>
+                      {metSla ? 'Met' : 'Missed'}
+                    </DxcTypography>
+                  </DxcFlex>
+                </DxcFlex>
+              )}
+              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  CLOSED DATE
                 </DxcTypography>
-                {daysRemaining <= 3 && (
-                  <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-error-medium)' }}>
-                    warning
-                  </span>
-                )}
+                <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+                  {closeDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                </DxcTypography>
               </DxcFlex>
-            </DxcFlex>
-          )}
-
-          {/* Target Close Date */}
-          {slaDate && (
-            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
-                TARGET CLOSE DATE
-              </DxcTypography>
-              <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
-                {slaDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-              </DxcTypography>
-            </DxcFlex>
+            </>
+          ) : (
+            <>
+              {daysRemaining !== null && (
+                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                    SLA DAYS REMAINING
+                  </DxcTypography>
+                  <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: getSLAColor(daysRemaining) }}>
+                      {daysRemaining}
+                    </DxcTypography>
+                    {daysRemaining <= 3 && (
+                      <span className="material-icons" style={{ fontSize: '20px', color: 'var(--color-fg-error-medium)' }}>
+                        warning
+                      </span>
+                    )}
+                  </DxcFlex>
+                </DxcFlex>
+              )}
+              {slaDate && (
+                <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                    TARGET CLOSE DATE
+                  </DxcTypography>
+                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+                    {slaDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                  </DxcTypography>
+                </DxcFlex>
+              )}
+            </>
           )}
 
           {/* Examiner */}
