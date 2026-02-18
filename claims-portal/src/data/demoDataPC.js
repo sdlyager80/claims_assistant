@@ -421,6 +421,69 @@ const createPCShowcaseClaims = () => {
     claims.push(claim);
   }
 
+
+  // ---- CLAIM PC-6: Commercial Property — STP, CLOSED (IoT-Validated Winter Storm) ----
+  {
+    const createdDate = new Date(NOW.getTime() - 34 * DAY);
+    const lossDate = createdDate;
+    const closedDate = new Date(createdDate.getTime() + 4 * 3600000); // approved in 45 min, closed same day
+    const slaDate = new Date(createdDate.getTime() + 1 * DAY);
+
+    const claim = {
+      id: 'pc-claim-6', claimNumber: 'CLM-PC-000006', status: ClaimStatus.CLOSED,
+      type: PCClaimType.COMMERCIAL_PROPERTY,
+      createdAt: createdDate.toISOString(), updatedAt: closedDate.toISOString(), closedAt: closedDate.toISOString(),
+      lossEvent: {
+        dateOfLoss: lossDate.toISOString().split('T')[0], causeOfLoss: 'Winter storm — frozen pipe burst',
+        lossLocation: 'Portland, OR', lossDescription: 'Extreme cold event (-5°F) caused pipe burst in commercial florist storage area. FloodStop Pro IoT sensors triggered immediate detection at 3:45 AM. Emergency mitigation started within 2 hours. Prior claim CLM-2024-012847 — all prevention measures followed.',
+        weatherConditions: 'Winter Storm Warning — -5°F, 25 mph winds, NOAA confirmed', policeReportNumber: null, faultDetermination: 'Weather event (no fault)'
+      },
+      insured: { name: 'Bloom & Petals Florist', dateOfBirth: null },
+      claimant: { name: 'Kim Lee', relationship: 'Named Insured / Business Owner', contactInfo: { email: 'kim@bloomandpetals.com', phone: '503-555-0234' } },
+      property: { address: '1847 Main Street, Portland, OR 97214', type: 'Commercial Florist', yearBuilt: 2010, squareFootage: 2200, businessName: 'Bloom & Petals Florist' },
+      policy: { policyNumber: 'BOP-OR-789456', type: 'Business Owners Policy', status: 'Active', issueDate: '2023-06-01', coverageLimit: 500000, deductible: 5000, owner: 'Bloom & Petals Florist' },
+      parties: [
+        { id: 'pc-party-6-1', name: 'Kim Lee', role: 'Policyholder', source: 'Policy Admin', resState: 'OR', dateOfBirth: '1982-03-15', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Portland, OR 97214', verificationStatus: 'Verified', verificationScore: 99 },
+        { id: 'pc-party-6-2', name: 'Bloom & Petals Florist', role: 'Named Insured', source: 'Policy Admin', resState: 'OR', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Portland, OR 97214', verificationStatus: 'Verified', verificationScore: 98 }
+      ],
+      aiInsights: {
+        riskScore: 8,
+        alerts: []
+      },
+      financial: {
+        claimAmount: 87000, deductible: 5000, repairEstimate: 75000, salvageValue: 0,
+        businessInterruptionEstimate: 12000, reserve: 0, amountPaid: 87000, currency: 'USD',
+        payments: [{ id: 'pc-pay-6-1', paymentNumber: 'PAY-PC-000006', payeeName: 'Bloom & Petals Florist', benefitAmount: 87000, paymentMethod: 'ACH', status: 'Completed', paymentDate: new Date(createdDate.getTime() + 2 * DAY).toISOString().split('T')[0] }]
+      },
+      routing: {
+        type: RoutingType.STP, score: 94, eligible: true,
+        evaluatedAt: new Date(createdDate.getTime() + 62 * 60000).toISOString(),
+        criteria: { coverageActive: true, clearLiability: true, minorDamage: false, establishedPolicyholder: true, noFraudIndicators: true },
+        stpDetails: {
+          iotValidated: true, weatherCorroborated: true, priorClaimCompliance: true,
+          confidenceScore: 94, approvalDuration: '45 minutes',
+          stpCriteria: [
+            { criterion: 'Storm Alert Sent', met: true, details: 'Winter storm alert sent to insured 48 hours before incident' },
+            { criterion: 'Risk Documentation', met: true, details: 'Property photos documented vulnerable pipe locations from prior claim', priorClaimRef: 'CLM-2024-012847' },
+            { criterion: 'Smart Monitoring', met: true, details: 'FloodStop Pro water sensor detected leak at 3:45 AM', sensorVerified: true },
+            { criterion: 'Prevention Compliance', met: true, details: 'All recommended measures followed post prior claim — insulation, sensor install, winterization checklist', complianceScore: 100 },
+            { criterion: 'Rapid Response', met: true, details: 'Emergency mitigation began within 2 hours of detection', responseTime: '1 hour 45 minutes' }
+          ]
+        }
+      },
+      workflow: { fsoCase: 'FSO-PC-000006', currentTask: null, assignedTo: null, daysOpen: 0, sla: { dueDate: slaDate.toISOString(), daysRemaining: 0, atRisk: false } }
+    };
+    claim.sysId = 'pc-demo-sys-id-6'; claim.fnolNumber = 'FNOL-PC-0000006';
+    claim.requirements = generatePCRequirements(claim);
+    claim.timeline = generatePCTimeline(claim);
+    claim.workNotes = [
+      { sys_id: 'wn-pc-claim-6-3', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'STP completed. All 5 criteria validated — 94% confidence. Claim approved in 45 minutes. ACH payment of $87,000 scheduled. Post-settlement audit queued. Claim closed.', sys_created_on: new Date(createdDate.getTime() + 2.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
+      { sys_id: 'wn-pc-claim-6-2', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'Prior claim CLM-2024-012847 reviewed. Insured followed all prevention recommendations: FloodStop Pro sensor installed, exposed pipes insulated, winterization checklist completed. Prevention compliance 100%. STP criteria 2 and 4 confirmed.', sys_created_on: new Date(createdDate.getTime() + 1.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
+      { sys_id: 'wn-pc-claim-6-1', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'FNOL received via mobile app with damage photos. IoT data: TEMP-BPF-001 recorded -5°F at 02:30, WATER-BPF-002 activated at 03:45 (water leak), HUMID-BPF-003 spike at 04:00. NOAA confirms Winter Storm Warning for Portland OR. STP evaluation initiated.', sys_created_on: new Date(createdDate.getTime() + 0.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' }
+    ];
+    claims.push(claim);
+  }
+
   return claims;
 };
 
@@ -506,9 +569,9 @@ const generateSeededPCClaim = (index, isFT) => {
 // ============================================================
 export const generatePCDemoClaims = () => {
   const showcaseClaims = createPCShowcaseClaims();
-  const ftIndices = [6, 9, 12];
+  const ftIndices = [7, 10, 13];
   const seededClaims = [];
-  for (let i = 6; i <= 15; i++) {
+  for (let i = 7; i <= 16; i++) {
     seededClaims.push(generateSeededPCClaim(i, ftIndices.includes(i)));
   }
   return [...showcaseClaims, ...seededClaims];
