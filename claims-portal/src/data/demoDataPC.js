@@ -435,16 +435,16 @@ const createPCShowcaseClaims = () => {
       createdAt: createdDate.toISOString(), updatedAt: closedDate.toISOString(), closedAt: closedDate.toISOString(),
       lossEvent: {
         dateOfLoss: lossDate.toISOString().split('T')[0], causeOfLoss: 'Winter storm — frozen pipe burst',
-        lossLocation: 'Portland, OR', lossDescription: 'Extreme cold event (-5°F) caused pipe burst in commercial florist storage area. FloodStop Pro IoT sensors triggered immediate detection at 3:45 AM. Emergency mitigation started within 2 hours. Prior claim CLM-2024-012847 — all prevention measures followed.',
+        lossLocation: 'Chicago, IL', lossDescription: 'Extreme cold event (-5°F) caused pipe burst in commercial florist storage area. FloodStop Pro IoT sensors triggered immediate detection at 3:45 AM. Emergency mitigation started within 2 hours. Prior claim CLM-2024-012847 — all prevention measures followed.',
         weatherConditions: 'Winter Storm Warning — -5°F, 25 mph winds, NOAA confirmed', policeReportNumber: null, faultDetermination: 'Weather event (no fault)'
       },
-      insured: { name: 'Bloom & Petals Florist', dateOfBirth: null },
+      insured: { name: "Kim's Flowers & Gifts", dateOfBirth: null },
       claimant: { name: 'Kim Lee', relationship: 'Named Insured / Business Owner', contactInfo: { email: 'kim@bloomandpetals.com', phone: '503-555-0234' } },
-      property: { address: '1847 Main Street, Portland, OR 97214', type: 'Commercial Florist', yearBuilt: 2010, squareFootage: 2200, businessName: 'Bloom & Petals Florist' },
-      policy: { policyNumber: 'BOP-OR-789456', type: 'Business Owners Policy', status: 'Active', issueDate: '2023-06-01', coverageLimit: 500000, deductible: 5000, owner: 'Bloom & Petals Florist' },
+      property: { address: '1847 Main Street, Chicago, IL 60601', type: 'Commercial Florist', yearBuilt: 2010, squareFootage: 2200, businessName: "Kim's Flowers & Gifts" },
+      policy: { policyNumber: 'BOP-IL-789456', type: 'Business Owners Policy', status: 'Active', issueDate: '2023-06-01', coverageLimit: 500000, deductible: 5000, owner: "Kim's Flowers & Gifts" },
       parties: [
-        { id: 'pc-party-6-1', name: 'Kim Lee', role: 'Policyholder', source: 'Policy Admin', resState: 'OR', dateOfBirth: '1982-03-15', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Portland, OR 97214', verificationStatus: 'Verified', verificationScore: 99 },
-        { id: 'pc-party-6-2', name: 'Bloom & Petals Florist', role: 'Named Insured', source: 'Policy Admin', resState: 'OR', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Portland, OR 97214', verificationStatus: 'Verified', verificationScore: 98 }
+        { id: 'pc-party-6-1', name: 'Kim Lee', role: 'Policyholder', source: 'Policy Admin', resState: 'IL', dateOfBirth: '1982-03-15', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Chicago, IL 60601', verificationStatus: 'Verified', verificationScore: 99 },
+        { id: 'pc-party-6-2', name: "Kim's Flowers & Gifts", role: 'Named Insured', source: 'Policy Admin', resState: 'IL', phone: '503-555-0234', email: 'kim@bloomandpetals.com', address: '1847 Main Street, Chicago, IL 60601', verificationStatus: 'Verified', verificationScore: 98 }
       ],
       aiInsights: {
         riskScore: 8,
@@ -465,8 +465,8 @@ const createPCShowcaseClaims = () => {
             severity: 'Low',
             category: 'Estimate Validation',
             title: 'No Inflation Indicators Detected — Estimate Within Expected Range',
-            message: 'Damage estimate of $87,000 validates against 127 comparable commercial pipe burst claims.',
-            description: 'Claimed amount of $87,000 benchmarked against comparable commercial property pipe burst losses in the Pacific Northwest (2024–2026 cohort, n=127). Estimate falls within expected range for a florist with refrigerated storage, retail floor, walk-in cooler, and business interruption. No line-item inflation, round-number anomalies, duplicate billing, or cost escalation patterns detected. Inventory loss quantum is consistent with a florist of this size and seasonal stock profile.',
+            message: 'Damage estimate of $19,500 validates against 127 comparable commercial pipe burst claims.',
+            description: 'Claimed amount of $19,500 benchmarked against comparable commercial property pipe burst losses in the Midwest (2024–2026 cohort, n=127). Estimate falls within expected range for a florist with refrigerated storage, retail floor, walk-in cooler, and business interruption. No line-item inflation, round-number anomalies, duplicate billing, or cost escalation patterns detected. Inventory loss quantum is consistent with a florist of this size and seasonal stock profile.',
             recommendation: 'Settlement amount validated. No independent appraisal required. Approve as submitted.',
             confidence: 96,
             timestamp: createdDate.toISOString()
@@ -488,7 +488,7 @@ const createPCShowcaseClaims = () => {
             category: 'Agentic Validation',
             title: 'Holistic Risk Profile Complete — 5 Independent Sources Corroborate Loss',
             message: 'Agentic AI assembled complete contextual picture from 5 data sources. Fraud score: 8/100.',
-            description: 'Claims AI agent assembled and cross-referenced 5 independent data sources: (1) NOAA Winter Storm Warning — freeze event confirmed for Portland OR 97214; (2) FloodStop Pro IoT sensor logs — temperature, water leak, and humidity readings timestamped and geo-verified; (3) Mobile FNOL submission — geo-tagged damage photos submitted within hours of sensor alert; (4) Prior claim history and prevention compliance record — behavioral pattern consistent with a low-risk insured; (5) Comparable loss benchmarks — estimate validated against regional peer cohort. All 5 sources independently support the reported loss. Fraud control achieved through context, not suspicion.',
+            description: 'Claims AI agent assembled and cross-referenced 5 independent data sources: (1) NOAA Winter Storm Warning — freeze event confirmed for Chicago IL 60601; (2) FloodStop Pro IoT sensor logs — temperature, water leak, and humidity readings timestamped and geo-verified; (3) Mobile FNOL submission — geo-tagged damage photos submitted within hours of sensor alert; (4) Prior claim history and prevention compliance record — behavioral pattern consistent with a low-risk insured; (5) Comparable loss benchmarks — estimate validated against regional peer cohort. All 5 sources independently support the reported loss. Fraud control achieved through context, not suspicion.',
             recommendation: 'STP approved. Complete contextual picture assembled — no human adjuster review required. Approve and schedule ACH payment.',
             confidence: 94,
             timestamp: createdDate.toISOString()
@@ -496,9 +496,9 @@ const createPCShowcaseClaims = () => {
         ]
       },
       financial: {
-        claimAmount: 87000, deductible: 5000, repairEstimate: 75000, salvageValue: 0,
-        businessInterruptionEstimate: 12000, reserve: 0, amountPaid: 87000, currency: 'USD',
-        payments: [{ id: 'pc-pay-6-1', paymentNumber: 'PAY-PC-000006', payeeName: 'Bloom & Petals Florist', benefitAmount: 87000, paymentMethod: 'ACH', status: 'Completed', paymentDate: new Date(createdDate.getTime() + 2 * DAY).toISOString().split('T')[0] }]
+        claimAmount: 19500, deductible: 5000, repairEstimate: 16500, salvageValue: 0,
+        businessInterruptionEstimate: 3000, reserve: 0, amountPaid: 19500, currency: 'USD',
+        payments: [{ id: 'pc-pay-6-1', paymentNumber: 'PAY-PC-000006', payeeName: "Kim's Flowers & Gifts", benefitAmount: 19500, paymentMethod: 'ACH', status: 'Completed', paymentDate: new Date(createdDate.getTime() + 2 * DAY).toISOString().split('T')[0] }]
       },
       routing: {
         type: RoutingType.STP, score: 94, eligible: true,
@@ -522,9 +522,9 @@ const createPCShowcaseClaims = () => {
     claim.requirements = generatePCRequirements(claim);
     claim.timeline = generatePCTimeline(claim);
     claim.workNotes = [
-      { sys_id: 'wn-pc-claim-6-3', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'STP completed. All 5 criteria validated — 94% confidence. Claim approved in 45 minutes. ACH payment of $87,000 scheduled. Post-settlement audit queued. Claim closed.', sys_created_on: new Date(createdDate.getTime() + 2.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
+      { sys_id: 'wn-pc-claim-6-3', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'STP completed. All 5 criteria validated — 94% confidence. Claim approved in 45 minutes. ACH payment of $19,500 scheduled. Post-settlement audit queued. Claim closed.', sys_created_on: new Date(createdDate.getTime() + 2.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
       { sys_id: 'wn-pc-claim-6-2', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'Prior claim CLM-2024-012847 reviewed. Insured followed all prevention recommendations: FloodStop Pro sensor installed, exposed pipes insulated, winterization checklist completed. Prevention compliance 100%. STP criteria 2 and 4 confirmed.', sys_created_on: new Date(createdDate.getTime() + 1.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
-      { sys_id: 'wn-pc-claim-6-1', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'FNOL received via mobile app with damage photos. IoT data: TEMP-BPF-001 recorded -5°F at 02:30, WATER-BPF-002 activated at 03:45 (water leak), HUMID-BPF-003 spike at 04:00. NOAA confirms Winter Storm Warning for Portland OR. STP evaluation initiated.', sys_created_on: new Date(createdDate.getTime() + 0.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' }
+      { sys_id: 'wn-pc-claim-6-1', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'FNOL received via mobile app with damage photos. IoT data: TEMP-BPF-001 recorded -5°F at 02:30, WATER-BPF-002 activated at 03:45 (water leak), HUMID-BPF-003 spike at 04:00. NOAA confirms Winter Storm Warning for Chicago IL. STP evaluation initiated.', sys_created_on: new Date(createdDate.getTime() + 0.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' }
     ];
     claims.push(claim);
   }
