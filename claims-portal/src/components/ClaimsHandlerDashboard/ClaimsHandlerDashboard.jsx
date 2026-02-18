@@ -8,15 +8,16 @@ const ClaimsHandlerDashboard = () => {
 
   // Mock data - would come from API
   const inventoryData = {
-    totalOpen: 47,
+    totalOpen: 54,
     buckets: [
       { id: 'new-fnol', label: 'New FNOL', count: 8, color: '#1B75BB', icon: 'fiber_new' },
       { id: 'waiting-requirements', label: 'Waiting on Requirements', count: 12, color: '#F6921E', icon: 'pending_actions' },
       { id: 'manual-followup', label: 'Manual Follow-Up Required', count: 6, color: '#D02E2E', icon: 'phone_in_talk' },
       { id: 'mail-received', label: 'Mail Received – Needs Review', count: 9, color: '#00ADEE', icon: 'mail_outline' },
+      { id: 'documents-received', label: 'Documents Received', count: 7, color: '#5C6BC0', icon: 'description' },
       { id: 'waiting-other', label: 'Waiting on Other', count: 5, color: '#8BC53F', icon: 'hourglass_empty' },
       { id: 'quality-review', label: 'Quality Review', count: 4, color: '#37A526', icon: 'verified' },
-      { id: 'manager-review', label: 'Manager Review', count: 3, color: '#E8DE23', icon: 'supervisor_account' }
+      { id: 'manager-approvals', label: 'Manager Approvals', count: 3, color: '#E8DE23', icon: 'supervisor_account' }
     ]
   };
 

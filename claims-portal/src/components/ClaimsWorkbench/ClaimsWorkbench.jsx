@@ -32,7 +32,10 @@ import RequirementsEngine from '../RequirementsEngine/RequirementsEngine';
 import WorkNotes from '../WorkNotes/WorkNotes';
 import './ClaimsWorkbench.css';
 
+const PC_CLAIM_TYPES = ['auto_collision', 'auto_comprehensive', 'homeowners', 'commercial_property', 'auto_liability', 'workers_comp'];
+
 const ClaimsWorkbench = ({ claim, onBack }) => {
+  const isPC = PC_CLAIM_TYPES.includes(claim?.type);
   const [activeTab, setActiveTab] = useState(0);
   const [showBeneficiaryAnalyzer, setShowBeneficiaryAnalyzer] = useState(false);
 
@@ -327,7 +330,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Beneficiary Analyzer"
+                  label={isPC ? 'Claimant Details' : 'Beneficiary Analyzer'}
                   icon="psychology"
                   active={activeTab === 6}
                   onClick={() => setActiveTab(6)}
@@ -427,7 +430,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         onClick={() => setActiveTab(5)}
                       />
                       <DxcButton
-                        label="Analyze Beneficiaries"
+                        label={isPC ? 'View Claimants' : 'Analyze Beneficiaries'}
                         mode="primary"
                         icon="psychology"
                         onClick={() => setActiveTab(6)}
@@ -731,9 +734,9 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
-                      <DxcHeading level={4} text="Beneficiaries" />
+                      <DxcHeading level={4} text={isPC ? 'Claimants' : 'Beneficiaries'} />
                       <DxcButton
-                        label="Analyze Beneficiaries with AI"
+                        label={isPC ? 'View Claimant Details' : 'Analyze Beneficiaries with AI'}
                         mode="primary"
                         icon="psychology"
                         onClick={() => setShowBeneficiaryAnalyzer(true)}
@@ -890,7 +893,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 </DxcFlex>
               )}
 
-              {/* Beneficiary Analyzer Tab */}
+              {/* Beneficiary Analyzer / Claimant Details Tab */}
               {activeTab === 6 && (
                 <BeneficiaryAnalyzer
                   claimId={claim.claimNumber || claim.id}

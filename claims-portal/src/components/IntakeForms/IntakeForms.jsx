@@ -18,18 +18,22 @@ import {
   DxcTabs
 } from '@dxc-technology/halstack-react';
 import serviceNowService from '../../services/api/serviceNowService';
+import { useApp } from '../../contexts/AppContext';
 import './IntakeForms.css';
 
 /**
  * FNOL Party Portal - Public-facing portal
  * Features:
  * - Simulated user registration/login flow
- * - Product selection (Life, Annuity, Health)
- * - Dynamic claim form based on product
+ * - Product selection (Life, Annuity for L&A; Auto, Homeowners, Commercial, Liability for P&C)
+ * - Dynamic claim form based on product line and product
  * - Document upload
  * - ServiceNow submission
  */
 const IntakeForms = () => {
+  const { productLine } = useApp();
+  const isPC = productLine === 'pc';
+
   // Auth state (simulated registration gate)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
@@ -56,6 +60,7 @@ const IntakeForms = () => {
     insuredName: '',
     insuredSSN: '',
     insuredDOB: '',
+    // L&A fields
     dateOfDeath: '',
     causeOfDeath: '',
     description: '',
@@ -75,6 +80,19 @@ const IntakeForms = () => {
     annuityType: '',
     surrenderValue: '',
     deathBenefitOption: '',
+    // P&C common fields
+    dateOfLoss: '',
+    causeOfLoss: '',
+    lossLocation: '',
+    lossDescription: '',
+    // P&C auto fields
+    vehicleYear: '',
+    vehicleMake: '',
+    vehicleModel: '',
+    vehicleVIN: '',
+    // P&C property fields
+    propertyAddress: '',
+    propertyType: '',
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -93,7 +111,6 @@ const IntakeForms = () => {
       setAuthError('Please enter both email and password.');
       return;
     }
-    // Simulated login
     setIsAuthenticated(true);
   };
 
@@ -106,7 +123,6 @@ const IntakeForms = () => {
       setAuthError('Passwords do not match.');
       return;
     }
-    // Simulated registration
     setIsAuthenticated(true);
   };
 
@@ -116,10 +132,19 @@ const IntakeForms = () => {
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
-    setFormData(prev => ({
-      ...prev,
-      claimType: product === 'life' ? 'death' : product === 'annuity' ? 'annuity_death' : 'health'
-    }));
+    let claimType = product;
+    if (!isPC) {
+      claimType = product === 'life' ? 'death' : product === 'annuity' ? 'annuity_death' : 'health';
+    } else {
+      const pcTypeMap = {
+        auto: 'auto_collision',
+        homeowners: 'homeowners',
+        commercial: 'commercial_property',
+        liability: 'auto_liability'
+      };
+      claimType = pcTypeMap[product] || product;
+    }
+    setFormData(prev => ({ ...prev, claimType }));
     setStep(2);
   };
 
@@ -140,24 +165,47 @@ const IntakeForms = () => {
     setError(null);
 
     try {
-      const fnolData = {
-        shortDescription: `${selectedProduct === 'life' ? 'Life' : 'Annuity'} Claim - ${formData.insuredName}`,
-        description: formData.description,
-        insured: {
-          fullName: formData.insuredName,
-          dateOfDeath: formData.dateOfDeath
-        },
-        claimant: {
-          fullName: formData.claimantName,
-          emailAddress: formData.claimantEmail,
-          phoneNumber: formData.claimantPhone,
-          relationshipToInsured: formData.relationship
-        },
-        policyNumbers: formData.policyNumber,
-        priority: '3',
-        urgency: '3',
-        impact: '3'
-      };
+      let fnolData;
+      if (isPC) {
+        const pcProductLabels = { auto: 'Auto', homeowners: 'Homeowners', commercial: 'Commercial Property', liability: 'Auto Liability' };
+        fnolData = {
+          shortDescription: `${pcProductLabels[selectedProduct] || selectedProduct} Claim - ${formData.insuredName}`,
+          description: formData.lossDescription,
+          insured: {
+            fullName: formData.insuredName,
+            dateOfLoss: formData.dateOfLoss
+          },
+          claimant: {
+            fullName: formData.claimantName,
+            emailAddress: formData.claimantEmail,
+            phoneNumber: formData.claimantPhone,
+            relationshipToInsured: formData.relationship
+          },
+          policyNumbers: formData.policyNumber,
+          priority: '3',
+          urgency: '3',
+          impact: '3'
+        };
+      } else {
+        fnolData = {
+          shortDescription: `${selectedProduct === 'life' ? 'Life' : 'Annuity'} Claim - ${formData.insuredName}`,
+          description: formData.description,
+          insured: {
+            fullName: formData.insuredName,
+            dateOfDeath: formData.dateOfDeath
+          },
+          claimant: {
+            fullName: formData.claimantName,
+            emailAddress: formData.claimantEmail,
+            phoneNumber: formData.claimantPhone,
+            relationshipToInsured: formData.relationship
+          },
+          policyNumbers: formData.policyNumber,
+          priority: '3',
+          urgency: '3',
+          impact: '3'
+        };
+      }
 
       console.log('[IntakeForms] Submitting FNOL to ServiceNow:', fnolData);
       const result = await serviceNowService.createFNOL(fnolData);
@@ -176,7 +224,10 @@ const IntakeForms = () => {
           dateOfDeath: '', causeOfDeath: '', description: '', claimantName: '', claimantEmail: '',
           claimantPhone: '', claimantSSN: '', claimantDOB: '', claimantAddress: '', relationship: '',
           lifeSettlementIndicator: '', contestabilityPeriod: '', annuityContractNumber: '',
-          annuityType: '', surrenderValue: '', deathBenefitOption: ''
+          annuityType: '', surrenderValue: '', deathBenefitOption: '',
+          dateOfLoss: '', causeOfLoss: '', lossLocation: '', lossDescription: '',
+          vehicleYear: '', vehicleMake: '', vehicleModel: '', vehicleVIN: '',
+          propertyAddress: '', propertyType: ''
         });
       }, 8000);
     } catch (err) {
@@ -189,6 +240,64 @@ const IntakeForms = () => {
 
   const progress = (step / totalSteps) * 100;
 
+  // P&C product card definitions
+  const pcProducts = [
+    {
+      id: 'auto',
+      label: 'Auto',
+      icon: 'directions_car',
+      badge: 'Connect Event',
+      badgeColor: 'success',
+      description: 'Collision, comprehensive, or liability claim for a personal or commercial vehicle',
+      disabled: false
+    },
+    {
+      id: 'homeowners',
+      label: 'Homeowners',
+      icon: 'home',
+      badge: 'Connect Event',
+      badgeColor: 'success',
+      description: 'Property damage or loss for a residential home or condo',
+      disabled: false
+    },
+    {
+      id: 'commercial',
+      label: 'Commercial Property',
+      icon: 'business',
+      badge: 'Connect Event',
+      badgeColor: 'success',
+      description: 'Property damage, business interruption, or loss for a commercial location',
+      disabled: false
+    },
+    {
+      id: 'liability',
+      label: 'Liability',
+      icon: 'gavel',
+      badge: 'Connect Event',
+      badgeColor: 'success',
+      description: 'Third-party bodily injury or property damage liability claim',
+      disabled: false
+    },
+    {
+      id: 'workers_comp',
+      label: "Workers' Comp",
+      icon: 'health_and_safety',
+      badge: 'Future Phase',
+      badgeColor: 'neutral',
+      description: "Workplace injury or occupational disease claims (coming soon)",
+      disabled: true
+    }
+  ];
+
+  // Is this an auto-type P&C product?
+  const isPCAuto = isPC && (selectedProduct === 'auto' || selectedProduct === 'liability');
+  const isPCProperty = isPC && (selectedProduct === 'homeowners' || selectedProduct === 'commercial');
+
+  const pcProductLabel = () => {
+    const labels = { auto: 'Auto', homeowners: 'Homeowners', commercial: 'Commercial Property', liability: 'Liability' };
+    return labels[selectedProduct] || selectedProduct;
+  };
+
   // =================== REGISTRATION/LOGIN GATE ===================
   if (!isAuthenticated) {
     return (
@@ -200,7 +309,9 @@ const IntakeForms = () => {
           <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
             <DxcHeading level={1} text="FNOL Party Portal" />
             <DxcTypography color="var(--color-fg-neutral-strong)">
-              Submit a First Notice of Loss for life and annuity claims
+              {isPC
+                ? 'Submit a First Notice of Loss for auto, property, and liability claims'
+                : 'Submit a First Notice of Loss for life and annuity claims'}
             </DxcTypography>
             <DxcBadge label="Demo Portal" mode="contextual" color="info" />
           </DxcFlex>
@@ -340,7 +451,9 @@ const IntakeForms = () => {
           <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
             <DxcHeading level={1} text="FNOL Party Portal" />
             <DxcTypography color="var(--color-fg-neutral-strong)">
-              Submit a First Notice of Loss for life and annuity claims
+              {isPC
+                ? 'Submit a First Notice of Loss for auto, property, and liability claims'
+                : 'Submit a First Notice of Loss for life and annuity claims'}
             </DxcTypography>
           </DxcFlex>
           <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
@@ -390,268 +503,493 @@ const IntakeForms = () => {
             {/* =================== STEP 1: PRODUCT SELECTION =================== */}
             {step === 1 && (
               <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                <DxcHeading level={3} text="Select Product Type" />
+                <DxcHeading level={3} text="Select Coverage Type" />
                 <DxcTypography color="var(--color-fg-neutral-strong)">
-                  Choose the type of claim you would like to submit. The form will be tailored to the selected product.
+                  Choose the type of claim you would like to submit. The form will be tailored to the selected coverage.
                 </DxcTypography>
 
-                <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
-                  {/* Life Insurance */}
-                  <div
-                    onClick={() => handleProductSelect('life')}
-                    style={{
-                      flex: "1 1 250px",
-                      padding: "var(--spacing-padding-l)",
-                      borderRadius: "var(--border-radius-m)",
-                      border: selectedProduct === 'life'
-                        ? "2px solid var(--color-fg-secondary-medium)"
-                        : "1px solid var(--border-color-neutral-lighter)",
-                      backgroundColor: "var(--color-bg-neutral-lighter)",
-                      cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                      <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>favorite</span>
-                      <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
-                        Life Insurance
-                      </DxcTypography>
-                      <DxcBadge label="Connect Event" mode="contextual" color="success" />
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
-                        Death claim for whole life, term life, or universal life policies
-                      </DxcTypography>
-                    </DxcFlex>
-                  </div>
+                {/* ---- L&A Products ---- */}
+                {!isPC && (
+                  <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                    {/* Life Insurance */}
+                    <div
+                      onClick={() => handleProductSelect('life')}
+                      style={{
+                        flex: "1 1 250px",
+                        padding: "var(--spacing-padding-l)",
+                        borderRadius: "var(--border-radius-m)",
+                        border: selectedProduct === 'life'
+                          ? "2px solid var(--color-fg-secondary-medium)"
+                          : "1px solid var(--border-color-neutral-lighter)",
+                        backgroundColor: "var(--color-bg-neutral-lighter)",
+                        cursor: "pointer",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
+                        <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>favorite</span>
+                        <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
+                          Life Insurance
+                        </DxcTypography>
+                        <DxcBadge label="Connect Event" mode="contextual" color="success" />
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
+                          Death claim for whole life, term life, or universal life policies
+                        </DxcTypography>
+                      </DxcFlex>
+                    </div>
 
-                  {/* Annuity */}
-                  <div
-                    onClick={() => handleProductSelect('annuity')}
-                    style={{
-                      flex: "1 1 250px",
-                      padding: "var(--spacing-padding-l)",
-                      borderRadius: "var(--border-radius-m)",
-                      border: selectedProduct === 'annuity'
-                        ? "2px solid var(--color-fg-secondary-medium)"
-                        : "1px solid var(--border-color-neutral-lighter)",
-                      backgroundColor: "var(--color-bg-neutral-lighter)",
-                      cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                      <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>account_balance</span>
-                      <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
-                        Annuity
-                      </DxcTypography>
-                      <DxcBadge label="Connect Event" mode="contextual" color="success" />
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
-                        Death claim for fixed, variable, or indexed annuity contracts
-                      </DxcTypography>
-                    </DxcFlex>
-                  </div>
+                    {/* Annuity */}
+                    <div
+                      onClick={() => handleProductSelect('annuity')}
+                      style={{
+                        flex: "1 1 250px",
+                        padding: "var(--spacing-padding-l)",
+                        borderRadius: "var(--border-radius-m)",
+                        border: selectedProduct === 'annuity'
+                          ? "2px solid var(--color-fg-secondary-medium)"
+                          : "1px solid var(--border-color-neutral-lighter)",
+                        backgroundColor: "var(--color-bg-neutral-lighter)",
+                        cursor: "pointer",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
+                        <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-secondary-medium)" }}>account_balance</span>
+                        <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04">
+                          Annuity
+                        </DxcTypography>
+                        <DxcBadge label="Connect Event" mode="contextual" color="success" />
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
+                          Death claim for fixed, variable, or indexed annuity contracts
+                        </DxcTypography>
+                      </DxcFlex>
+                    </div>
 
-                  {/* Health (Future Phase) */}
-                  <div
-                    style={{
-                      flex: "1 1 250px",
-                      padding: "var(--spacing-padding-l)",
-                      borderRadius: "var(--border-radius-m)",
-                      border: "1px solid var(--border-color-neutral-lighter)",
-                      backgroundColor: "var(--color-bg-neutral-lighter)",
-                      opacity: 0.5,
-                      cursor: "not-allowed"
-                    }}
-                  >
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
-                      <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-neutral-dark)" }}>local_hospital</span>
-                      <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="var(--color-fg-neutral-dark)">
-                        Health
-                      </DxcTypography>
-                      <DxcBadge label="Future Phase" mode="contextual" color="neutral" />
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
-                        Health insurance claims (coming soon)
-                      </DxcTypography>
-                    </DxcFlex>
-                  </div>
-                </DxcFlex>
+                    {/* Health (Future Phase) */}
+                    <div
+                      style={{
+                        flex: "1 1 250px",
+                        padding: "var(--spacing-padding-l)",
+                        borderRadius: "var(--border-radius-m)",
+                        border: "1px solid var(--border-color-neutral-lighter)",
+                        backgroundColor: "var(--color-bg-neutral-lighter)",
+                        opacity: 0.5,
+                        cursor: "not-allowed"
+                      }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
+                        <span className="material-icons" style={{ fontSize: "48px", color: "var(--color-fg-neutral-dark)" }}>local_hospital</span>
+                        <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="var(--color-fg-neutral-dark)">
+                          Health
+                        </DxcTypography>
+                        <DxcBadge label="Future Phase" mode="contextual" color="neutral" />
+                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
+                          Health insurance claims (coming soon)
+                        </DxcTypography>
+                      </DxcFlex>
+                    </div>
+                  </DxcFlex>
+                )}
+
+                {/* ---- P&C Products ---- */}
+                {isPC && (
+                  <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                    {pcProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={product.disabled ? undefined : () => handleProductSelect(product.id)}
+                        style={{
+                          flex: "1 1 200px",
+                          padding: "var(--spacing-padding-l)",
+                          borderRadius: "var(--border-radius-m)",
+                          border: selectedProduct === product.id
+                            ? "2px solid var(--color-fg-secondary-medium)"
+                            : "1px solid var(--border-color-neutral-lighter)",
+                          backgroundColor: "var(--color-bg-neutral-lighter)",
+                          opacity: product.disabled ? 0.5 : 1,
+                          cursor: product.disabled ? "not-allowed" : "pointer",
+                          transition: "all 0.15s"
+                        }}
+                      >
+                        <DxcFlex direction="column" gap="var(--spacing-gap-s)" alignItems="center">
+                          <span
+                            className="material-icons"
+                            style={{
+                              fontSize: "48px",
+                              color: product.disabled
+                                ? "var(--color-fg-neutral-dark)"
+                                : "var(--color-fg-secondary-medium)"
+                            }}
+                          >
+                            {product.icon}
+                          </span>
+                          <DxcTypography
+                            fontWeight="font-weight-semibold"
+                            fontSize="font-scale-04"
+                            color={product.disabled ? "var(--color-fg-neutral-dark)" : undefined}
+                          >
+                            {product.label}
+                          </DxcTypography>
+                          <DxcBadge label={product.badge} mode="contextual" color={product.badgeColor} />
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)" textAlign="center">
+                            {product.description}
+                          </DxcTypography>
+                        </DxcFlex>
+                      </div>
+                    ))}
+                  </DxcFlex>
+                )}
               </DxcFlex>
             )}
 
-            {/* =================== STEP 2: CLAIM INFORMATION (Product-Specific) =================== */}
+            {/* =================== STEP 2: CLAIM INFORMATION =================== */}
             {step === 2 && (
               <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                 <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
                   <DxcHeading level={3} text="Claim Information" />
                   <DxcBadge
-                    label={selectedProduct === 'life' ? 'Life Insurance' : 'Annuity'}
+                    label={isPC ? pcProductLabel() : (selectedProduct === 'life' ? 'Life Insurance' : 'Annuity')}
                     mode="contextual"
                     color="info"
                   />
                 </DxcFlex>
-                <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
-                  Form fields will match standard Wilton forms when specs are provided. Placeholder fields shown below.
-                </DxcTypography>
 
-                {/* Common Fields */}
-                <DxcTextInput
-                  label="Policy Number"
-                  placeholder="Enter policy number"
-                  value={formData.policyNumber}
-                  onChange={({ value }) => handleInputChange('policyNumber', value)}
-                  size="fillParent"
-                />
-
-                <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
-                  <div style={{ flex: "1 1 250px" }}>
-                    <DxcTextInput
-                      label="Insured Full Name"
-                      placeholder="First Middle Last"
-                      value={formData.insuredName}
-                      onChange={({ value }) => handleInputChange('insuredName', value)}
-                      size="fillParent"
-                    />
-                  </div>
-                  <div style={{ flex: "1 1 200px" }}>
-                    <DxcTextInput
-                      label="Insured SSN"
-                      placeholder="XXX-XX-XXXX"
-                      value={formData.insuredSSN}
-                      onChange={({ value }) => handleInputChange('insuredSSN', value)}
-                      size="fillParent"
-                    />
-                  </div>
-                  <div style={{ flex: "1 1 200px" }}>
-                    <DxcDateInput
-                      label="Insured Date of Birth"
-                      value={formData.insuredDOB}
-                      onChange={({ value }) => handleInputChange('insuredDOB', value)}
-                      placeholder="MM/DD/YYYY"
-                    />
-                  </div>
-                </DxcFlex>
-
-                <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
-                  <div style={{ flex: "1 1 200px" }}>
-                    <DxcDateInput
-                      label="Date of Death"
-                      value={formData.dateOfDeath}
-                      onChange={({ value }) => handleInputChange('dateOfDeath', value)}
-                      placeholder="MM/DD/YYYY"
-                    />
-                  </div>
-                  <div style={{ flex: "1 1 250px" }}>
-                    <DxcTextInput
-                      label="Cause of Death"
-                      placeholder="Enter cause of death"
-                      value={formData.causeOfDeath}
-                      onChange={({ value }) => handleInputChange('causeOfDeath', value)}
-                      size="fillParent"
-                    />
-                  </div>
-                </DxcFlex>
-
-                {/* Life-Specific Fields */}
-                {selectedProduct === 'life' && (
+                {/* ---- P&C Step 2 ---- */}
+                {isPC && (
                   <>
-                    <DxcHeading level={4} text="Life Insurance Details" />
+                    <DxcTextInput
+                      label="Policy Number"
+                      placeholder="Enter policy number"
+                      value={formData.policyNumber}
+                      onChange={({ value }) => handleInputChange('policyNumber', value)}
+                      size="fillParent"
+                    />
+
+                    <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                      <div style={{ flex: "1 1 280px" }}>
+                        <DxcTextInput
+                          label="Policyholder Full Name"
+                          placeholder="First Middle Last"
+                          value={formData.insuredName}
+                          onChange={({ value }) => handleInputChange('insuredName', value)}
+                          size="fillParent"
+                        />
+                      </div>
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcDateInput
+                          label="Date of Loss"
+                          value={formData.dateOfLoss}
+                          onChange={({ value }) => handleInputChange('dateOfLoss', value)}
+                          placeholder="MM/DD/YYYY"
+                        />
+                      </div>
+                    </DxcFlex>
+
                     <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
                       <div style={{ flex: "1 1 250px" }}>
                         <DxcSelect
-                          label="Policy Type"
-                          placeholder="Select policy type"
-                          value={formData.lifeSettlementIndicator}
-                          onChange={({ value }) => handleInputChange('lifeSettlementIndicator', value)}
-                          options={[
-                            { label: 'Whole Life', value: 'whole_life' },
-                            { label: 'Term Life', value: 'term_life' },
-                            { label: 'Universal Life', value: 'universal_life' },
-                            { label: 'Variable Life', value: 'variable_life' }
+                          label="Cause of Loss"
+                          placeholder="Select cause of loss"
+                          value={formData.causeOfLoss}
+                          onChange={({ value }) => handleInputChange('causeOfLoss', value)}
+                          options={isPCAuto ? [
+                            { label: 'Collision', value: 'collision' },
+                            { label: 'Theft / Total Theft', value: 'theft' },
+                            { label: 'Vandalism', value: 'vandalism' },
+                            { label: 'Weather / Hail', value: 'weather_hail' },
+                            { label: 'Flood / Water Damage', value: 'flood' },
+                            { label: 'Fire', value: 'fire' },
+                            { label: 'Hit and Run', value: 'hit_and_run' },
+                            { label: 'Other', value: 'other' }
+                          ] : [
+                            { label: 'Wind / Storm', value: 'wind_storm' },
+                            { label: 'Hail', value: 'hail' },
+                            { label: 'Fire', value: 'fire' },
+                            { label: 'Flood / Water Damage', value: 'flood' },
+                            { label: 'Theft / Burglary', value: 'theft' },
+                            { label: 'Vandalism', value: 'vandalism' },
+                            { label: 'Pipe Burst / Plumbing', value: 'plumbing' },
+                            { label: 'Lightning Strike', value: 'lightning' },
+                            { label: 'Other', value: 'other' }
                           ]}
                           size="fillParent"
                         />
                       </div>
                       <div style={{ flex: "1 1 250px" }}>
-                        <DxcSelect
-                          label="Contestability Status"
-                          placeholder="Select status"
-                          value={formData.contestabilityPeriod}
-                          onChange={({ value }) => handleInputChange('contestabilityPeriod', value)}
-                          options={[
-                            { label: 'Within Contestability (0-2 years)', value: 'within' },
-                            { label: 'Past Contestability (2+ years)', value: 'past' },
-                            { label: 'Unknown', value: 'unknown' }
-                          ]}
+                        <DxcTextInput
+                          label="Loss Location / Incident Address"
+                          placeholder="City, State or full address"
+                          value={formData.lossLocation}
+                          onChange={({ value }) => handleInputChange('lossLocation', value)}
                           size="fillParent"
                         />
                       </div>
                     </DxcFlex>
+
+                    {/* Auto-specific fields */}
+                    {isPCAuto && (
+                      <>
+                        <DxcHeading level={4} text="Vehicle Information" />
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                          <div style={{ flex: "0 1 120px" }}>
+                            <DxcTextInput
+                              label="Year"
+                              placeholder="2022"
+                              value={formData.vehicleYear}
+                              onChange={({ value }) => handleInputChange('vehicleYear', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 160px" }}>
+                            <DxcTextInput
+                              label="Make"
+                              placeholder="Toyota"
+                              value={formData.vehicleMake}
+                              onChange={({ value }) => handleInputChange('vehicleMake', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 160px" }}>
+                            <DxcTextInput
+                              label="Model"
+                              placeholder="Camry"
+                              value={formData.vehicleModel}
+                              onChange={({ value }) => handleInputChange('vehicleModel', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 220px" }}>
+                            <DxcTextInput
+                              label="VIN"
+                              placeholder="17-character VIN"
+                              value={formData.vehicleVIN}
+                              onChange={({ value }) => handleInputChange('vehicleVIN', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                        </DxcFlex>
+                      </>
+                    )}
+
+                    {/* Property-specific fields */}
+                    {isPCProperty && (
+                      <>
+                        <DxcHeading level={4} text="Property Information" />
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                          <div style={{ flex: "2 1 300px" }}>
+                            <DxcTextInput
+                              label="Property Address"
+                              placeholder="Street, City, State, ZIP"
+                              value={formData.propertyAddress}
+                              onChange={({ value }) => handleInputChange('propertyAddress', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 200px" }}>
+                            <DxcSelect
+                              label="Property Type"
+                              placeholder="Select type"
+                              value={formData.propertyType}
+                              onChange={({ value }) => handleInputChange('propertyType', value)}
+                              options={selectedProduct === 'commercial' ? [
+                                { label: 'Office Building', value: 'office' },
+                                { label: 'Retail / Storefront', value: 'retail' },
+                                { label: 'Warehouse / Industrial', value: 'warehouse' },
+                                { label: 'Restaurant / Food Service', value: 'restaurant' },
+                                { label: 'Multi-Family / Apartment', value: 'multifamily' },
+                                { label: 'Other Commercial', value: 'other' }
+                              ] : [
+                                { label: 'Single Family Home', value: 'single_family' },
+                                { label: 'Townhouse', value: 'townhouse' },
+                                { label: 'Condominium', value: 'condo' },
+                                { label: 'Mobile Home', value: 'mobile_home' },
+                                { label: 'Other', value: 'other' }
+                              ]}
+                              size="fillParent"
+                            />
+                          </div>
+                        </DxcFlex>
+                      </>
+                    )}
+
+                    <DxcTextarea
+                      label="Description of Loss"
+                      placeholder="Describe what happened, when it occurred, and any damage observed"
+                      value={formData.lossDescription}
+                      onChange={({ value }) => handleInputChange('lossDescription', value)}
+                      rows={4}
+                    />
                   </>
                 )}
 
-                {/* Annuity-Specific Fields */}
-                {selectedProduct === 'annuity' && (
+                {/* ---- L&A Step 2 ---- */}
+                {!isPC && (
                   <>
-                    <DxcHeading level={4} text="Annuity Contract Details" />
+                    <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                      Form fields will match standard Wilton forms when specs are provided. Placeholder fields shown below.
+                    </DxcTypography>
+
+                    <DxcTextInput
+                      label="Policy Number"
+                      placeholder="Enter policy number"
+                      value={formData.policyNumber}
+                      onChange={({ value }) => handleInputChange('policyNumber', value)}
+                      size="fillParent"
+                    />
+
                     <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
                       <div style={{ flex: "1 1 250px" }}>
                         <DxcTextInput
-                          label="Contract Number"
-                          placeholder="Enter annuity contract number"
-                          value={formData.annuityContractNumber}
-                          onChange={({ value }) => handleInputChange('annuityContractNumber', value)}
+                          label="Insured Full Name"
+                          placeholder="First Middle Last"
+                          value={formData.insuredName}
+                          onChange={({ value }) => handleInputChange('insuredName', value)}
                           size="fillParent"
                         />
                       </div>
-                      <div style={{ flex: "1 1 250px" }}>
-                        <DxcSelect
-                          label="Annuity Type"
-                          placeholder="Select annuity type"
-                          value={formData.annuityType}
-                          onChange={({ value }) => handleInputChange('annuityType', value)}
-                          options={[
-                            { label: 'Fixed Annuity', value: 'fixed' },
-                            { label: 'Variable Annuity', value: 'variable' },
-                            { label: 'Indexed Annuity', value: 'indexed' },
-                            { label: 'Immediate Annuity', value: 'immediate' }
-                          ]}
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcTextInput
+                          label="Insured SSN"
+                          placeholder="XXX-XX-XXXX"
+                          value={formData.insuredSSN}
+                          onChange={({ value }) => handleInputChange('insuredSSN', value)}
                           size="fillParent"
+                        />
+                      </div>
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcDateInput
+                          label="Insured Date of Birth"
+                          value={formData.insuredDOB}
+                          onChange={({ value }) => handleInputChange('insuredDOB', value)}
+                          placeholder="MM/DD/YYYY"
                         />
                       </div>
                     </DxcFlex>
+
                     <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcDateInput
+                          label="Date of Death"
+                          value={formData.dateOfDeath}
+                          onChange={({ value }) => handleInputChange('dateOfDeath', value)}
+                          placeholder="MM/DD/YYYY"
+                        />
+                      </div>
                       <div style={{ flex: "1 1 250px" }}>
-                        <DxcSelect
-                          label="Death Benefit Option"
-                          placeholder="Select benefit option"
-                          value={formData.deathBenefitOption}
-                          onChange={({ value }) => handleInputChange('deathBenefitOption', value)}
-                          options={[
-                            { label: 'Return of Premium', value: 'return_premium' },
-                            { label: 'Account Value', value: 'account_value' },
-                            { label: 'Greater of Premium or Account Value', value: 'greater' },
-                            { label: 'Stepped-Up Value', value: 'stepped_up' }
-                          ]}
+                        <DxcTextInput
+                          label="Cause of Death"
+                          placeholder="Enter cause of death"
+                          value={formData.causeOfDeath}
+                          onChange={({ value }) => handleInputChange('causeOfDeath', value)}
                           size="fillParent"
                         />
                       </div>
                     </DxcFlex>
+
+                    {/* Life-Specific Fields */}
+                    {selectedProduct === 'life' && (
+                      <>
+                        <DxcHeading level={4} text="Life Insurance Details" />
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                          <div style={{ flex: "1 1 250px" }}>
+                            <DxcSelect
+                              label="Policy Type"
+                              placeholder="Select policy type"
+                              value={formData.lifeSettlementIndicator}
+                              onChange={({ value }) => handleInputChange('lifeSettlementIndicator', value)}
+                              options={[
+                                { label: 'Whole Life', value: 'whole_life' },
+                                { label: 'Term Life', value: 'term_life' },
+                                { label: 'Universal Life', value: 'universal_life' },
+                                { label: 'Variable Life', value: 'variable_life' }
+                              ]}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 250px" }}>
+                            <DxcSelect
+                              label="Contestability Status"
+                              placeholder="Select status"
+                              value={formData.contestabilityPeriod}
+                              onChange={({ value }) => handleInputChange('contestabilityPeriod', value)}
+                              options={[
+                                { label: 'Within Contestability (0-2 years)', value: 'within' },
+                                { label: 'Past Contestability (2+ years)', value: 'past' },
+                                { label: 'Unknown', value: 'unknown' }
+                              ]}
+                              size="fillParent"
+                            />
+                          </div>
+                        </DxcFlex>
+                      </>
+                    )}
+
+                    {/* Annuity-Specific Fields */}
+                    {selectedProduct === 'annuity' && (
+                      <>
+                        <DxcHeading level={4} text="Annuity Contract Details" />
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                          <div style={{ flex: "1 1 250px" }}>
+                            <DxcTextInput
+                              label="Contract Number"
+                              placeholder="Enter annuity contract number"
+                              value={formData.annuityContractNumber}
+                              onChange={({ value }) => handleInputChange('annuityContractNumber', value)}
+                              size="fillParent"
+                            />
+                          </div>
+                          <div style={{ flex: "1 1 250px" }}>
+                            <DxcSelect
+                              label="Annuity Type"
+                              placeholder="Select annuity type"
+                              value={formData.annuityType}
+                              onChange={({ value }) => handleInputChange('annuityType', value)}
+                              options={[
+                                { label: 'Fixed Annuity', value: 'fixed' },
+                                { label: 'Variable Annuity', value: 'variable' },
+                                { label: 'Indexed Annuity', value: 'indexed' },
+                                { label: 'Immediate Annuity', value: 'immediate' }
+                              ]}
+                              size="fillParent"
+                            />
+                          </div>
+                        </DxcFlex>
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
+                          <div style={{ flex: "1 1 250px" }}>
+                            <DxcSelect
+                              label="Death Benefit Option"
+                              placeholder="Select benefit option"
+                              value={formData.deathBenefitOption}
+                              onChange={({ value }) => handleInputChange('deathBenefitOption', value)}
+                              options={[
+                                { label: 'Return of Premium', value: 'return_premium' },
+                                { label: 'Account Value', value: 'account_value' },
+                                { label: 'Greater of Premium or Account Value', value: 'greater' },
+                                { label: 'Stepped-Up Value', value: 'stepped_up' }
+                              ]}
+                              size="fillParent"
+                            />
+                          </div>
+                        </DxcFlex>
+                      </>
+                    )}
+
+                    <DxcTextarea
+                      label="Additional Details"
+                      placeholder="Provide any additional details about the claim"
+                      value={formData.description}
+                      onChange={({ value }) => handleInputChange('description', value)}
+                      rows={4}
+                    />
                   </>
                 )}
-
-                <DxcTextarea
-                  label="Additional Details"
-                  placeholder="Provide any additional details about the claim"
-                  value={formData.description}
-                  onChange={({ value }) => handleInputChange('description', value)}
-                  rows={4}
-                />
               </DxcFlex>
             )}
 
             {/* =================== STEP 3: CLAIMANT INFORMATION =================== */}
             {step === 3 && (
               <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                <DxcHeading level={3} text="Claimant / Beneficiary Information" />
+                <DxcHeading level={3} text={isPC ? 'Claimant Information' : 'Claimant / Beneficiary Information'} />
 
                 <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
                   <div style={{ flex: "1 1 250px" }}>
@@ -663,23 +1001,27 @@ const IntakeForms = () => {
                       size="fillParent"
                     />
                   </div>
-                  <div style={{ flex: "1 1 200px" }}>
-                    <DxcTextInput
-                      label="Claimant SSN"
-                      placeholder="XXX-XX-XXXX"
-                      value={formData.claimantSSN}
-                      onChange={({ value }) => handleInputChange('claimantSSN', value)}
-                      size="fillParent"
-                    />
-                  </div>
-                  <div style={{ flex: "1 1 200px" }}>
-                    <DxcDateInput
-                      label="Date of Birth"
-                      value={formData.claimantDOB}
-                      onChange={({ value }) => handleInputChange('claimantDOB', value)}
-                      placeholder="MM/DD/YYYY"
-                    />
-                  </div>
+                  {!isPC && (
+                    <>
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcTextInput
+                          label="Claimant SSN"
+                          placeholder="XXX-XX-XXXX"
+                          value={formData.claimantSSN}
+                          onChange={({ value }) => handleInputChange('claimantSSN', value)}
+                          size="fillParent"
+                        />
+                      </div>
+                      <div style={{ flex: "1 1 200px" }}>
+                        <DxcDateInput
+                          label="Date of Birth"
+                          value={formData.claimantDOB}
+                          onChange={({ value }) => handleInputChange('claimantDOB', value)}
+                          placeholder="MM/DD/YYYY"
+                        />
+                      </div>
+                    </>
+                  )}
                 </DxcFlex>
 
                 <DxcTextInput
@@ -707,11 +1049,18 @@ const IntakeForms = () => {
                 />
 
                 <DxcSelect
-                  label="Relationship to Insured"
+                  label={isPC ? 'Relationship to Policyholder' : 'Relationship to Insured'}
                   placeholder="Select relationship"
                   value={formData.relationship}
                   onChange={({ value }) => handleInputChange('relationship', value)}
-                  options={[
+                  options={isPC ? [
+                    { label: 'Policyholder (Self)', value: 'policyholder' },
+                    { label: 'Spouse / Domestic Partner', value: 'spouse' },
+                    { label: 'Other Insured Driver / Resident', value: 'resident' },
+                    { label: 'Third Party Claimant', value: 'third_party' },
+                    { label: 'Attorney / Legal Representative', value: 'attorney' },
+                    { label: 'Other', value: 'other' }
+                  ] : [
                     { label: 'Spouse', value: 'spouse' },
                     { label: 'Child', value: 'child' },
                     { label: 'Parent', value: 'parent' },
@@ -734,54 +1083,146 @@ const IntakeForms = () => {
                   message={{ text: "Please upload required documents. Accepted formats: PDF, JPG, PNG (Max 10MB per file)" }}
                 />
 
-                <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                  <DxcTypography fontWeight="font-weight-semibold">
-                    Death Certificate *
-                  </DxcTypography>
-                  <DxcFileInput
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    mode="file"
-                    buttonLabel="Choose File"
-                  />
-                </DxcFlex>
+                {/* ---- P&C Documents ---- */}
+                {isPC && (
+                  <>
+                    {/* Police Report — required for auto and liability */}
+                    {isPCAuto && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Police Report / Incident Report *
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
 
-                <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                  <DxcTypography fontWeight="font-weight-semibold">
-                    Claimant ID Document *
-                  </DxcTypography>
-                  <DxcFileInput
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    mode="file"
-                    buttonLabel="Choose File"
-                  />
-                </DxcFlex>
+                    {/* Damage / Loss Photos — required for all P&C */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontWeight="font-weight-semibold">
+                        Damage / Loss Photos *
+                      </DxcTypography>
+                      <DxcFileInput
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        mode="filedrop"
+                        buttonLabel="Drop photos or click to upload"
+                        multiple
+                      />
+                    </DxcFlex>
 
-                {selectedProduct === 'life' && (
-                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                    <DxcTypography fontWeight="font-weight-semibold">
-                      Completed Claim Form *
-                    </DxcTypography>
-                    <DxcFileInput
-                      accept=".pdf"
-                      mode="file"
-                      buttonLabel="Choose File"
-                    />
-                  </DxcFlex>
+                    {/* Repair Estimate — auto */}
+                    {isPCAuto && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Repair Estimate
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
+
+                    {/* Contractor / Repair Estimate — property */}
+                    {isPCProperty && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Contractor / Repair Estimate
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
+
+                    {/* Proof of Ownership — auto */}
+                    {isPCAuto && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Proof of Ownership (Title / Registration)
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
+
+                    {/* Claimant ID */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontWeight="font-weight-semibold">
+                        Claimant ID Document *
+                      </DxcTypography>
+                      <DxcFileInput
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        mode="file"
+                        buttonLabel="Choose File"
+                      />
+                    </DxcFlex>
+                  </>
                 )}
 
-                {selectedProduct === 'annuity' && (
-                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                    <DxcTypography fontWeight="font-weight-semibold">
-                      Annuity Claim Form *
-                    </DxcTypography>
-                    <DxcFileInput
-                      accept=".pdf"
-                      mode="file"
-                      buttonLabel="Choose File"
-                    />
-                  </DxcFlex>
+                {/* ---- L&A Documents ---- */}
+                {!isPC && (
+                  <>
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontWeight="font-weight-semibold">
+                        Death Certificate *
+                      </DxcTypography>
+                      <DxcFileInput
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        mode="file"
+                        buttonLabel="Choose File"
+                      />
+                    </DxcFlex>
+
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontWeight="font-weight-semibold">
+                        Claimant ID Document *
+                      </DxcTypography>
+                      <DxcFileInput
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        mode="file"
+                        buttonLabel="Choose File"
+                      />
+                    </DxcFlex>
+
+                    {selectedProduct === 'life' && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Completed Claim Form *
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
+
+                    {selectedProduct === 'annuity' && (
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcTypography fontWeight="font-weight-semibold">
+                          Annuity Claim Form *
+                        </DxcTypography>
+                        <DxcFileInput
+                          accept=".pdf"
+                          mode="file"
+                          buttonLabel="Choose File"
+                        />
+                      </DxcFlex>
+                    )}
+                  </>
                 )}
 
+                {/* Additional Documents — all */}
                 <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                   <DxcTypography fontWeight="font-weight-semibold">
                     Additional Documents (Optional)
@@ -846,43 +1287,83 @@ const IntakeForms = () => {
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             <DxcHeading level={3} text="What happens next?" />
 
-            <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-              <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                <DxcTypography fontWeight="font-weight-semibold">
-                  1. Automatic Verification
-                </DxcTypography>
-                <DxcTypography color="var(--color-fg-neutral-strong)">
-                  Your claim will be automatically verified through LexisNexis death verification
-                </DxcTypography>
-              </DxcFlex>
+            {isPC ? (
+              <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    1. Coverage Verification
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Your policy will be verified to confirm active coverage and applicable deductibles at the time of loss
+                  </DxcTypography>
+                </DxcFlex>
 
-              <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                <DxcTypography fontWeight="font-weight-semibold">
-                  2. Requirements Generation
-                </DxcTypography>
-                <DxcTypography color="var(--color-fg-neutral-strong)">
-                  Our rules engine will determine any additional requirements based on policy and state regulations
-                </DxcTypography>
-              </DxcFlex>
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    2. Adjuster Assignment
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    A licensed claims adjuster will be assigned to your claim and will contact you to schedule an inspection or review
+                  </DxcTypography>
+                </DxcFlex>
 
-              <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                <DxcTypography fontWeight="font-weight-semibold">
-                  3. STP (Straight Through Processing)
-                </DxcTypography>
-                <DxcTypography color="var(--color-fg-neutral-strong)">
-                  Eligible claims will be processed through our STP system with a 10-day target
-                </DxcTypography>
-              </DxcFlex>
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    3. Fast Track Processing
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Simple, straightforward claims may qualify for Fast Track processing with an accelerated settlement timeline
+                  </DxcTypography>
+                </DxcFlex>
 
-              <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                <DxcTypography fontWeight="font-weight-semibold">
-                  4. Examiner Review
-                </DxcTypography>
-                <DxcTypography color="var(--color-fg-neutral-strong)">
-                  A claims examiner will review your submission and contact you if additional information is needed
-                </DxcTypography>
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    4. Adjuster Review & Settlement
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Your adjuster will review all submitted documents and damage assessments and contact you with a settlement offer
+                  </DxcTypography>
+                </DxcFlex>
               </DxcFlex>
-            </DxcFlex>
+            ) : (
+              <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    1. Automatic Verification
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Your claim will be automatically verified through LexisNexis death verification
+                  </DxcTypography>
+                </DxcFlex>
+
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    2. Requirements Generation
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Our rules engine will determine any additional requirements based on policy and state regulations
+                  </DxcTypography>
+                </DxcFlex>
+
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    3. STP (Straight Through Processing)
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    Eligible claims will be processed through our STP system with a 10-day target
+                  </DxcTypography>
+                </DxcFlex>
+
+                <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                  <DxcTypography fontWeight="font-weight-semibold">
+                    4. Examiner Review
+                  </DxcTypography>
+                  <DxcTypography color="var(--color-fg-neutral-strong)">
+                    A claims examiner will review your submission and contact you if additional information is needed
+                  </DxcTypography>
+                </DxcFlex>
+              </DxcFlex>
+            )}
           </DxcFlex>
         </DxcContainer>
       </DxcFlex>

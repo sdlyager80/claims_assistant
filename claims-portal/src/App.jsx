@@ -129,12 +129,12 @@ function AppContent() {
       selected: currentView === 'handlerDashboard',
       onClick: () => handleNavigationClick('handlerDashboard')
     },
-    {
+    ...( productLine !== 'pc' ? [{
       label: "New Claim FNOL Party Portal",
       icon: "add_circle",
       selected: currentView === 'intake',
       onClick: () => handleNavigationClick('intake')
-    },
+    }] : []),
     {
       label: "New FNOL Workspace",
       icon: "work",
