@@ -18,10 +18,13 @@ import {
 } from '@dxc-technology/halstack-react';
 import { useClaims } from '../../contexts/ClaimsContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
+import { useApp } from '../../contexts/AppContext';
 import STPBadge from '../shared/STPBadge';
 import SLAIndicator from '../shared/SLAIndicator';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
 import serviceNowService from '../../services/api/serviceNowService';
+import { getTerm, getProductLineConfig, PRODUCT_LINES } from '../../config/productLineConfig';
+import { getPCDemoData } from '../../data/demoDataPC';
 import './Dashboard.css';
 
 const Dashboard = ({ onClaimSelect }) => {
@@ -42,13 +45,30 @@ const Dashboard = ({ onClaimSelect }) => {
 
   // Get data from contexts
   const {
-    claims,
+    claims: laClaims,
     claimsLoading,
     claimsError,
     fetchClaims,
     filters,
     updateFilters
   } = useClaims();
+
+  const { productLine } = useApp();
+  const plConfig = getProductLineConfig(productLine);
+  const isPC = productLine === PRODUCT_LINES.PC;
+
+  // Use the correct demo dataset for the active product line
+  const claims = useMemo(() => {
+    if (isPC) return getPCDemoData().claims;
+    return laClaims;
+  }, [isPC, laClaims]);
+
+  // Reset type filter when product line changes
+  useEffect(() => {
+    setTypeFilter('');
+    setCurrentPage(1);
+    setSubsetFilter(null);
+  }, [productLine]);
 
   const {
     slaAtRiskCases,
@@ -418,7 +438,25 @@ const Dashboard = ({ onClaimSelect }) => {
     <div style={{ padding: '24px', width: '100%', backgroundColor: '#f5f5f5' }}>
       <DxcFlex direction="column" gap="var(--spacing-gap-m)">
         {/* Page Title */}
-        <DxcHeading level={1} text="Dashboard" />
+        <DxcFlex alignItems="center" gap="var(--spacing-gap-m)">
+          <DxcHeading level={1} text="Dashboard" />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 12px',
+            backgroundColor: 'var(--color-bg-primary-lighter)',
+            borderRadius: 'var(--border-radius-m)',
+            border: '1px solid var(--color-border-primary-medium)'
+          }}>
+            <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-primary-stronger)' }}>
+              {isPC ? 'directions_car' : 'favorite'}
+            </span>
+            <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-primary-stronger)">
+              {plConfig.label}
+            </DxcTypography>
+          </div>
+        </DxcFlex>
 
         {/* Highlights Section - Top Cards */}
         <DxcFlex gap="var(--spacing-gap-m)">
@@ -706,7 +744,7 @@ const Dashboard = ({ onClaimSelect }) => {
           </div>
         </DxcFlex>
 
-        {/* STP Metrics Card */}
+        {/* Fast Track / STP Metrics Card */}
         <div style={{
           backgroundColor: "var(--color-bg-neutral-lightest)",
           borderRadius: "var(--border-radius-m)",
@@ -715,11 +753,11 @@ const Dashboard = ({ onClaimSelect }) => {
         }}>
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-              <DxcHeading level={3} text="STP Performance" />
+              <DxcHeading level={3} text={`${plConfig.terms.stpLabel} Performance`} />
               <STPBadge eligible={true} showLabel={false} size="small" />
             </DxcFlex>
             <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" justifyContent="space-between">
-              {/* STP Claims */}
+              {/* Fast Track Claims count */}
               <div style={{ borderTop: "4px solid #0095FF", flex: "1" }}>
                 <div style={{ backgroundColor: "var(--color-bg-neutral-lightest)", height: "120px" }}>
                   <DxcFlex
@@ -735,7 +773,7 @@ const Dashboard = ({ onClaimSelect }) => {
                       color="var(--color-fg-neutral-stronger)"
                       textAlign="center"
                     >
-                      STP CLAIMS
+                      {plConfig.terms.fastTrackMetric.toUpperCase()} CLAIMS
                     </DxcTypography>
                     <DxcTypography
                       fontSize="32px"
@@ -895,7 +933,7 @@ const Dashboard = ({ onClaimSelect }) => {
                                 {claim.claimant?.name || claim.insured?.name || 'N/A'}
                               </DxcTypography>
                               {hasSTP && (
-                                <STPBadge eligible={true} showLabel={true} size="small" />
+                                <STPBadge eligible={true} showLabel={true} size="small" label={plConfig.terms.stpLabel} />
                               )}
                             </DxcFlex>
                             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
@@ -927,7 +965,7 @@ const Dashboard = ({ onClaimSelect }) => {
                               color={getStatusColor(claim.status)}
                             />
                             <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
-                              LOB: {claim.type === 'death' ? 'Life' : claim.type === 'annuity' ? 'Annuity' : 'Other'}
+                              LOB: {isPC ? (plConfig.claimTypeLabels[claim.type] || claim.type) : (claim.type === 'death' ? 'Life' : claim.type === 'annuity' ? 'Annuity' : 'Other')}
                             </DxcTypography>
                             <div style={{
                               width: "6px",
@@ -1108,13 +1146,24 @@ const Dashboard = ({ onClaimSelect }) => {
                 placeholder="All Types"
                 value={typeFilter}
                 onChange={({ value }) => { setTypeFilter(value); setCurrentPage(1); }}
-                options={[
-                  { label: 'All Types', value: '' },
-                  { label: 'Death', value: 'death' },
-                  { label: 'Maturity', value: 'maturity' },
-                  { label: 'Surrender', value: 'surrender' },
-                  { label: 'Annuity', value: 'annuity' }
-                ]}
+                options={isPC
+                  ? [
+                      { label: 'All Types', value: '' },
+                      { label: 'Auto Collision', value: 'auto_collision' },
+                      { label: 'Auto Comprehensive', value: 'auto_comprehensive' },
+                      { label: 'Homeowners', value: 'homeowners' },
+                      { label: 'Commercial Property', value: 'commercial_property' },
+                      { label: 'Auto Liability', value: 'auto_liability' },
+                      { label: 'Workers Comp', value: 'workers_comp' }
+                    ]
+                  : [
+                      { label: 'All Types', value: '' },
+                      { label: 'Death', value: 'death' },
+                      { label: 'Maturity', value: 'maturity' },
+                      { label: 'Surrender', value: 'surrender' },
+                      { label: 'Annuity', value: 'annuity' }
+                    ]
+                }
                 size="small"
               />
               <DxcSelect
@@ -1173,7 +1222,7 @@ const Dashboard = ({ onClaimSelect }) => {
                 const displayName = isClaim ? (submission.claimant?.name || submission.insured?.name) : submission.name;
                 const displayStatus = isClaim ? submission.status : submission.status;
                 const displayType = isClaim
-                  ? `LOB: ${submission.type === 'death' ? 'Life' : 'Annuity'}`
+                  ? `LOB: ${isPC ? (plConfig.claimTypeLabels[submission.type] || submission.type) : (submission.type === 'death' ? 'Life' : 'Annuity')}`
                   : submission.type;
                 const displaySubmitted = isClaim
                   ? new Date(submission.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
@@ -1207,7 +1256,7 @@ const Dashboard = ({ onClaimSelect }) => {
                               {displayName}
                             </DxcTypography>
                             {hasSTP && (
-                              <STPBadge eligible={true} showLabel={true} size="small" />
+                              <STPBadge eligible={true} showLabel={true} size="small" label={plConfig.terms.stpLabel} />
                             )}
                             {isServiceNow && (
                               <DxcBadge label="ServiceNow" mode="contextual" color="info" />

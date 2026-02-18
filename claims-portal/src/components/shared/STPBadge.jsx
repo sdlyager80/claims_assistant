@@ -11,7 +11,8 @@ const STPBadge = ({
   eligible = null,
   showLabel = true,
   size = 'medium',
-  showIcon = true
+  showIcon = true,
+  label = 'STP'
 }) => {
   // Determine if STP
   const isSTP = routing === RoutingType.STP ||
@@ -48,7 +49,7 @@ const STPBadge = ({
       )}
       {showLabel && (
         <DxcBadge
-          label="STP"
+          label={label}
           size={size}
         />
       )}

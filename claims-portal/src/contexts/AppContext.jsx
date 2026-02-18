@@ -24,6 +24,16 @@ export const AppProvider = ({ children }) => {
   // Theme State
   const [theme, setTheme] = useState('default');
 
+  // Product Line State (demo toggle: 'la' | 'pc')
+  const [productLine, setProductLine] = useState(
+    () => localStorage.getItem('demoProductLine') || 'la'
+  );
+
+  const switchProductLine = (line) => {
+    setProductLine(line);
+    localStorage.setItem('demoProductLine', line);
+  };
+
   // Loading State
   const [globalLoading, setGlobalLoading] = useState(false);
 
@@ -220,7 +230,11 @@ export const AppProvider = ({ children }) => {
 
     // Global Loading
     globalLoading,
-    setGlobalLoading
+    setGlobalLoading,
+
+    // Product Line
+    productLine,
+    switchProductLine
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

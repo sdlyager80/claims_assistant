@@ -27,7 +27,7 @@ import './App.css';
 function AppContent() {
 
   // Access global app context
-  const { user } = useApp();
+  const { user, productLine, switchProductLine } = useApp();
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedClaim, setSelectedClaim] = useState(null);
@@ -174,7 +174,7 @@ function AppContent() {
                       position: 'absolute',
                       top: 'calc(100% + 6px)',
                       right: 0,
-                      minWidth: '220px',
+                      minWidth: '250px',
                       backgroundColor: 'var(--color-bg-neutral-lightest)',
                       border: '1px solid var(--border-color-neutral-lighter)',
                       borderRadius: 'var(--border-radius-m)',
@@ -182,6 +182,45 @@ function AppContent() {
                       zIndex: 1000,
                       overflow: 'hidden'
                     }}>
+                      {/* Product Line Toggle Section */}
+                      <div style={{ padding: '8px 16px 4px', borderBottom: '1px solid var(--border-color-neutral-lighter)' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-fg-neutral-strong)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+                          Demo Product Line
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', paddingBottom: '8px' }}>
+                          {[
+                            { id: 'la', label: 'L&A', icon: 'favorite', title: 'Life & Annuity' },
+                            { id: 'pc', label: 'P&C', icon: 'directions_car', title: 'Personal & Commercial' }
+                          ].map(pl => (
+                            <button
+                              key={pl.id}
+                              onClick={() => { switchProductLine(pl.id); setActionsMenuOpen(false); }}
+                              title={pl.title}
+                              style={{
+                                flex: 1,
+                                padding: '7px 10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
+                                background: productLine === pl.id ? 'var(--color-bg-primary-strong)' : 'var(--color-bg-neutral-lighter)',
+                                border: productLine === pl.id ? '1.5px solid var(--color-border-primary-medium)' : '1.5px solid transparent',
+                                borderRadius: 'var(--border-radius-s)',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: productLine === pl.id ? '600' : '400',
+                                color: productLine === pl.id ? 'var(--color-fg-primary-stronger)' : 'var(--color-fg-neutral-dark)',
+                                transition: 'all 0.15s'
+                              }}
+                            >
+                              <span className="material-icons" style={{ fontSize: '15px' }}>{pl.icon}</span>
+                              {pl.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* ServiceNow Connect Section */}
                       {serviceNowService.useOAuth && (
                         snowConnected ? (
                           <button
