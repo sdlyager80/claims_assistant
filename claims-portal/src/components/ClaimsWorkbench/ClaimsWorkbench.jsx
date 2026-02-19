@@ -1028,7 +1028,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
           <WorkNotes
             claimSysId={claim.sysId || claim.servicenow_sys_id}
             fnolNumber={claim.fnolNumber || claim.claimNumber}
-            isDemo={!claim.sysId || claim.sysId?.startsWith('demo-')}
+            isDemo={!claim.sysId || claim.sysId?.includes('demo')}
             demoWorkNotes={claim.workNotes || []}
           />
         </DxcContainer>
