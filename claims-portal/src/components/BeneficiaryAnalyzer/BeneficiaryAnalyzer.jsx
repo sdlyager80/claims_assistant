@@ -557,8 +557,8 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
   }
 
   return (
-    <div style={{ backgroundColor: '#F5F7FA', padding: '24px', minHeight: '100vh' }}>
-      <DxcFlex direction="column" gap="24px">
+    <div style={{ backgroundColor: '#F5F7FA', padding: '16px', borderRadius: '12px' }}>
+      <DxcFlex direction="column" gap="16px">
         {/* Modern Header */}
         <DxcFlex justifyContent="space-between" alignItems="center">
           <DxcFlex gap="12px" alignItems="center">
@@ -586,17 +586,17 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
         </DxcFlex>
 
         {/* Summary Metrics Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }}>
           {/* Match Score Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '20px',
+            padding: '12px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            border: `3px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02'}`,
+            border: `2px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02'}`,
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="12px">
+            <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
                   backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#E8F5E9' : '#FFF3E0',
@@ -614,7 +614,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   Match Score
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
+              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
                 {(analysisData.overallAnalysis.confidence * 100).toFixed(0)}%
               </DxcTypography>
               <div style={{ width: '100%', height: '6px', backgroundColor: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
@@ -631,13 +631,13 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Beneficiaries Compared Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '20px',
+            padding: '12px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             border: '2px solid #E5E7EB',
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="12px">
+            <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
                   backgroundColor: '#E3F2FD',
@@ -653,7 +653,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   Beneficiaries
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: '#1B5E9E', lineHeight: '1' }}>
+              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: '#1B5E9E', lineHeight: '1' }}>
                 {analysisData.extractedBeneficiaries.length}
               </DxcTypography>
               <DxcTypography fontSize="font-scale-02" color="#6B7280">
@@ -665,13 +665,13 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Mismatches Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '20px',
+            padding: '12px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             border: '2px solid #E5E7EB',
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="12px">
+            <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
                   backgroundColor: analysisData.overallAnalysis.discrepancies.length === 0 ? '#E8F5E9' : '#FFEBEE',
@@ -689,7 +689,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   Discrepancies
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="36px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F', lineHeight: '1' }}>
+              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F', lineHeight: '1' }}>
                 {analysisData.overallAnalysis.discrepancies.length}
               </DxcTypography>
               <DxcTypography fontSize="font-scale-02" color="#6B7280">
@@ -701,13 +701,13 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
           {/* Data Source Sync Card */}
           <div style={{
             backgroundColor: '#FFFFFF',
-            padding: '20px',
+            padding: '12px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             border: '2px solid #E5E7EB',
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
-            <DxcFlex direction="column" gap="12px">
+            <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
                   backgroundColor: '#E1F5FE',

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DxcHeading,
   DxcFlex,
@@ -11,9 +11,10 @@ import {
   DxcProgressBar,
   DxcAlert,
   DxcChip,
-  DxcDialog
+  DxcDialog,
+  DxcSpinner
 } from '@dxc-technology/halstack-react';
-import STPBadge from '../shared/STPBadge';
+import FastTrackBadge from '../shared/FastTrackBadge';
 import DocumentUpload from '../shared/DocumentUpload';
 import DocumentViewer from '../shared/DocumentViewer';
 import AnomalyDetection from '../shared/AnomalyDetection';
@@ -30,12 +31,10 @@ import PolicyDetailView from '../PolicyDetailView/PolicyDetailView';
 import PartyForm from '../PartyForm/PartyForm';
 import RequirementsEngine from '../RequirementsEngine/RequirementsEngine';
 import WorkNotes from '../WorkNotes/WorkNotes';
+import serviceNowService from '../../services/api/serviceNowService';
 import './ClaimsWorkbench.css';
 
-const PC_CLAIM_TYPES = ['auto_collision', 'auto_comprehensive', 'homeowners', 'commercial_property', 'auto_liability', 'workers_comp'];
-
 const ClaimsWorkbench = ({ claim, onBack }) => {
-  const isPC = PC_CLAIM_TYPES.includes(claim?.type);
   const [activeTab, setActiveTab] = useState(0);
   const [showBeneficiaryAnalyzer, setShowBeneficiaryAnalyzer] = useState(false);
 
@@ -50,80 +49,184 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [selectedParty, setSelectedParty] = useState(null);
   const [showAnomalyDetection, setShowAnomalyDetection] = useState(false);
   const [anomalyData, setAnomalyData] = useState(null);
+  const [anomalyLoading, setAnomalyLoading] = useState(false);
+  const [anomalyLoadingMessage, setAnomalyLoadingMessage] = useState('');
+  const [anomalyRetryCount, setAnomalyRetryCount] = useState(0);
+  const [aiInsights, setAiInsights] = useState([]);
 
   console.log('[ClaimsWorkbench] Received claim:', claim);
+
+  // Fetch anomaly detection data when claim loads
+  useEffect(() => {
+    const fetchAnomalyData = async () => {
+      if (!claim) return;
+
+      const fnolSysId = claim.sysId || claim.servicenow_sys_id || claim.id;
+      if (!fnolSysId) {
+        console.log('[ClaimsWorkbench] No sys_id found, skipping anomaly detection fetch');
+        return;
+      }
+
+      try {
+        console.log('[ClaimsWorkbench] Fetching anomaly detection for AI Insights panel');
+        const anomalyResponse = await serviceNowService.getAnomalyDetection(fnolSysId, {
+          maxRetries: 10,
+          retryDelay: 3000,
+          onRetry: (retriesLeft, message) => {
+            console.log(`[ClaimsWorkbench] AI Insights retry: ${message} (${retriesLeft} retries left)`);
+          }
+        });
+
+        if (anomalyResponse && anomalyResponse.AgenticSummary) {
+          // Store full anomaly data for modal
+          setAnomalyData(anomalyResponse);
+
+          // Convert anomaly findings to AI Insights format
+          const findings = anomalyResponse.AgenticSummary.Analysis_Findings || [];
+          const insights = findings
+            .filter(f => f.Status === 'FAIL') // Only show failed findings
+            .map(finding => ({
+              id: finding.Finding_ID,
+              title: finding.Title,
+              severity: finding.Severity,
+              type: finding.Risk_Type,
+              description: finding.Evidence ? finding.Evidence.join(' ') : '',
+              recommendation: finding.Recommendation,
+              status: finding.Status
+            }));
+
+          setAiInsights(insights);
+          console.log('[ClaimsWorkbench] AI Insights updated with', insights.length, 'findings');
+        }
+      } catch (error) {
+        console.error('[ClaimsWorkbench] Error fetching anomaly data for AI Insights:', error);
+        // Don't show error to user, just log it
+        setAiInsights([]);
+      }
+    };
+
+    fetchAnomalyData();
+  }, [claim]);
 
   // Handler for anomaly detection
   const handleSchedulePayment = async () => {
     console.log('[ClaimsWorkbench] Schedule Payment clicked - Running anomaly detection');
+    console.log('[ClaimsWorkbench] Claim object:', claim);
 
-    // TODO: Replace with actual API call to anomaly detection service
-    // For now, using mock data based on the structure provided
-    const mockAnomalyData = {
-      "AgenticSummary": {
-        "General_Information": {
-          "Policy_Number": claim.policy?.policyNumber || "892461037",
-          "Claim_Number": claim.claimNumber || "WRADC0004602"
-        },
-        "Overall_Status": "FAIL",
-        "Processing_Recommendation": "STOP_AND_REVIEW - Multiple critical findings require manual review before payment processing.",
-        "Analysis_Findings": [
-          {
-            "Finding_ID": "R001",
-            "Severity": "MEDIUM",
-            "Risk_Type": "Operational",
-            "Title": "Mandatory Fields Missing",
-            "Status": "FAIL",
-            "Evidence": [
-              "Missing beneficiary tax ID",
-              "Missing payment method details"
-            ],
-            "Recommendation": "Complete all mandatory fields before proceeding with payment."
-          },
-          {
-            "Finding_ID": "R002",
-            "Severity": "HIGH",
-            "Risk_Type": "Compliance",
-            "Title": "Tax Withholding Not Calculated",
-            "Status": "FAIL",
-            "Evidence": [
-              "No tax withholding calculation found",
-              "Payment amount exceeds threshold requiring tax withholding"
-            ],
-            "Recommendation": "Calculate and apply appropriate tax withholding before payment."
-          }
-        ],
-        "Actions_Required": [
-          {
-            "Action": "Complete Missing Beneficiary Information",
-            "Priority": "HIGH",
-            "Reason": "Tax ID and contact information required for IRS reporting"
-          },
-          {
-            "Action": "Calculate Tax Withholding",
-            "Priority": "CRITICAL",
-            "Reason": "Federal and state tax withholding must be calculated and applied"
-          }
-        ],
-        "Risk_Assessment": [
-          {
-            "Category": "Compliance Risk",
-            "Level": "HIGH"
-          },
-          {
-            "Category": "Operational Risk",
-            "Level": "MEDIUM"
-          }
-        ],
-        "Summary_Recommendation": {
-          "Decision": "STOP_AND_REVIEW",
-          "Rationale": "Payment cannot be processed until all mandatory fields are completed and tax withholding is calculated. Manual review required."
+    // Get FNOL sys_id from claim
+    const fnolSysId = claim.sysId || claim.servicenow_sys_id || claim.id;
+
+    console.log('[ClaimsWorkbench] Extracted sys_id:', fnolSysId);
+    console.log('[ClaimsWorkbench] claim.sysId:', claim.sysId);
+    console.log('[ClaimsWorkbench] claim.servicenow_sys_id:', claim.servicenow_sys_id);
+    console.log('[ClaimsWorkbench] claim.id:', claim.id);
+
+    if (!fnolSysId) {
+      console.error('[ClaimsWorkbench] No sys_id found for claim');
+      alert('Cannot run anomaly detection: No claim sys_id found');
+      return;
+    }
+
+    try {
+      setAnomalyLoading(true);
+      setShowAnomalyDetection(true);
+      setAnomalyLoadingMessage('Initializing anomaly detection...');
+      setAnomalyRetryCount(0);
+
+      console.log('[ClaimsWorkbench] Fetching anomaly detection for sys_id:', fnolSysId);
+
+      const anomalyResponse = await serviceNowService.getAnomalyDetection(fnolSysId, {
+        maxRetries: 10,
+        retryDelay: 3000,
+        onRetry: (retriesLeft, message, delay) => {
+          const attemptNumber = 11 - retriesLeft;
+          console.log(`[ClaimsWorkbench] Retry attempt ${attemptNumber}/10`);
+          setAnomalyRetryCount(attemptNumber);
+          setAnomalyLoadingMessage(`${message} - Retrying in ${delay / 1000}s... (Attempt ${attemptNumber}/10)`);
         }
-      }
-    };
+      });
 
-    setAnomalyData(mockAnomalyData);
-    setShowAnomalyDetection(true);
+      console.log('[ClaimsWorkbench] Anomaly detection response received');
+      console.log('[ClaimsWorkbench] Response type:', typeof anomalyResponse);
+      console.log('[ClaimsWorkbench] Response:', JSON.stringify(anomalyResponse, null, 2));
+
+      setAnomalyData(anomalyResponse);
+
+    } catch (error) {
+      console.error('[ClaimsWorkbench] Error fetching anomaly detection:', error);
+
+      // Fallback to mock data if API fails
+      const mockAnomalyData = {
+        "AgenticSummary": {
+          "General_Information": {
+            "Policy_Number": claim.policy?.policyNumber || "892461037",
+            "Claim_Number": claim.claimNumber || "WRADC0004602"
+          },
+          "Overall_Status": "FAIL",
+          "Processing_Recommendation": "STOP_AND_REVIEW - Multiple critical findings require manual review before payment processing.",
+          "Analysis_Findings": [
+            {
+              "Finding_ID": "R001",
+              "Severity": "MEDIUM",
+              "Risk_Type": "Operational",
+              "Title": "Mandatory Fields Missing",
+              "Status": "FAIL",
+              "Evidence": [
+                "Missing beneficiary tax ID",
+                "Missing payment method details"
+              ],
+              "Recommendation": "Complete all mandatory fields before proceeding with payment."
+            },
+            {
+              "Finding_ID": "R002",
+              "Severity": "HIGH",
+              "Risk_Type": "Compliance",
+              "Title": "Tax Withholding Not Calculated",
+              "Status": "FAIL",
+              "Evidence": [
+                "No tax withholding calculation found",
+                "Payment amount exceeds threshold requiring tax withholding"
+              ],
+              "Recommendation": "Calculate and apply appropriate tax withholding before payment."
+            }
+          ],
+          "Actions_Required": [
+            {
+              "Action": "Complete Missing Beneficiary Information",
+              "Priority": "HIGH",
+              "Reason": "Tax ID and contact information required for IRS reporting"
+            },
+            {
+              "Action": "Calculate Tax Withholding",
+              "Priority": "CRITICAL",
+              "Reason": "Federal and state tax withholding must be calculated and applied"
+            }
+          ],
+          "Risk_Assessment": [
+            {
+              "Category": "Compliance Risk",
+              "Level": "HIGH"
+            },
+            {
+              "Category": "Operational Risk",
+              "Level": "MEDIUM"
+            }
+          ],
+          "Summary_Recommendation": {
+            "Decision": "STOP_AND_REVIEW",
+            "Rationale": "Payment cannot be processed until all mandatory fields are completed and tax withholding is calculated. Manual review required."
+          }
+        }
+      };
+
+      console.log('[ClaimsWorkbench] Using fallback mock data due to API error');
+      setAnomalyData(mockAnomalyData);
+
+      // Show alert to user about API error
+      alert(`Failed to fetch anomaly detection: ${error.message}\n\nShowing sample data for demonstration.`);
+    } finally {
+      setAnomalyLoading(false);
+    }
   };
 
   if (!claim) {
@@ -186,7 +289,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
     policyNumber: claim.policy?.policyNumber || 'N/A',
     insuredName: claim.insured?.name || claim.claimant?.name || 'N/A',
     policyType: claim.policy?.policyType || 'Term Life Insurance',
-    coverage: claim.policy?.coverageLimit ? formatCurrency(claim.policy.coverageLimit) : 'N/A',
+    coverage: claim.financial?.claimAmount ? formatCurrency(claim.financial.claimAmount) : 'N/A',
     effectiveDate: claim.policy?.effectiveDate || claim.policy?.issueDate || 'N/A',
     expirationDate: claim.policy?.expirationDate || 'N/A',
     premium: claim.policy?.premium || 'N/A'
@@ -237,36 +340,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
             <DxcFlex gap="var(--spacing-gap-xl)">
               {claim.workflow?.sla?.dueDate && (() => {
                 const dueDate = new Date(claim.workflow.sla.dueDate);
-                const isClosed = !!claim.closedAt;
-
-                if (isClosed) {
-                  const closeDate = new Date(claim.closedAt);
-                  const metSla = closeDate <= dueDate;
-                  return (
-                    <>
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
-                          SLA STATUS
-                        </DxcTypography>
-                        <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)'}>
-                          {metSla ? 'Met' : 'Missed'}
-                        </DxcTypography>
-                      </DxcFlex>
-                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
-                          CLOSED DATE
-                        </DxcTypography>
-                        <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
-                          {closeDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
-                        </DxcTypography>
-                      </DxcFlex>
-                    </>
-                  );
-                }
-
                 const today = new Date();
                 const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
                 const color = daysRemaining <= 3 ? 'var(--color-fg-error-medium)' : daysRemaining <= 7 ? 'var(--color-fg-warning-medium)' : 'var(--color-fg-success-medium)';
+
                 return (
                   <>
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
@@ -290,10 +367,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               })()}
               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
-                  STP ELIGIBLE
+                  FASTTRACK ELIGIBLE
                 </DxcTypography>
-                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'fasttrack' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
-                  {claim.routing?.type === 'fasttrack' ? 'Yes' : 'No'}
+                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'FASTTRACK' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
+                  {claim.routing?.type === 'FASTTRACK' ? 'Yes' : 'No'}
                 </DxcTypography>
               </DxcFlex>
             </DxcFlex>
@@ -356,7 +433,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label={isPC ? 'Claimant Details' : 'Beneficiary Analyzer'}
+                  label="Beneficiary Analyzer"
                   icon="psychology"
                   active={activeTab === 6}
                   onClick={() => setActiveTab(6)}
@@ -370,89 +447,34 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
               {activeTab === 0 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                  {/* Top Section: Loss/Death Event + AI Insights */}
-                  {isPC ? (
-                    <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                      {/* Loss Event — full width for P&C */}
-                      <div style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', padding: 'var(--spacing-padding-l)', borderRadius: 'var(--border-radius-m)', border: '1px solid var(--color-border-neutral-lighter)' }}>
-                        <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                          <DxcHeading level={3} text="Loss Event" />
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-gap-m)' }}>
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Date of Loss</DxcTypography>
-                              <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">{claim.lossEvent?.dateOfLoss || 'N/A'}</DxcTypography>
-                            </DxcFlex>
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Cause of Loss</DxcTypography>
-                              <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">{claim.lossEvent?.causeOfLoss || 'N/A'}</DxcTypography>
-                            </DxcFlex>
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Loss Location</DxcTypography>
-                              <DxcTypography fontSize="16px">{claim.lossEvent?.lossLocation || 'N/A'}</DxcTypography>
-                            </DxcFlex>
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Fault Determination</DxcTypography>
-                              <DxcTypography fontSize="16px">{claim.lossEvent?.faultDetermination || 'N/A'}</DxcTypography>
-                            </DxcFlex>
-                            {claim.lossEvent?.weatherConditions && (
-                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Weather Conditions</DxcTypography>
-                                <DxcTypography fontSize="16px">{claim.lossEvent.weatherConditions}</DxcTypography>
-                              </DxcFlex>
-                            )}
-                            {claim.lossEvent?.policeReportNumber && (
-                              <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Police Report #</DxcTypography>
-                                <DxcTypography fontSize="16px">{claim.lossEvent.policeReportNumber}</DxcTypography>
-                              </DxcFlex>
-                            )}
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Deductible</DxcTypography>
-                              <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">{claim.policy?.deductible ? formatCurrency(claim.policy.deductible) : 'N/A'}</DxcTypography>
-                            </DxcFlex>
-                          </div>
-                          {claim.lossEvent?.lossDescription && (
-                            <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Description</DxcTypography>
-                              <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-stronger)">{claim.lossEvent.lossDescription}</DxcTypography>
-                            </DxcFlex>
-                          )}
-                        </DxcFlex>
-                      </div>
-                      {/* AI Insights — full width for P&C so alerts have room to breathe */}
-                      <AIInsightsPanel
-                        claimData={{ riskScore: claim.aiInsights?.riskScore || 0 }}
-                        insights={claim.aiInsights?.alerts || []}
-                        onViewDetail={(insight) => console.log('View insight:', insight)}
-                        onDismiss={(insight) => console.log('Dismiss insight:', insight)}
-                      />
-                    </DxcFlex>
-                  ) : (
-                    <div className="dashboard-grid-top">
-                      <DeathEventPanel
-                        claimData={{
-                          dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
-                          mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
-                          causeOfDeath: claim.deathEvent?.causeOfDeath,
-                          deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
-                          countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
-                          proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
-                          proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
-                          certifiedDOB: claim.insured?.dateOfBirth,
-                          verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
-                          verificationScore: claim.deathEvent?.verificationScore || 95,
-                          specialEvent: claim.deathEvent?.specialEvent
-                        }}
-                        onEdit={() => console.log('Edit death event')}
-                      />
-                      <AIInsightsPanel
-                        claimData={{ riskScore: claim.aiInsights?.riskScore || 0 }}
-                        insights={claim.aiInsights?.alerts || []}
-                        onViewDetail={(insight) => console.log('View insight:', insight)}
-                        onDismiss={(insight) => console.log('Dismiss insight:', insight)}
-                      />
-                    </div>
-                  )}
+                  {/* Top Row: Death Event and AI Insights */}
+                  <div className="dashboard-grid-top">
+                    <DeathEventPanel
+                      claimData={{
+                        dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
+                        mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
+                        causeOfDeath: claim.deathEvent?.causeOfDeath,
+                        deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
+                        countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
+                        proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
+                        proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
+                        certifiedDOB: claim.insured?.dateOfBirth,
+                        verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
+                        verificationScore: claim.deathEvent?.verificationScore || 95,
+                        specialEvent: claim.deathEvent?.specialEvent
+                      }}
+                      onEdit={() => console.log('Edit death event')}
+                    />
+                    <AIInsightsPanel
+                      claimData={{
+                        riskScore: aiInsights.filter(i => ['HIGH', 'CRITICAL'].includes(i.severity)).length > 0 ? 75 : aiInsights.length > 0 ? 50 : 0
+                      }}
+                      insights={aiInsights}
+                      anomalyData={anomalyData}
+                      onViewDetail={(insight) => console.log('View insight:', insight)}
+                      onDismiss={(insight) => console.log('Dismiss insight:', insight)}
+                    />
+                  </div>
 
                   {/* Middle Row: Policy Summary and Party Management */}
                   <div className="dashboard-grid-middle">
@@ -512,7 +534,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         onClick={() => setActiveTab(5)}
                       />
                       <DxcButton
-                        label={isPC ? 'View Claimants' : 'Analyze Beneficiaries'}
+                        label="Analyze Beneficiaries"
                         mode="primary"
                         icon="psychology"
                         onClick={() => setActiveTab(6)}
@@ -605,25 +627,23 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="Payment History" />
-                      {!isPC && (
-                        <DxcFlex gap="var(--spacing-gap-s)">
-                          <DxcButton
-                            label="Calculate PMI"
-                            mode="secondary"
-                            size="small"
-                            icon="calculate"
-                            onClick={() => setShowPMICalculator(true)}
-                          />
-                          <DxcButton
-                            label="Tax Withholding"
-                            mode="secondary"
-                            size="small"
-                            icon="account_balance"
-                            onClick={() => setShowTaxCalculator(true)}
-                          />
-                          <DxcButton label="View EOB" mode="tertiary" size="small" icon="description" />
-                        </DxcFlex>
-                      )}
+                      <DxcFlex gap="var(--spacing-gap-s)">
+                        <DxcButton
+                          label="Calculate PMI"
+                          mode="secondary"
+                          size="small"
+                          icon="calculate"
+                          onClick={() => setShowPMICalculator(true)}
+                        />
+                        <DxcButton
+                          label="Tax Withholding"
+                          mode="secondary"
+                          size="small"
+                          icon="account_balance"
+                          onClick={() => setShowTaxCalculator(true)}
+                        />
+                        <DxcButton label="View EOB" mode="tertiary" size="small" icon="description" />
+                      </DxcFlex>
                     </DxcFlex>
                     {financialData.payments.map((payment, index) => (
                       <DxcContainer
@@ -778,7 +798,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                           <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Face Amount</DxcTypography>
-                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color="var(--color-primary)">{policyDetails.coverage}</DxcTypography>
+                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">{policyDetails.coverage}</DxcTypography>
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                           <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Issue Date</DxcTypography>
@@ -818,9 +838,9 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
-                      <DxcHeading level={4} text={isPC ? 'Claimants' : 'Beneficiaries'} />
+                      <DxcHeading level={4} text="Beneficiaries" />
                       <DxcButton
-                        label={isPC ? 'View Claimant Details' : 'Analyze Beneficiaries with AI'}
+                        label="Analyze Beneficiaries with AI"
                         mode="primary"
                         icon="psychology"
                         onClick={() => setShowBeneficiaryAnalyzer(true)}
@@ -977,7 +997,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 </DxcFlex>
               )}
 
-              {/* Beneficiary Analyzer / Claimant Details Tab */}
+              {/* Beneficiary Analyzer Tab */}
               {activeTab === 6 && (
                 <BeneficiaryAnalyzer
                   claimId={claim.claimNumber || claim.id}
@@ -1127,32 +1147,71 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Beneficiary Analyzer Modal */}
       {showBeneficiaryAnalyzer && (
-        <DxcDialog isCloseVisible={false}>
-          <BeneficiaryAnalyzer
-            claimId={claim.claimNumber || claim.id}
-            claim={claim}
-            onApproveBeneficiaries={(beneficiaries) => {
-              console.log('Beneficiaries approved:', beneficiaries);
-              setShowBeneficiaryAnalyzer(false);
-            }}
-            onRequestDocuments={(beneficiaries) => {
-              console.log('Request documents for beneficiaries:', beneficiaries);
-              setShowBeneficiaryAnalyzer(false);
-            }}
-            onClose={() => setShowBeneficiaryAnalyzer(false)}
-          />
+        <DxcDialog isCloseVisible onCloseClick={() => setShowBeneficiaryAnalyzer(false)}>
+          <div style={{ maxHeight: '85vh', overflowY: 'auto', overflowX: 'hidden' }}>
+            <BeneficiaryAnalyzer
+              claimId={claim.claimNumber || claim.id}
+              claim={claim}
+              onApproveBeneficiaries={(beneficiaries) => {
+                console.log('Beneficiaries approved:', beneficiaries);
+                setShowBeneficiaryAnalyzer(false);
+              }}
+              onRequestDocuments={(beneficiaries) => {
+                console.log('Request documents for beneficiaries:', beneficiaries);
+                setShowBeneficiaryAnalyzer(false);
+              }}
+              onClose={() => setShowBeneficiaryAnalyzer(false)}
+            />
+          </div>
         </DxcDialog>
       )}
 
       {/* Anomaly Detection Modal */}
-      {showAnomalyDetection && anomalyData && (
-        <DxcDialog isCloseVisible onCloseClick={() => setShowAnomalyDetection(false)}>
+      {showAnomalyDetection && (
+        <DxcDialog isCloseVisible onCloseClick={() => {
+          setShowAnomalyDetection(false);
+          setAnomalyData(null);
+        }}>
           <div style={{ maxHeight: '85vh', overflowY: 'auto', overflowX: 'hidden' }}>
             <DxcInset space="var(--spacing-padding-l)">
-              <AnomalyDetection
-                anomalyData={anomalyData}
-                onClose={() => setShowAnomalyDetection(false)}
-              />
+              {anomalyLoading ? (
+                <DxcFlex direction="column" alignItems="center" justifyContent="center" gap="var(--spacing-gap-m)" style={{ minHeight: '300px' }}>
+                  <DxcSpinner label="Running anomaly detection..." mode="large" />
+                  <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)" style={{ textAlign: 'center', maxWidth: '80%' }}>
+                    {anomalyLoadingMessage || 'Analyzing payment data from ServiceNow...'}
+                  </DxcTypography>
+                  {anomalyRetryCount > 0 && (
+                    <DxcBadge
+                      label={`Attempt ${anomalyRetryCount}/10`}
+                      mode="notification"
+                    />
+                  )}
+                  <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-darker)">
+                    Claim sys_id: {claim.sysId || claim.servicenow_sys_id || claim.id}
+                  </DxcTypography>
+                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-dark)" style={{ fontStyle: 'italic', textAlign: 'center', maxWidth: '80%' }}>
+                    This process may take up to 30 seconds. Please wait...
+                  </DxcTypography>
+                </DxcFlex>
+              ) : anomalyData ? (
+                <AnomalyDetection
+                  anomalyData={anomalyData}
+                  onClose={() => {
+                    setShowAnomalyDetection(false);
+                    setAnomalyData(null);
+                  }}
+                />
+              ) : (
+                <DxcContainer padding="var(--spacing-padding-m)">
+                  <DxcAlert
+                    type="error"
+                    inlineText="Failed to load anomaly detection data. Check browser console for details."
+                  />
+                  <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-dark)" style={{ marginTop: '16px' }}>
+                    Please check the browser console (F12) for detailed error information.
+                  </DxcTypography>
+                </DxcContainer>
+              )}
             </DxcInset>
           </div>
         </DxcDialog>

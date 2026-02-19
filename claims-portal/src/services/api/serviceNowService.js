@@ -1284,6 +1284,17 @@ class ServiceNowService {
       const result = await response.json();
       console.log('[ServiceNow] Document uploaded successfully:', result);
 
+      // Update docintel_attachment flag in FNOL table
+      if (tableName === this.fnolTable) {
+        try {
+          await this.updateFNOLDocIntelFlag(tableSysId);
+          console.log('[ServiceNow] docintel_attachment flag set to true for record:', tableSysId);
+        } catch (flagError) {
+          console.warn('[ServiceNow] Failed to update docintel_attachment flag:', flagError);
+          // Don't fail the upload if flag update fails
+        }
+      }
+
       return {
         success: true,
         attachmentSysId: result.result.sys_id,
@@ -1295,6 +1306,44 @@ class ServiceNowService {
     } catch (error) {
       console.error('[ServiceNow] Error uploading document:', error);
       throw new Error(`Failed to upload document to ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update docintel_attachment flag in FNOL table
+   * @param {string} fnolSysId - sys_id of the FNOL record
+   * @returns {Promise<void>}
+   */
+  async updateFNOLDocIntelFlag(fnolSysId) {
+    try {
+      const path = `/api/now/table/${this.fnolTable}/${fnolSysId}`;
+      const url = this.buildProxyURL(path);
+
+      console.log('[ServiceNow] Updating docintel_attachment flag for:', fnolSysId);
+
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          docintel_attachment: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update flag: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('[ServiceNow] Flag updated successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('[ServiceNow] Error updating docintel_attachment flag:', error);
+      throw error;
     }
   }
 
@@ -1360,6 +1409,127 @@ class ServiceNowService {
     } catch (error) {
       console.error('[ServiceNow] Error deleting attachment:', error);
       throw new Error(`Failed to delete attachment from ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get anomaly detection data for a claim
+   * @param {string} fnolSysId - The sys_id of the FNOL record
+   * @param {Object} options - Options for polling
+   * @param {number} options.maxRetries - Maximum number of retries (default: 10)
+   * @param {number} options.retryDelay - Delay between retries in ms (default: 3000)
+   * @param {Function} options.onRetry - Callback for each retry with retry count and message
+   * @returns {Promise<Object>} Anomaly detection data
+   */
+  async getAnomalyDetection(fnolSysId, options = {}) {
+    const { maxRetries = 10, retryDelay = 3000, onRetry } = options;
+    try {
+      const path = `/api/x_dxcis_anomaly_0/anomaly_detection/${fnolSysId}`;
+      const url = this.buildProxyURL(path);
+      console.log('[ServiceNow] Fetching anomaly detection for sys_id:', fnolSysId);
+      console.log('[ServiceNow] Full URL:', url);
+
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, {
+        method: 'GET',
+        headers
+      });
+
+      console.log('[ServiceNow] Response status:', response.status);
+      const responseText = await response.text();
+      console.log('[ServiceNow] Response text:', responseText);
+
+      if (!response.ok) {
+        throw new Error(`ServiceNow API error: ${response.status} - ${responseText}`);
+      }
+
+      const data = JSON.parse(responseText);
+      console.log('[ServiceNow] Anomaly detection response:', JSON.stringify(data, null, 2));
+
+      // Check if anomaly detection is still processing
+      if (data.status === 'processing' || data.result?.status === 'processing') {
+        const message = data.message || data.result?.message || 'Anomaly detection is still running';
+        console.log('[ServiceNow] Anomaly detection still processing:', message);
+
+        // If we have retries left, wait and retry
+        if (maxRetries > 0) {
+          console.log(`[ServiceNow] Retrying in ${retryDelay}ms... (${maxRetries} retries left)`);
+
+          // Call onRetry callback if provided
+          if (onRetry) {
+            onRetry(maxRetries, message, retryDelay);
+          }
+
+          // Wait for the retry delay
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+
+          // Retry with decremented retry count
+          return this.getAnomalyDetection(fnolSysId, {
+            maxRetries: maxRetries - 1,
+            retryDelay,
+            onRetry
+          });
+        } else {
+          throw new Error('Anomaly detection is still processing. Maximum retries exceeded.');
+        }
+      }
+
+      // The API can return data in different field names, check in order:
+      // 1. result.data (most common for this API)
+      // 2. result.anomaly_data
+      // 3. data field directly
+      // 4. Full result object
+
+      let rawDataString = null;
+      let dataSource = null;
+
+      if (data.result) {
+        if (data.result.data) {
+          rawDataString = data.result.data;
+          dataSource = 'result.data';
+        } else if (data.result.anomaly_data) {
+          rawDataString = data.result.anomaly_data;
+          dataSource = 'result.anomaly_data';
+        }
+      } else if (data.data) {
+        rawDataString = data.data;
+        dataSource = 'data';
+      }
+
+      if (rawDataString) {
+        console.log('[ServiceNow] Found data in field:', dataSource);
+        console.log('[ServiceNow] Data type:', typeof rawDataString);
+
+        try {
+          // If it's already an object, return it directly
+          if (typeof rawDataString === 'object') {
+            console.log('[ServiceNow] Data is already an object');
+            return rawDataString;
+          }
+
+          // If it's a string, parse it
+          console.log('[ServiceNow] Parsing JSON string...');
+          const anomalyData = JSON.parse(rawDataString);
+          console.log('[ServiceNow] Successfully parsed anomaly data');
+          console.log('[ServiceNow] Has AgenticSummary:', !!anomalyData.AgenticSummary);
+          return anomalyData;
+        } catch (parseError) {
+          console.error('[ServiceNow] Error parsing data string:', parseError);
+          console.error('[ServiceNow] Raw data string (first 500 chars):', rawDataString.substring(0, 500));
+          throw new Error(`Failed to parse anomaly detection data: ${parseError.message}`);
+        }
+      }
+
+      console.log('[ServiceNow] No recognized data field found');
+      console.log('[ServiceNow] Available fields in result:', Object.keys(data.result || {}));
+      console.log('[ServiceNow] Available fields in response:', Object.keys(data));
+
+      // If no recognized field, return the whole result
+      return data.result || data;
+    } catch (error) {
+      console.error('[ServiceNow] Error fetching anomaly detection:', error);
+      console.error('[ServiceNow] Error stack:', error.stack);
+      throw error;
     }
   }
 
