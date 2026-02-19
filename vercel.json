@@ -1,4 +1,5 @@
 {
   "buildCommand": "cd claims-portal && npm run build",
-  "installCommand": "cd claims-portal && npm install"
+  "installCommand": "cd claims-portal && npm install",
+  "outputDirectory": "claims-portal/dist"
 }
