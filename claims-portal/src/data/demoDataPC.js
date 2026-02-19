@@ -519,7 +519,69 @@ const createPCShowcaseClaims = () => {
       workflow: { fsoCase: 'FSO-PC-000006', currentTask: null, assignedTo: null, daysOpen: 0, sla: { dueDate: slaDate.toISOString(), daysRemaining: 0, atRisk: false } }
     };
     claim.sysId = 'pc-demo-sys-id-6'; claim.fnolNumber = 'FNOL-PC-0000006';
-    claim.requirements = generatePCRequirements(claim);
+    claim.requirements = [
+      {
+        id: 'pc-claim-6-req-1', level: 'claim', type: PCRequirementType.CLAIMANT_STATEMENT,
+        name: 'FNOL & Loss Statement',
+        description: 'Mobile FNOL submitted with geo-tagged damage photos and signed loss statement within 2 hours of sensor alert',
+        status: RequirementStatus.SATISFIED, isMandatory: true,
+        dueDate: new Date(createdDate.getTime() + 1 * DAY).toISOString(),
+        satisfiedDate: new Date(createdDate.getTime() + 30 * 60000).toISOString(),
+        documents: [
+          { id: 'doc-pc6-1a', name: 'mobile_fnol_submission.pdf' },
+          { id: 'doc-pc6-1b', name: 'geo_tagged_damage_photos.zip' }
+        ],
+        metadata: { confidenceScore: 0.98, channel: 'mobile_app' }
+      },
+      {
+        id: 'pc-claim-6-req-2', level: 'claim', type: PCRequirementType.DAMAGE_PHOTOS,
+        name: 'IoT Sensor Validation & Damage Documentation',
+        description: 'FloodStop Pro sensor logs (TEMP-BPF-001 at -5°F, WATER-BPF-002 water alert at 03:45) independently corroborate loss event alongside mobile damage photos',
+        status: RequirementStatus.SATISFIED, isMandatory: true,
+        dueDate: new Date(createdDate.getTime() + 2 * DAY).toISOString(),
+        satisfiedDate: new Date(createdDate.getTime() + 1 * 3600000).toISOString(),
+        documents: [
+          { id: 'doc-pc6-2a', name: 'iot_sensor_log_TEMP-BPF-001.csv' },
+          { id: 'doc-pc6-2b', name: 'iot_sensor_log_WATER-BPF-002.csv' },
+          { id: 'doc-pc6-2c', name: 'damage_photos_interior.zip' }
+        ],
+        metadata: { confidenceScore: 0.99, sensorVerified: true, noaaCorroborated: true }
+      },
+      {
+        id: 'pc-claim-6-req-3', level: 'claim', type: PCRequirementType.CONTRACTOR_ESTIMATE,
+        name: 'Emergency Mitigation & Repair Estimate',
+        description: 'Licensed contractor on-site estimate covering water remediation, pipe repair, walk-in cooler damage, and business interruption — validated against 127 comparable peer claims',
+        status: RequirementStatus.SATISFIED, isMandatory: true,
+        dueDate: new Date(createdDate.getTime() + 3 * DAY).toISOString(),
+        satisfiedDate: new Date(createdDate.getTime() + 2 * 3600000).toISOString(),
+        documents: [
+          { id: 'doc-pc6-3', name: 'emergency_mitigation_estimate.pdf' }
+        ],
+        metadata: { confidenceScore: 0.96, estimateAmount: 16500 }
+      },
+      {
+        id: 'pc-claim-6-req-4', level: 'policy', type: PCRequirementType.COVERAGE_VERIFICATION,
+        name: 'Coverage & Policy Verification',
+        description: 'BOP-IL-789456 active at date of loss. Commercial property, business interruption, and inventory coverage confirmed in Policy Admin System',
+        status: RequirementStatus.SATISFIED, isMandatory: true,
+        dueDate: new Date(createdDate.getTime() + 1 * DAY).toISOString(),
+        satisfiedDate: new Date(createdDate.getTime() + 15 * 60000).toISOString(),
+        documents: [],
+        metadata: { verificationSource: 'Policy Admin System', policyNumber: 'BOP-IL-789456' }
+      },
+      {
+        id: 'pc-claim-6-req-5', level: 'party', type: PCRequirementType.PROOF_OF_IDENTITY,
+        name: 'Claimant Identity Verification',
+        description: 'Kim Lee — Government-issued photo ID verified. Identity score 99/100. Pre-verified returning customer.',
+        status: RequirementStatus.SATISFIED, isMandatory: true,
+        dueDate: new Date(createdDate.getTime() + 2 * DAY).toISOString(),
+        satisfiedDate: new Date(createdDate.getTime() + 15 * 60000).toISOString(),
+        documents: [
+          { id: 'doc-pc6-5', name: 'identity_verification.pdf' }
+        ],
+        metadata: { confidenceScore: 0.99 }
+      },
+    ];
     claim.timeline = generatePCTimeline(claim);
     claim.workNotes = [
       { sys_id: 'wn-pc-claim-6-3', element: 'work_notes', element_id: 'pc-demo-sys-id-6', name: 'x_dxcis_claims_a_0_claims_fnol', value: 'STP completed. All 5 criteria validated — 94% confidence. Claim approved in 45 minutes. ACH payment of $19,500 scheduled. Post-settlement audit queued. Claim closed.', sys_created_on: new Date(createdDate.getTime() + 2.5 * 3600000).toISOString().replace('T', ' ').substring(0, 19), sys_created_by: 'ai.engine' },
@@ -567,7 +629,13 @@ const generateSeededPCClaim = (index, isFT) => {
   const daysOpen = Math.floor(((isClosed ? closedDate : NOW) - createdDate) / DAY);
   const slaDays = isFT ? 7 : (claimType === PCClaimType.COMMERCIAL_PROPERTY ? 30 : 14);
   const slaDate = new Date(createdDate.getTime() + slaDays * DAY);
-  const daysToSla = isClosed ? Math.ceil((slaDate - closedDate) / DAY) : Math.ceil((slaDate - NOW) / DAY);
+  // STP claims are evaluated within minutes — use the STP evaluation time as the effective
+  // completion date so daysRemaining is always positive (never negative) for processed STP claims.
+  const stpCompletedAt = isFT ? new Date(createdDate.getTime() + 5 * 60000) : null;
+  const effectiveCompletionDate = closedDate || stpCompletedAt;
+  const daysToSla = effectiveCompletionDate
+    ? Math.ceil((slaDate - effectiveCompletionDate) / DAY)
+    : Math.ceil((slaDate - NOW) / DAY);
 
   const claim = {
     id: `pc-claim-${index}`, claimNumber, status, type: claimType,

@@ -34,7 +34,7 @@ import SLAIndicator from '../shared/SLAIndicator';
 import RequirementsTracker from '../shared/RequirementsTracker';
 import DocumentUpload from '../shared/DocumentUpload';
 import BeneficiaryAnalysisPanel from './BeneficiaryAnalysisPanel';
-import { ClaimStatus, RoutingType } from '../../types/claim.types';
+import { ClaimStatus, RoutingType, RequirementStatus } from '../../types/claim.types';
 
 /**
  * Claim Header Section
@@ -144,6 +144,7 @@ const ClaimHeader = ({ claim }) => {
             daysOpen={claim.workflow.daysOpen || 0}
             slaDays={isSTP ? 10 : 30}
             routing={claim.routing?.type}
+            claimStatus={claim.status}
           />
         )}
       </DxcFlex>
@@ -337,49 +338,20 @@ const ClaimDetail = ({ claimId, onClose }) => {
     }
   }, [claim]);
 
-  // Mock requirements data (in production, this would come from requirementProcessor)
+  // Requirements from claim data — normalized to match RequirementsTracker interface
   const requirements = useMemo(() => {
-    if (!claim) return [];
-
-    // This would be replaced with actual requirement data from the processor
-    return [
-      {
-        id: 'req-1',
-        type: 'DEATH_CERTIFICATE',
-        level: 'MANDATORY',
-        status: 'SATISFIED',
-        description: 'Official death certificate from vital records',
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        documents: ['doc-1'],
-        isSatisfied: () => true,
-        isMandatory: () => true,
-        isOverdue: () => false
-      },
-      {
-        id: 'req-2',
-        type: 'CLAIMANT_STATEMENT',
-        level: 'MANDATORY',
-        status: 'PENDING',
-        description: 'Completed and signed claimant statement form',
-        dueDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
-        documents: [],
-        isSatisfied: () => false,
-        isMandatory: () => true,
-        isOverdue: () => false
-      },
-      {
-        id: 'req-3',
-        type: 'PROOF_OF_IDENTITY',
-        level: 'MANDATORY',
-        status: 'IN_REVIEW',
-        description: 'Valid government-issued photo ID',
-        dueDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
-        documents: ['doc-2'],
-        isSatisfied: () => false,
-        isMandatory: () => true,
-        isOverdue: () => false
-      }
-    ];
+    if (!claim?.requirements?.length) return [];
+    const now = new Date();
+    return claim.requirements.map(req => ({
+      ...req,
+      level: req.isMandatory ? 'MANDATORY' : 'OPTIONAL',
+      isSatisfied: () => req.status === RequirementStatus.SATISFIED,
+      isMandatory: () => req.isMandatory === true,
+      isOverdue: () =>
+        !!req.dueDate &&
+        new Date(req.dueDate) < now &&
+        req.status !== RequirementStatus.SATISFIED,
+    }));
   }, [claim]);
 
   const handleAction = (action) => {
