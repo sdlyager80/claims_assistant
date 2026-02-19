@@ -21,6 +21,7 @@ import { useWorkflow } from '../../contexts/WorkflowContext';
 import { useApp } from '../../contexts/AppContext';
 import STPBadge from '../shared/STPBadge';
 import SLAIndicator from '../shared/SLAIndicator';
+import ClaimLifecycleTracker from '../shared/ClaimLifecycleTracker';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
 import serviceNowService from '../../services/api/serviceNowService';
 import { getTerm, getProductLineConfig, PRODUCT_LINES } from '../../config/productLineConfig';
@@ -1340,6 +1341,17 @@ const Dashboard = ({ onClaimSelect }) => {
                             </>
                           )}
                         </DxcFlex>
+
+                        {/* Lifecycle Tracker */}
+                        {isClaim && (
+                          <div style={{ marginTop: '6px' }}>
+                            <ClaimLifecycleTracker
+                              status={submission.status}
+                              routing={submission.routing?.type}
+                              compact={true}
+                            />
+                          </div>
+                        )}
                       </DxcFlex>
                     </DxcInset>
                   </DxcContainer>
