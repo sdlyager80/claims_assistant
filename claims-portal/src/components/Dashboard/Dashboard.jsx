@@ -19,14 +19,69 @@ import {
 import { useClaims } from '../../contexts/ClaimsContext';
 import { useWorkflow } from '../../contexts/WorkflowContext';
 import { useApp } from '../../contexts/AppContext';
-import STPBadge from '../shared/STPBadge';
-import SLAIndicator from '../shared/SLAIndicator';
-import ClaimLifecycleTracker from '../shared/ClaimLifecycleTracker';
 import { RoutingType, ClaimStatus } from '../../types/claim.types';
 import serviceNowService from '../../services/api/serviceNowService';
 import { getTerm, getProductLineConfig, PRODUCT_LINES } from '../../config/productLineConfig';
 import { getPCDemoData } from '../../data/demoDataPC';
+import STPBadge from '../shared/STPBadge';
+import SLAIndicator from '../shared/SLAIndicator';
 import './Dashboard.css';
+
+// ── Pizza Tracker ─────────────────────────────────────────────────────────────
+const LIFECYCLE_STEPS_STANDARD = [
+  { key: 'fnol',         label: 'FNOL'         },
+  { key: 'review',       label: 'Review'       },
+  { key: 'requirements', label: 'Requirements' },
+  { key: 'assessment',   label: 'Assessment'   },
+  { key: 'decision',     label: 'Decision'     },
+  { key: 'closed',       label: 'Closed'       },
+];
+const LIFECYCLE_STEPS_STP = [
+  { key: 'fnol',      label: 'FNOL'     },
+  { key: 'stp',       label: 'STP Eval' },
+  { key: 'approved',  label: 'Approved' },
+  { key: 'payment',   label: 'Payment'  },
+  { key: 'closed',    label: 'Closed'   },
+];
+const getLifecycleStep = (status, isSTP) => {
+  if (isSTP) {
+    return { new:0,submitted:0,under_review:1,in_review:1,approved:2,payment_scheduled:3,payment_complete:3,closed:4,denied:4 }[status] ?? 0;
+  }
+  return { new:0,submitted:0,under_review:1,in_review:1,pending_requirements:2,requirements_complete:3,in_approval:3,approved:4,denied:4,closed:5,payment_complete:5 }[status] ?? 0;
+};
+const ClaimLifecycleTracker = ({ status, routing }) => {
+  const isSTP    = routing === 'fasttrack';
+  const isDenied = status === 'denied';
+  const steps    = isSTP ? LIFECYCLE_STEPS_STP : LIFECYCLE_STEPS_STANDARD;
+  const active   = getLifecycleStep(status, isSTP);
+  return (
+    <div style={{ display:'flex', alignItems:'flex-start', width:'100%', paddingTop:'4px' }}>
+      {steps.map((step, i) => {
+        const done    = i < active;
+        const current = i === active;
+        const error   = isDenied && current;
+        const fill    = error ? '#D0021B' : (done || current) ? '#0095FF' : 'transparent';
+        const border  = error ? '#D0021B' : (done || current) ? '#0095FF' : '#BDBDBD';
+        const line    = done ? '#0095FF' : '#E0E0E0';
+        const lblClr  = current ? '#1E293B' : done ? '#475569' : '#94A3B8';
+        return (
+          <div key={step.key} style={{ display:'flex', alignItems:'flex-start', flex: i < steps.length - 1 ? 1 : 0 }}>
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', flexShrink:0 }}>
+              <div style={{ width:14, height:14, borderRadius:'50%', backgroundColor:fill, border:`2px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                {done  && <span style={{ color:'white', fontSize:'8px', fontWeight:700, lineHeight:1 }}>✓</span>}
+                {current && !done && <div style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'white' }} />}
+              </div>
+              <div style={{ fontSize:'8px', color:lblClr, marginTop:2, whiteSpace:'nowrap', fontWeight: current ? 700 : 400 }}>{step.label}</div>
+            </div>
+            {i < steps.length - 1 && (
+              <div style={{ flex:1, height:2, minWidth:12, backgroundColor:line, marginTop:5, alignSelf:'flex-start' }} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const Dashboard = ({ onClaimSelect }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0); // 0 = All Open, 1 = Closed
