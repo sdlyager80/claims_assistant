@@ -25,7 +25,7 @@ import BeneficiaryAnalyzer from '../BeneficiaryAnalyzer/BeneficiaryAnalyzer';
 import './FNOLWorkspace.css';
 
 /**
- * FNOL Workspace - Examiner persona
+ * Claim Notifications - Examiner persona
  * Structure: 4-stage progressive tab flow
  * 1. Policy Match
  * 2. Related Policy Search
@@ -181,7 +181,7 @@ const FNOLWorkspace = ({ onClaimSelect }) => {
       <DxcFlex direction="column" gap="var(--spacing-gap-m)">
         {/* Header */}
         <DxcFlex justifyContent="space-between" alignItems="center">
-          <DxcHeading level={1} text="New FNOL Workspace" />
+          <DxcHeading level={1} text="Claim Notifications" />
           <DxcBadge label="Examiner" mode="contextual" color="info" />
         </DxcFlex>
 

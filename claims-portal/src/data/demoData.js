@@ -436,11 +436,91 @@ export const generateDemoClaims = () => {
 };
 
 export const generateDemoPolicies = (claims) => {
-  return claims.map(claim => ({
+  const claimPolicies = claims.map(claim => ({
     id: claim.policy.policyNumber, policyNumber: claim.policy.policyNumber, status: claim.policy.status, type: claim.policy.type, issueDate: claim.policy.issueDate, faceAmount: claim.policy.faceAmount, owner: claim.policy.owner, insured: claim.insured.name,
     beneficiaries: claim.parties.filter(p => p.role === 'Primary Beneficiary' || p.role === 'Contingent Beneficiary').map(p => ({ name: p.name, relationship: p.role === 'Primary Beneficiary' ? claim.claimant.relationship : 'Child', percentage: p.role === 'Primary Beneficiary' ? 50 : 25, type: p.role === 'Primary Beneficiary' ? 'Primary' : 'Contingent' })),
-    premiumAmount: Math.floor(claim.policy.faceAmount * 0.001), premiumFrequency: 'Annual'
+    premiumAmount: Math.floor(claim.policy.faceAmount * 0.001), premiumFrequency: 'Annual',
+    policyType: claim.policy.type, policyStatus: claim.policy.status,
+    region: claims[0]?.policies?.[0]?.region || 'Midwest',
+    companyCode: claims[0]?.policies?.[0]?.companyCode || 'BLM',
+    planCode: claims[0]?.policies?.[0]?.planCode || 'TL200',
+    currentCashValue: claims[0]?.policies?.[0]?.currentCashValue || 0,
+    loanBalance: claims[0]?.policies?.[0]?.loanBalance || 0,
+    source: 'Policy Admin'
   }));
+
+  // Add unclaimed policies for some deceased insureds (for Related Policies feature)
+  const unclaimedPolicies = [
+    // Additional policy for Robert Jones (Claim 1)
+    {
+      id: 'POL-847292', policyNumber: 'POL-847292',
+      policyStatus: 'In Force', status: 'In Force',
+      policyType: 'Whole Life', type: 'Whole Life',
+      issueDate: '2015-03-20',
+      issueState: 'IL',
+      faceAmount: 250000,
+      owner: 'Robert Jones',
+      insured: 'Robert Jones',
+      region: 'Midwest',
+      companyCode: 'BLM',
+      planCode: 'WL250',
+      currentCashValue: 45000,
+      loanBalance: 0,
+      source: 'Policy Admin',
+      premiumAmount: 250,
+      premiumFrequency: 'Monthly',
+      beneficiaries: [
+        { name: 'Elizabeth Jones', relationship: 'Spouse', percentage: 100, type: 'Primary' }
+      ]
+    },
+    // Another policy for Robert Jones
+    {
+      id: 'POL-847293', policyNumber: 'POL-847293',
+      policyStatus: 'In Force', status: 'In Force',
+      policyType: 'Universal Life', type: 'Universal Life',
+      issueDate: '2012-08-15',
+      issueState: 'IL',
+      faceAmount: 100000,
+      owner: 'Robert Jones',
+      insured: 'Robert Jones',
+      region: 'Midwest',
+      companyCode: 'BLM',
+      planCode: 'UL100',
+      currentCashValue: 28000,
+      loanBalance: 5000,
+      source: 'Policy Admin',
+      premiumAmount: 150,
+      premiumFrequency: 'Monthly',
+      beneficiaries: [
+        { name: 'David Jones', relationship: 'Child', percentage: 50, type: 'Primary' },
+        { name: 'Rachel Jones', relationship: 'Child', percentage: 50, type: 'Primary' }
+      ]
+    },
+    // Additional policy for Thomas Garcia (Claim 3)
+    {
+      id: 'POL-619248', policyNumber: 'POL-619248',
+      policyStatus: 'In Force', status: 'In Force',
+      policyType: 'Whole Life', type: 'Whole Life',
+      issueDate: '2017-06-10',
+      issueState: 'TX',
+      faceAmount: 200000,
+      owner: 'Thomas Garcia',
+      insured: 'Thomas Garcia',
+      region: 'Southwest',
+      companyCode: 'GLP',
+      planCode: 'WL200',
+      currentCashValue: 38000,
+      loanBalance: 0,
+      source: 'Policy Admin',
+      premiumAmount: 200,
+      premiumFrequency: 'Monthly',
+      beneficiaries: [
+        { name: 'Maria Garcia', relationship: 'Spouse', percentage: 100, type: 'Primary' }
+      ]
+    }
+  ];
+
+  return [...claimPolicies, ...unclaimedPolicies];
 };
 
 export const generateDemoFSOCases = (claims) => {

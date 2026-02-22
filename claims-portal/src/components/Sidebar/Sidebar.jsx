@@ -42,7 +42,7 @@ const Sidebar = ({ currentView, onNavigationClick, collapsed = false, onToggleCo
         },
         {
           id: 'fnolWorkspace',
-          label: 'FNOL Workspace',
+          label: 'Claim Notifications',
           icon: 'work_outline',
           badge: null
         },

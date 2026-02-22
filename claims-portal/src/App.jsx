@@ -136,7 +136,7 @@ function AppContent() {
       onClick: () => handleNavigationClick('intake')
     }] : []),
     {
-      label: "New FNOL Workspace",
+      label: "Claim Notifications",
       icon: "work",
       selected: currentView === 'fnolWorkspace',
       onClick: () => handleNavigationClick('fnolWorkspace')

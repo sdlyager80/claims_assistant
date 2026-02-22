@@ -1,0 +1,47 @@
+/* Related Policies Panel Styles */
+
+.related-policy-card {
+  padding: var(--spacing-padding-m);
+  background-color: var(--color-bg-neutral-white);
+  border: 2px solid var(--color-border-warning-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.related-policy-card:hover {
+  border-color: var(--color-border-primary-strong);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.related-policy-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-gap-m);
+}
+
+.policy-number-link {
+  color: var(--color-fg-primary-strong);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.policy-number-link:hover {
+  color: var(--color-fg-primary-darker);
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .related-policy-details-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .related-policy-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

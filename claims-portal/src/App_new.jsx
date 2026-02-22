@@ -147,7 +147,7 @@ function AppContent() {
       view: 'intake',
     },
     {
-      label: 'New FNOL Workspace',
+      label: 'Claim Notifications',
       icon: <WorkIcon />,
       view: 'fnolWorkspace',
     },

@@ -101,6 +101,80 @@ export const searchPolicyBySSN = async (ssn) => {
 };
 
 /**
+ * Find all policies related to deceased for death claims
+ * Searches for policies where deceased is insured or owner
+ * @param {Object} deceasedInfo - Deceased person information
+ * @param {string} deceasedInfo.ssn - Social Security Number
+ * @param {string} deceasedInfo.name - Full name
+ * @param {string} deceasedInfo.dateOfBirth - Date of birth (ISO format)
+ * @param {string} excludePolicyNumber - Policy number to exclude (current claim policy)
+ * @returns {Promise<Object>} Related policies grouped by relationship
+ */
+export const findRelatedPoliciesForDeathClaim = async (deceasedInfo, excludePolicyNumber = null) => {
+  try {
+    // DEMO MODE: Search demo data
+    if (USE_DEMO_DATA) {
+      console.log(`[Policy Admin] Searching for related policies for deceased: ${deceasedInfo.name}`);
+
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const allPolicies = demoData.policies;
+
+      // Find policies where deceased is insured or owner
+      const relatedPolicies = allPolicies.filter(policy => {
+        // Exclude the current claim's policy
+        if (excludePolicyNumber && policy.policyNumber === excludePolicyNumber) {
+          return false;
+        }
+
+        // Match by insured name or owner name
+        const insuredMatch = policy.owner && policy.owner.toLowerCase() === deceasedInfo.name.toLowerCase();
+
+        return insuredMatch;
+      });
+
+      // Group policies by relationship
+      const result = {
+        asInsured: relatedPolicies.filter(p => p.owner?.toLowerCase() === deceasedInfo.name.toLowerCase()),
+        asOwner: [], // Would need separate owner field in real system
+        total: relatedPolicies.length,
+        totalFaceAmount: relatedPolicies.reduce((sum, p) => sum + (p.faceAmount || 0), 0)
+      };
+
+      console.log(`[Policy Admin] Found ${result.total} related policies`);
+
+      return result;
+    }
+
+    const cacheKey = cacheManager.generateKey('policy:death-claim-related', {
+      ssn: deceasedInfo.ssn,
+      exclude: excludePolicyNumber
+    });
+    const cached = cacheManager.get(cacheKey);
+    if (cached) return cached;
+
+    console.log(`[Policy Admin] Searching for related policies for death claim`);
+
+    const result = await apiClient.get(`${POLICY_BASE_PATH}/policies/death-claim-search`, {
+      params: {
+        ssn: deceasedInfo.ssn,
+        name: deceasedInfo.name,
+        dob: deceasedInfo.dateOfBirth,
+        exclude: excludePolicyNumber
+      }
+    });
+
+    // Cache for shorter period since this is claim-specific
+    cacheManager.set(cacheKey, result, 30 * 60 * 1000); // 30 minutes
+
+    return result;
+  } catch (error) {
+    throw handleAPIError(error, 'PolicyAdmin.findRelatedPoliciesForDeathClaim');
+  }
+};
+
+/**
  * Get policy details
  * @param {string} policyNumber - Policy number
  * @returns {Promise<Object>} Detailed policy information
@@ -382,6 +456,7 @@ export default {
   lookupPolicy,
   searchPolicyBySSN,
   getPolicyDetails,
+  findRelatedPoliciesForDeathClaim,
 
   // Beneficiary Information
   getBeneficiaries,
