@@ -31,6 +31,7 @@ import PolicyDetailView from '../PolicyDetailView/PolicyDetailView';
 import PartyForm from '../PartyForm/PartyForm';
 import RequirementsEngine from '../RequirementsEngine/RequirementsEngine';
 import WorkNotes from '../WorkNotes/WorkNotes';
+import RelatedPoliciesPanel from '../RelatedPoliciesPanel/RelatedPoliciesPanel';
 import serviceNowService from '../../services/api/serviceNowService';
 import './ClaimsWorkbench.css';
 
@@ -443,6 +444,16 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   icon="psychology"
                   active={activeTab === 6}
                   onClick={() => setActiveTab(6)}
+                >
+                  <div />
+                </DxcTabs.Tab>
+                )}
+                {claim.deathEvent && (
+                <DxcTabs.Tab
+                  label="Related Policies"
+                  icon="policy"
+                  active={activeTab === 7}
+                  onClick={() => setActiveTab(7)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -1101,6 +1112,23 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   onCancel={() => {
                     // Return to Policy 360 tab
                     setActiveTab(2);
+                  }}
+                />
+              )}
+
+              {/* Related Policies Tab */}
+              {activeTab === 7 && (
+                <RelatedPoliciesPanel
+                  claimData={claim}
+                  onInitiateClaim={(policy) => {
+                    console.log('[ClaimsWorkbench] Initiating death claim for related policy:', policy.policyNumber);
+                    // TODO: Navigate to FNOL form with pre-populated data
+                    alert(`Initiating death claim for policy ${policy.policyNumber}\n\nThis would:\n1. Pre-populate FNOL with deceased information\n2. Copy death certificate from current claim\n3. Link to original claim: ${claim.claimNumber}\n4. Navigate to intake form`);
+                  }}
+                  onViewPolicy={(policy) => {
+                    console.log('[ClaimsWorkbench] Viewing policy:', policy.policyNumber);
+                    setSelectedPolicy(policy);
+                    setShowPolicyModal(true);
                   }}
                 />
               )}
