@@ -80,16 +80,7 @@ const PaymentQuickView = ({ payment, onEdit, onCancel, onResend, onView1099, onC
               {payment.paymentNumber || payment.id}
             </DxcTypography>
           </DxcFlex>
-          <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-            <DxcBadge label={payment.status || 'Unknown'} />
-            {onClose && (
-              <DxcButton
-                mode="tertiary"
-                icon="close"
-                onClick={onClose}
-              />
-            )}
-          </DxcFlex>
+          <DxcBadge label={payment.status || 'Unknown'} />
         </DxcFlex>
 
         <DxcDivider />
@@ -167,10 +158,10 @@ const PaymentQuickView = ({ payment, onEdit, onCancel, onResend, onView1099, onC
 
               {payment.netBenefitPMI > 0 && (
                 <DxcFlex justifyContent="space-between" alignItems="center">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-success-medium)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM: Data black */>
                     + Post Mortem Interest
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data black */>
                     {formatCurrency(payment.netBenefitPMI)}
                   </DxcTypography>
                 </DxcFlex>
@@ -178,10 +169,10 @@ const PaymentQuickView = ({ payment, onEdit, onCancel, onResend, onView1099, onC
 
               {payment.taxWithheld > 0 && (
                 <DxcFlex justifyContent="space-between" alignItems="center">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-error-medium)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM: Data black */>
                     - Tax Withholding
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+                  <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data black */>
                     {formatCurrency(payment.taxWithheld)}
                   </DxcTypography>
                 </DxcFlex>
@@ -193,7 +184,7 @@ const PaymentQuickView = ({ payment, onEdit, onCancel, onResend, onView1099, onC
                 <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
                   Net Benefit Proceeds
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-darker)">
+                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data black */>
                   {formatCurrency(payment.netBenefitProceeds)}
                 </DxcTypography>
               </DxcFlex>

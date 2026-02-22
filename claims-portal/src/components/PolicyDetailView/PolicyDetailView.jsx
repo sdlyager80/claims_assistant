@@ -78,16 +78,7 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
               {policy.policyNumber}
             </DxcTypography>
           </DxcFlex>
-          <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-            <DxcBadge label={policy.policyStatus || policy.status || 'Unknown'} />
-            {onClose && (
-              <DxcButton
-                mode="tertiary"
-                icon="close"
-                onClick={onClose}
-              />
-            )}
-          </DxcFlex>
+          <DxcBadge label={policy.policyStatus || policy.status || 'Unknown'} />
         </DxcFlex>
 
         {/* Quick Stats */}
@@ -100,7 +91,7 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
               <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                 FACE AMOUNT
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                 {formatCurrency(policy.faceAmount)}
               </DxcTypography>
             </DxcFlex>

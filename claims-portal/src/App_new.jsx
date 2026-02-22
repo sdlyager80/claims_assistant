@@ -197,7 +197,7 @@ function AppContent() {
             sx={{ height: 40, mr: 2 }}
           />
 
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 700 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: '#1B75BB', fontWeight: 700 }}>
             Claims Assistant Portal
           </Typography>
 
@@ -221,7 +221,7 @@ function AppContent() {
             <IconButton onClick={handleProfileMenuOpen} sx={{ p: 0 }}>
               <Avatar
                 sx={{
-                  bgcolor: 'primary.main',
+                  bgcolor: '#1B75BB',
                   width: 40,
                   height: 40,
                   fontWeight: 600,

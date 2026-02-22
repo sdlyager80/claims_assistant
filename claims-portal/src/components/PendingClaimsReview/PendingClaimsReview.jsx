@@ -295,8 +295,9 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
             <div style={{
               backgroundColor: "var(--color-bg-neutral-lightest)",
               borderRadius: "var(--border-radius-m)",
-              boxShadow: "var(--shadow-mid-04)",
-              padding: "var(--spacing-padding-m)"
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Card shadow */
+              padding: "var(--spacing-padding-m)",
+              borderLeft: "4px solid #00ADEE" /* BLOOM: Cyan left accent border for search */
             }}>
               <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                 <DxcTextInput
@@ -317,7 +318,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                 <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                   <DxcFlex justifyContent="space-between" alignItems="center">
                     <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
-                      <DxcTypography fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)" fontSize="font-scale-04">
+                      <DxcTypography fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */ fontSize="font-scale-04">
                         {claim.claimNumber}
                       </DxcTypography>
                       <DxcBadge label={claim.status.replace(/_/g, ' ')} mode="contextual" color={getStatusColor(claim.status)} />
@@ -329,19 +330,19 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
 
                   <DxcFlex gap="var(--spacing-gap-l)" wrap="wrap">
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">INSURED</DxcTypography>
+                      <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>INSURED</DxcTypography>
                       <DxcTypography>{claim.insured.name}</DxcTypography>
                     </DxcFlex>
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">CLAIMANT</DxcTypography>
+                      <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>CLAIMANT</DxcTypography>
                       <DxcTypography>{claim.claimant.name} ({claim.claimant.relationship})</DxcTypography>
                     </DxcFlex>
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">DATE OF LOSS</DxcTypography>
+                      <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>DATE OF LOSS</DxcTypography>
                       <DxcTypography>{claim.dateOfLoss}</DxcTypography>
                     </DxcFlex>
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">POLICIES</DxcTypography>
+                      <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>POLICIES</DxcTypography>
                       <DxcTypography>{claim.policies.length} policy(ies)</DxcTypography>
                     </DxcFlex>
                   </DxcFlex>
@@ -358,8 +359,9 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
             <div style={{
               backgroundColor: "var(--color-bg-neutral-lightest)",
               borderRadius: "var(--border-radius-m)",
-              boxShadow: "var(--shadow-mid-04)",
-              padding: "var(--spacing-padding-m)"
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Card shadow */
+              padding: "var(--spacing-padding-m)",
+              borderLeft: "4px solid #1B75BB" /* BLOOM: Blue left accent border */
             }}>
               <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                 <DxcFlex justifyContent="space-between" alignItems="center">
@@ -367,28 +369,28 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                     <DxcHeading level={2} text={selectedClaim.claimNumber} />
                     <DxcBadge label={selectedClaim.status.replace(/_/g, ' ')} mode="contextual" color={getStatusColor(selectedClaim.status)} />
                   </DxcFlex>
-                  <DxcTypography fontWeight="font-weight-semibold" fontSize="32px" color="var(--color-fg-secondary-medium)">
+                  <DxcTypography fontWeight="font-weight-semibold" fontSize="32px" color="#000000" /* BLOOM: Data values must be black */>
                     {formatCurrency(selectedClaim.totalClaimAmount)}
                   </DxcTypography>
                 </DxcFlex>
 
                 <DxcFlex gap="var(--spacing-gap-l)" wrap="wrap">
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">INSURED</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>INSURED</DxcTypography>
                     <DxcTypography fontWeight="font-weight-semibold">{selectedClaim.insured.name}</DxcTypography>
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">DOB: {selectedClaim.insured.dob} | DOD: {selectedClaim.insured.dod}</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>DOB: {selectedClaim.insured.dob} | DOD: {selectedClaim.insured.dod}</DxcTypography>
                   </DxcFlex>
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">CLAIMANT</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>CLAIMANT</DxcTypography>
                     <DxcTypography fontWeight="font-weight-semibold">{selectedClaim.claimant.name}</DxcTypography>
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Relationship: {selectedClaim.claimant.relationship}</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>Relationship: {selectedClaim.claimant.relationship}</DxcTypography>
                   </DxcFlex>
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">DATE OF LOSS</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>DATE OF LOSS</DxcTypography>
                     <DxcTypography fontWeight="font-weight-semibold">{selectedClaim.dateOfLoss}</DxcTypography>
                   </DxcFlex>
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">DATE FILED</DxcTypography>
+                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>DATE FILED</DxcTypography>
                     <DxcTypography fontWeight="font-weight-semibold">{selectedClaim.dateFiled}</DxcTypography>
                   </DxcFlex>
                 </DxcFlex>
@@ -422,15 +424,15 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                   <div key={policy.id} style={{
                     backgroundColor: "var(--color-bg-neutral-lightest)",
                     borderRadius: "var(--border-radius-m)",
-                    boxShadow: "var(--shadow-mid-02)",
+                    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Card shadow */
                     padding: "var(--spacing-padding-m)",
-                    borderLeft: "4px solid var(--color-fg-secondary-medium)"
+                    borderLeft: "4px solid #37A526" /* BLOOM: Green left accent border for policies */
                   }}>
                     <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                       {/* Policy Header */}
                       <DxcFlex justifyContent="space-between" alignItems="center">
                         <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                          <DxcTypography fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                          <DxcTypography fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                             {policy.policyNumber}
                           </DxcTypography>
                           <DxcBadge label={policy.type} mode="contextual" color="info" />
@@ -444,15 +446,15 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                       {/* Policy Details */}
                       <DxcFlex gap="var(--spacing-gap-l)" wrap="wrap">
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">COVERAGE</DxcTypography>
+                          <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>COVERAGE</DxcTypography>
                           <DxcTypography>{formatCurrency(policy.coverage)}</DxcTypography>
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">ISSUE DATE</DxcTypography>
+                          <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>ISSUE DATE</DxcTypography>
                           <DxcTypography>{policy.issueDate}</DxcTypography>
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">ACCUMULATED VALUE</DxcTypography>
+                          <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>ACCUMULATED VALUE</DxcTypography>
                           <DxcTypography>{formatCurrency(policy.accumulatedValue)}</DxcTypography>
                         </DxcFlex>
                       </DxcFlex>
@@ -472,7 +474,7 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                                     <DxcTypography fontWeight="font-weight-semibold">{ben.name}</DxcTypography>
                                     <DxcBadge label={ben.type} mode="contextual" color="info" />
                                     <DxcBadge label={ben.status} mode="contextual" color={getStatusColor(ben.status)} />
-                                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                                    <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
                                       {ben.relationship} | {ben.allocationPercent}%
                                     </DxcTypography>
                                   </DxcFlex>
@@ -531,8 +533,9 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                 <div style={{
                   backgroundColor: "var(--color-bg-neutral-lightest)",
                   borderRadius: "var(--border-radius-m)",
-                  boxShadow: "var(--shadow-mid-02)",
-                  padding: "var(--spacing-padding-m)"
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Card shadow */
+                  padding: "var(--spacing-padding-m)",
+                  borderLeft: "4px solid #F6921E" /* BLOOM: Orange left accent border for aggregate view */
                 }}>
                   <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                     <DxcHeading level={3} text="Claim-Level Beneficiary Summary" />
@@ -553,22 +556,22 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
                               <DxcBadge label={ben.relationship} mode="contextual" color="info" />
                               <DxcBadge label={ben.status} mode="contextual" color={getStatusColor(ben.status)} />
                             </DxcFlex>
-                            <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="var(--color-fg-secondary-medium)">
+                            <DxcTypography fontWeight="font-weight-semibold" fontSize="font-scale-04" color="#000000" /* BLOOM: Data values must be black */>
                               Total: {formatCurrency(ben.totalBenefits)}
                             </DxcTypography>
                           </DxcFlex>
 
-                          <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+                          <DxcTypography fontSize="font-scale-03" color="#000000" /* BLOOM */>
                             Across {ben.policies.length} policy(ies):
                           </DxcTypography>
 
                           {ben.policies.map((pol, pidx) => (
                             <DxcFlex key={pidx} gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap" style={{ paddingLeft: "16px" }}>
-                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                              <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                 {pol.policyNumber}
                               </DxcTypography>
                               <DxcBadge label={pol.type} mode="contextual" color="info" />
-                              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                              <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
                                 {pol.allocationPercent}% allocation
                               </DxcTypography>
                               <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -588,8 +591,9 @@ const PendingClaimsReview = ({ onClaimSelect }) => {
             <div style={{
               backgroundColor: "var(--color-bg-neutral-lightest)",
               borderRadius: "var(--border-radius-m)",
-              boxShadow: "var(--shadow-mid-02)",
-              padding: "var(--spacing-padding-m)"
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Card shadow */
+              padding: "var(--spacing-padding-m)",
+              borderLeft: "4px solid #808285" /* BLOOM: Gray left accent border for actions */
             }}>
               <DxcFlex justifyContent="space-between" alignItems="center">
                 <DxcFlex gap="var(--spacing-gap-s)">

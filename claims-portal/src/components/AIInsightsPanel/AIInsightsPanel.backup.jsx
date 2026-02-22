@@ -159,7 +159,7 @@ const AIInsightsPanel = ({ claimData, insights = [], onViewDetail, onDismiss }) 
               style={{ backgroundColor: 'var(--color-bg-info-lightest)', flex: 1 }}
             >
               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" alignItems="center">
-                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                   {lowAlerts.length}
                 </DxcTypography>
                 <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">

@@ -1,7 +1,8 @@
+/* BLOOM: Requirements Summary Grid */
 .requirements-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-gap-m);
+  gap: 16px; /* BLOOM: Consistent spacing */
 }
 
 @media (max-width: 1024px) {
@@ -14,6 +15,47 @@
   .requirements-summary-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* BLOOM: Stat Card Base */
+.requirements-summary-grid > div {
+  border-radius: 8px !important; /* BLOOM: Rounded corners */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important; /* BLOOM: Card shadow */
+  transition: all 0.2s ease !important;
+  border: 2px solid transparent !important;
+  min-height: 100px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.requirements-summary-grid > div:hover {
+  transform: translateY(-3px) !important; /* BLOOM: Lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* BLOOM: Total Requirements Card - Blue */
+.requirements-summary-grid > div:nth-child(1) {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important; /* BLOOM: Light blue gradient */
+  border-left: 4px solid #1B75BB !important; /* BLOOM: Blue accent */
+}
+
+/* BLOOM: Satisfied Card - Green */
+.requirements-summary-grid > div:nth-child(2) {
+  background: linear-gradient(135deg, #E8F5E3 0%, #C8E6C9 100%) !important; /* BLOOM: Light green gradient */
+  border-left: 4px solid #37A526 !important; /* BLOOM: Green accent */
+}
+
+/* BLOOM: Pending Card - Orange */
+.requirements-summary-grid > div:nth-child(3) {
+  background: linear-gradient(135deg, #FEF1E8 0%, #FFE0B2 100%) !important; /* BLOOM: Light orange gradient */
+  border-left: 4px solid #F6921E !important; /* BLOOM: Orange accent */
+}
+
+/* BLOOM: NIGO Card - Red */
+.requirements-summary-grid > div:nth-child(4) {
+  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%) !important; /* BLOOM: Light red gradient */
+  border-left: 4px solid #D02E2E !important; /* BLOOM: Red accent */
 }
 
 .requirement-details-grid {
@@ -31,5 +73,84 @@
 @media (max-width: 768px) {
   .requirement-details-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* BLOOM: Enhanced Stat Card Typography */
+.requirements-summary-grid .dxc-typography:first-of-type {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: #58595B !important; /* BLOOM: Dark gray for labels */
+}
+
+.requirements-summary-grid .dxc-typography:last-of-type {
+  font-size: 42px !important; /* BLOOM: Large numbers */
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  color: #000000 !important; /* BLOOM: Black for data values */
+}
+
+/* BLOOM: Generate Requirements Button Enhancement */
+button[mode="primary"]:has([class*="auto_awesome"]),
+button[mode="secondary"]:has([class*="auto_awesome"]) {
+  min-height: 44px !important;
+  background: linear-gradient(135deg, #1B75BB 0%, #155A93 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+button[mode="primary"]:has([class*="auto_awesome"]):hover,
+button[mode="secondary"]:has([class*="auto_awesome"]):hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 8px 16px rgba(27, 117, 187, 0.4) !important;
+  background: linear-gradient(135deg, #155A93 0%, #1B75BB 100%) !important;
+}
+
+button[mode="primary"]:has([class*="auto_awesome"]) .material-icons,
+button[mode="secondary"]:has([class*="auto_awesome"]) .material-icons {
+  animation: sparkle 2s ease-in-out infinite !important;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(10deg) scale(1.2);
+  }
+  75% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+}
+
+/* BLOOM: Empty State Styling */
+.dxc-inset {
+  padding: 48px 24px !important;
+  text-align: center !important;
+}
+
+.dxc-inset .material-icons {
+  color: #1B75BB !important;
+  opacity: 0.3 !important;
+  animation: float 3s ease-in-out infinite !important;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }

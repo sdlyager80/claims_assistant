@@ -116,7 +116,7 @@ const DocumentViewer = ({
           >
             folder_open
           </span>
-          <DxcTypography fontSize="font-scale-03" color="var(--color-fg-neutral-dark)">
+          <DxcTypography fontSize="font-scale-03" color="#000000">
             No documents uploaded yet
           </DxcTypography>
         </DxcFlex>
@@ -202,7 +202,7 @@ const DocumentViewer = ({
                       {doc.name || 'Untitled Document'}
                     </DxcTypography>
                     <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                      <DxcTypography fontSize="12px" color="#000000">
                         {formatFileSize(doc.size)}
                       </DxcTypography>
                       {doc.status && (
@@ -214,7 +214,7 @@ const DocumentViewer = ({
                   {/* IDP Results */}
                   {showIDP && doc.idp && (
                     <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                      <DxcTypography fontSize="12px" color="#000000">
                         IDP Classification
                       </DxcTypography>
                       <DxcFlex justifyContent="space-between" alignItems="center">
@@ -242,11 +242,11 @@ const DocumentViewer = ({
 
                   {/* Metadata */}
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                    <DxcTypography fontSize="12px" color="#000000">
                       Uploaded: {formatDate(doc.uploadedAt)}
                     </DxcTypography>
                     {doc.uploadedBy && (
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                      <DxcTypography fontSize="12px" color="#000000">
                         By: {doc.uploadedBy}
                       </DxcTypography>
                     )}
@@ -303,7 +303,7 @@ const DocumentViewer = ({
 
             <DxcFlex direction="column" gap="var(--spacing-gap-s)">
               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                <DxcTypography fontSize="12px" color="#000000">
                   File Name
                 </DxcTypography>
                 <DxcTypography fontSize="font-scale-02">
@@ -313,7 +313,7 @@ const DocumentViewer = ({
 
               <DxcFlex gap="var(--spacing-gap-l)">
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="12px" color="#000000">
                     File Size
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-02">
@@ -322,7 +322,7 @@ const DocumentViewer = ({
                 </DxcFlex>
 
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="12px" color="#000000">
                     Upload Date
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-02">
@@ -332,7 +332,7 @@ const DocumentViewer = ({
 
                 {selectedDoc.status && (
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                    <DxcTypography fontSize="12px" color="#000000">
                       Status
                     </DxcTypography>
                     <DxcBadge label={selectedDoc.status} />
@@ -347,7 +347,7 @@ const DocumentViewer = ({
                   </DxcTypography>
                   {selectedDoc.idp.fields?.map((field, idx) => (
                     <DxcFlex key={idx} justifyContent="space-between" alignItems="center">
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                      <DxcTypography fontSize="12px" color="#000000">
                         {field.name}
                       </DxcTypography>
                       <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">

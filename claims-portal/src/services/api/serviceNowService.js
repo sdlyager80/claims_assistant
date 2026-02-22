@@ -1285,10 +1285,13 @@ class ServiceNowService {
       console.log('[ServiceNow] Document uploaded successfully:', result);
 
       // Update docintel_attachment flag in FNOL table
+      // NOTE: This triggers the OLD DocIntel flow in ServiceNow
+      // Running in parallel with NEW IDP flow until IDP is fully validated
+      // TODO: Remove this once IDP flow is confirmed end-to-end
       if (tableName === this.fnolTable) {
         try {
           await this.updateFNOLDocIntelFlag(tableSysId);
-          console.log('[ServiceNow] docintel_attachment flag set to true for record:', tableSysId);
+          console.log('[ServiceNow] ✓ OLD FLOW: docintel_attachment flag set to true (triggers ServiceNow DocIntel)');
         } catch (flagError) {
           console.warn('[ServiceNow] Failed to update docintel_attachment flag:', flagError);
           // Don't fail the upload if flag update fails

@@ -158,22 +158,13 @@ const TaxWithholdingCalculator = ({ claimData, paymentData, onCalculate, onApply
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
-        <DxcFlex justifyContent="space-between" alignItems="center">
-          <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-            <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
-              receipt_long
-            </span>
-            <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
-              Tax Withholding Calculator
-            </DxcTypography>
-          </DxcFlex>
-          {onClose && (
-            <DxcButton
-              mode="tertiary"
-              icon="close"
-              onClick={onClose}
-            />
-          )}
+        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+          <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
+            receipt_long
+          </span>
+          <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
+            Tax Withholding Calculator
+          </DxcTypography>
         </DxcFlex>
 
         {/* Error Alert */}

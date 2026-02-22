@@ -214,7 +214,12 @@ const DocumentUpload = ({
       let completedIDPUploads = 0;
 
       // Step 1: Upload all files to ServiceNow in parallel (faster!)
+      // This triggers BOTH: ServiceNow attachment + docintel_attachment flag (old flow)
+      console.log('[DocumentUpload] ========================================');
+      console.log('[DocumentUpload] DUAL FLOW MODE: Running both DocIntel (old) + IDP (new)');
+      console.log('[DocumentUpload] ========================================');
       console.log('[DocumentUpload] Step 1: Uploading', totalFiles, 'file(s) to ServiceNow in parallel...');
+      console.log('[DocumentUpload] → This will set docintel_attachment flag (triggers old DocIntel flow)');
       const snowPromises = files.map(async (fileData) => {
         try {
           const result = await serviceNowService.uploadDocument(
@@ -237,6 +242,7 @@ const DocumentUpload = ({
 
       // Step 2 & 3: Send all files to IDP for processing in parallel (faster!)
       console.log('[DocumentUpload] Step 2 & 3: Sending', totalFiles, 'file(s) to IDP in parallel...');
+      console.log('[DocumentUpload] → IDP will process and callback to ServiceNow (new IDP flow)');
       const idpFilesToUpload = files
         .map(f => f.file)
         .filter((file, index) => snowResults[index].success); // Only process files that uploaded to ServiceNow
@@ -394,7 +400,7 @@ const DocumentUpload = ({
               <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
                 {dragActive ? 'Drop files here' : 'Drag and drop files here'}
               </DxcTypography>
-              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+              <DxcTypography fontSize="12px" color="#000000">
                 or
               </DxcTypography>
               <DxcButton
@@ -405,7 +411,7 @@ const DocumentUpload = ({
                 disabled={uploading}
               />
             </DxcFlex>
-            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+            <DxcTypography fontSize="12px" color="#000000">
               Accepted: {acceptedFileTypes.join(', ')} • Max size: {formatFileSize(maxFileSize)}
             </DxcTypography>
           </DxcFlex>
@@ -469,7 +475,7 @@ const DocumentUpload = ({
                         <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
                           {file.name}
                         </DxcTypography>
-                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                        <DxcTypography fontSize="12px" color="#000000">
                           {formatFileSize(file.size)} • {file.type || 'Unknown type'}
                         </DxcTypography>
                       </DxcFlex>
@@ -547,7 +553,7 @@ const DocumentUpload = ({
                         <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
                           {attachment.file_name?.display_value || attachment.file_name || 'Unknown'}
                         </DxcTypography>
-                        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                        <DxcTypography fontSize="12px" color="#000000">
                           {attachment.size_bytes ? formatFileSize(parseInt(attachment.size_bytes)) : 'Size unknown'}
                           {' • '}
                           {attachment.sys_created_on ? new Date(attachment.sys_created_on).toLocaleDateString() : 'Date unknown'}
@@ -572,7 +578,7 @@ const DocumentUpload = ({
 
         {loadingAttachments && (
           <DxcFlex justifyContent="center">
-            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+            <DxcTypography fontSize="12px" color="#000000">
               Loading existing documents...
             </DxcTypography>
           </DxcFlex>

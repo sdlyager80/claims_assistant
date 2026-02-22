@@ -1,26 +1,28 @@
 .pending-claims-review {
   padding: 24px;
   width: 100%;
-  background-color: #f5f5f5;
+  background-color: #F8F9FA; /* BLOOM: Page background */
 }
 
 .pending-claims-review .claim-card {
   background-color: var(--color-bg-neutral-lightest);
   border-radius: var(--border-radius-m);
-  box-shadow: var(--shadow-mid-04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* BLOOM: Card shadow */
   padding: var(--spacing-padding-m);
   cursor: pointer;
-  transition: box-shadow 0.15s;
+  transition: all 0.2s ease; /* BLOOM: Smooth transition */
+  border-left: 4px solid #1B75BB; /* BLOOM: Blue left accent border */
 }
 
 .pending-claims-review .claim-card:hover {
-  box-shadow: var(--shadow-mid-06);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* BLOOM: Enhanced hover shadow */
+  transform: translateY(-2px); /* BLOOM: Lift effect */
 }
 
 .pending-claims-review .policy-nested-section {
   margin-left: 24px;
   padding-left: 16px;
-  border-left: 3px solid var(--border-color-neutral-lighter);
+  /* Removed border-left to avoid double border effect with outer accent border */
 }
 
 .pending-claims-review .beneficiary-row {

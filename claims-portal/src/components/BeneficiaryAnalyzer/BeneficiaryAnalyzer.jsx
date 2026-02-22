@@ -877,7 +877,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: extractedBen.relationship === 'Primary' ? '#E3F2FD' : '#FFF3E0',
                             color: extractedBen.relationship === 'Primary' ? '#1565C0' : '#E65100',
                             fontSize: '13px',
-                            fontWeight: '600',
+                            fontWeight: 600,
                             border: `1px solid ${extractedBen.relationship === 'Primary' ? '#90CAF9' : '#FFB74D'}`
                           }}>
                             {extractedBen.relationship}
@@ -888,7 +888,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: '#F3F4F6',
                             color: '#1F2937',
                             fontSize: '13px',
-                            fontWeight: '700',
+                            fontWeight: 700,
                             border: '1px solid #D1D5DB'
                           }}>
                             {extractedBen.percentage}%
@@ -900,7 +900,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                               backgroundColor: '#E8F5E9',
                               color: '#2E7D32',
                               fontSize: '13px',
-                              fontWeight: '600',
+                              fontWeight: 600,
                               display: 'flex',
                               alignItems: 'center',
                               gap: '6px',
@@ -1045,7 +1045,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                     backgroundColor: '#FFFFFF',
                                     color: '#1565C0',
                                     fontSize: '12px',
-                                    fontWeight: '600'
+                                    fontWeight: 600
                                   }}>
                                     ID: {extractedBen.sourceDocument.id}
                                   </span>
@@ -1056,7 +1056,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                       backgroundColor: '#FFFFFF',
                                       color: '#1565C0',
                                       fontSize: '12px',
-                                      fontWeight: '600'
+                                      fontWeight: 600
                                     }}>
                                       Page {extractedBen.sourceDocument.pageNumber}
                                     </span>

@@ -1,3 +1,4 @@
+/* BLOOM: Party Form Grid */
 .party-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -8,4 +9,39 @@
   .party-form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* BLOOM: Input Focus States - Fix Partial Highlighting */
+.party-form-grid input:focus,
+.party-form-grid select:focus,
+.party-form-grid textarea:focus {
+  outline: 2px solid #1B75BB !important; /* BLOOM: Blue */
+  outline-offset: 0px !important;
+  border-color: #1B75BB !important;
+  box-shadow: 0 0 0 3px rgba(27, 117, 187, 0.1) !important;
+}
+
+/* BLOOM: Remove Partial Border Highlighting */
+.party-form-grid div[class*="textInput"],
+.party-form-grid div[class*="select"] {
+  width: 100% !important;
+}
+
+.party-form-grid div[class*="textInput"] > div,
+.party-form-grid div[class*="select"] > div {
+  width: 100% !important;
+}
+
+/* BLOOM: Section Headers */
+.party-form-grid + * {
+  border-left: 4px solid #1B75BB !important;
+  border-radius: 8px !important;
+}
+
+/* BLOOM: Beneficiary Section - Info Background */
+[style*="bg-info-lightest"] {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border-radius: 8px !important;
+  border-left: 4px solid #1B75BB !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }

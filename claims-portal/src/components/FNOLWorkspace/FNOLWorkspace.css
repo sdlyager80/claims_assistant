@@ -1,7 +1,8 @@
+/* BLOOM: FNOL Workspace Enhanced Styling */
 .fnol-workspace {
   padding: 24px;
   width: 100%;
-  background-color: #f5f5f5;
+  background-color: #F8F9FA; /* BLOOM: Page background */
 }
 
 .fnol-workspace .source-indicator {
@@ -14,41 +15,367 @@
   min-height: 400px;
 }
 
+/* BLOOM: Submission Source Section - Blue Accent */
+.fnol-workspace > div > div:nth-child(2) {
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #1B75BB !important; /* BLOOM: Blue accent */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
+}
+
+/* BLOOM: Progress Bar Container */
+.fnol-workspace .dxc-progress-bar {
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #37A526 !important; /* BLOOM: Green accent for progress */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
+}
+
+/* BLOOM: Stage Tabs Container */
+.fnol-workspace > div > div:nth-child(4) {
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #0095FF !important; /* BLOOM: Cyan accent for stages */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
+}
+
+/* BLOOM: Tab Buttons Enhanced */
+.fnol-workspace button[role="tab"] {
+  min-height: 44px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  transition: all 0.2s ease !important;
+  border: 2px solid transparent !important;
+}
+
+.fnol-workspace button[role="tab"]:not([aria-selected="true"]) {
+  background-color: #F8F9FA !important;
+  color: #58595B !important;
+  border-color: #D1D3D4 !important;
+}
+
+.fnol-workspace button[role="tab"]:not([aria-selected="true"]):hover {
+  background-color: #E3F2FD !important;
+  color: #1B75BB !important;
+  border-color: #1B75BB !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.2) !important;
+}
+
+.fnol-workspace button[role="tab"][aria-selected="true"] {
+  background: linear-gradient(135deg, #1B75BB 0%, #155A93 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #1B75BB !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+}
+
+/* BLOOM: Policy Match Section */
+.fnol-workspace .stage-content > div > div:first-child {
+  padding: 16px !important;
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border-left: 4px solid #1B75BB !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 16px !important;
+}
+
+/* BLOOM: Search for Policy Button - Make it BOLD and BLUE */
+.fnol-workspace button:has([class*="search"]):not([role="tab"]) {
+  min-height: 44px !important;
+  background: linear-gradient(135deg, #1B75BB 0%, #155A93 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.fnol-workspace button:has([class*="search"]):not([role="tab"]):hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 8px 16px rgba(27, 117, 187, 0.4) !important;
+  background: linear-gradient(135deg, #155A93 0%, #1B75BB 100%) !important;
+}
+
+.fnol-workspace button:has([class*="search"]):not([role="tab"]):disabled {
+  background: linear-gradient(135deg, #D1D3D4 0%, #A7A8AA 100%) !important;
+  border-color: #D1D3D4 !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* BLOOM: Policy Match Found Card - Green Accent */
+.fnol-workspace .stage-content div[style*="border: 2px solid"] {
+  background: linear-gradient(135deg, #E8F5E3 0%, #C8E6C9 100%) !important;
+  border-radius: 8px !important;
+  border: 2px solid #37A526 !important;
+  border-left: 4px solid #37A526 !important;
+  box-shadow: 0 2px 6px rgba(55, 165, 38, 0.2) !important;
+  padding: 16px !important;
+}
+
+/* BLOOM: Death Verification Section - Orange Accent */
+.fnol-workspace .death-verification-section {
+  border-top: none !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #F6921E !important; /* BLOOM: Orange accent */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  background-color: #FFFFFF !important;
+  padding: 16px !important;
+  margin-top: 16px !important;
+}
+
+/* BLOOM: Run Automated Death Search Button - Secondary Blue */
+.fnol-workspace button:has([class*="search"])[mode="secondary"] {
+  min-height: 44px !important;
+  background-color: #E3F2FD !important;
+  color: #1B75BB !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button:has([class*="search"])[mode="secondary"]:hover:not(:disabled) {
+  background-color: #1B75BB !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+}
+
+/* BLOOM: Select Files Button */
+.fnol-workspace button:has([class*="folder"]),
+.fnol-workspace .dxc-file-input button {
+  min-height: 44px !important;
+  background-color: #FFFFFF !important;
+  color: #1B75BB !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button:has([class*="folder"]):hover,
+.fnol-workspace .dxc-file-input button:hover {
+  background-color: #E3F2FD !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+}
+
+/* BLOOM: Policy Result Row Cards */
 .fnol-workspace .policy-result-row {
   padding: 16px;
-  border: 1px solid var(--border-color-neutral-lighter);
-  border-radius: var(--border-radius-m);
-  background-color: var(--color-bg-neutral-lightest);
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #0095FF !important; /* BLOOM: Cyan accent */
+  border-radius: 8px !important;
+  background-color: #FFFFFF !important;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .fnol-workspace .policy-result-row:hover {
-  background-color: var(--color-bg-neutral-lighter);
+  background-color: #F8F9FA !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+  border-left-color: #0073C5 !important; /* BLOOM: Darker cyan on hover */
 }
 
-.fnol-workspace .death-verification-section {
-  border-top: 1px solid var(--border-color-neutral-lighter);
-  padding-top: 16px;
-  margin-top: 16px;
+/* BLOOM: Primary Action Buttons (Proceed, Continue, etc.) */
+.fnol-workspace button:not([role="tab"]):not([role="combobox"]):not(:has([class*="search"])):not([mode="secondary"]):not([mode="tertiary"]) {
+  min-height: 44px !important;
+  background: linear-gradient(135deg, #1B75BB 0%, #155A93 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button:not([role="tab"]):not([role="combobox"]):not(:has([class*="search"])):not([mode="secondary"]):not([mode="tertiary"]):hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 12px rgba(27, 117, 187, 0.4) !important;
+  background: linear-gradient(135deg, #155A93 0%, #1B75BB 100%) !important;
+}
+
+/* BLOOM: Secondary Buttons (Back, etc.) */
+.fnol-workspace button[mode="secondary"]:not(:has([class*="search"])) {
+  min-height: 44px !important;
+  background-color: #FFFFFF !important;
+  color: #58595B !important;
+  border: 2px solid #D1D3D4 !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button[mode="secondary"]:not(:has([class*="search"])):hover:not(:disabled) {
+  background-color: #F8F9FA !important;
+  border-color: #58595B !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* BLOOM: Tertiary Buttons (Remove Association, etc.) */
+.fnol-workspace button[mode="tertiary"] {
+  min-height: 44px !important;
+  background-color: #FEF1E8 !important;
+  color: #F6921E !important;
+  border: 2px solid #F6921E !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 18px !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button[mode="tertiary"]:hover {
+  background-color: #F6921E !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(246, 146, 30, 0.3) !important;
+}
+
+/* BLOOM: Tie to Claim Button - Green */
+.fnol-workspace button:has([class*="link"]):not(:has([class*="link_off"])) {
+  min-height: 44px !important;
+  background-color: #E8F5E3 !important;
+  color: #37A526 !important;
+  border: 2px solid #37A526 !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 18px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace button:has([class*="link"]):not(:has([class*="link_off"])):hover {
+  background-color: #37A526 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(55, 165, 38, 0.3) !important;
+}
+
+/* BLOOM: Input Fields Focus States */
+.fnol-workspace input:focus,
+.fnol-workspace select:focus,
+.fnol-workspace textarea:focus {
+  outline: 2px solid #1B75BB !important; /* BLOOM: Blue */
+  outline-offset: 0px !important;
+  border-color: #1B75BB !important;
+  box-shadow: 0 0 0 3px rgba(27, 117, 187, 0.1) !important;
+}
+
+/* BLOOM: Manual Policy Search Section */
+.fnol-workspace div[style*="borderTop"] {
+  border-top: 2px solid #D1D3D4 !important;
+  padding-top: 16px !important;
+  margin-top: 16px !important;
+}
+
+/* BLOOM: Packet Contents Section */
+.fnol-workspace div[style*="color-bg-neutral-lighter"] {
+  background-color: #F8F9FA !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #1B75BB !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
 }
 
 .fnol-workspace .packet-preview {
-  border: 2px dashed var(--border-color-neutral-light);
-  border-radius: var(--border-radius-m);
+  border: 2px dashed #1B75BB !important; /* BLOOM: Blue dashed */
+  border-radius: 8px !important;
   padding: 24px;
   text-align: center;
-  background-color: var(--color-bg-neutral-lighter);
+  background-color: #E3F2FD !important; /* BLOOM: Light blue background */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .fnol-workspace .qr-code-placeholder {
   width: 150px;
   height: 150px;
-  border: 2px solid var(--color-fg-neutral-strong);
-  border-radius: var(--border-radius-s);
+  border: 3px solid #1B75BB !important; /* BLOOM: Blue border */
+  border-radius: 8px !important;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  background-color: var(--color-bg-neutral-lightest);
+  background-color: #FFFFFF !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
+
+/* BLOOM: Badge Enhancements */
+.fnol-workspace .dxc-badge {
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  border: 2px solid transparent !important;
+  min-height: 28px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* BLOOM: Chip Enhancements */
+.fnol-workspace .dxc-chip {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  background-color: #E3F2FD !important;
+  color: #1B75BB !important;
+  border: 2px solid #1B75BB !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.fnol-workspace .dxc-chip:hover {
+  background-color: #1B75BB !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+}
+
+/* BLOOM: Alert Enhancements */
+.fnol-workspace .dxc-alert {
+  border-radius: 8px !important;
+  border-left-width: 4px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* BLOOM: Fix Date Picker Visual Alignment with Other Inputs */
+.fnol-workspace .dxc-date-input {
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Date Input - Keep it simple and let Halstack handle styling */
+.fnol-workspace .dxc-date-input {
+  width: 100%;
+}
+
+/* BLOOM: Data Values Must Be Black */
+.fnol-workspace [style*="font-weight-semibold"] {
+  color: #000000 !important;
+}
+

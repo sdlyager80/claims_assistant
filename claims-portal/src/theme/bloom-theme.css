@@ -134,11 +134,12 @@
      GRADIENTS
      ============================================================================ */
 
-  --gradient-primary: linear-gradient(135deg, #1B75BB 0%, #00ADEE 100%);
-  --gradient-primary-vertical: linear-gradient(180deg, #1B75BB 0%, #00ADEE 100%);
-  --gradient-success: linear-gradient(135deg, #37A526 0%, #8BC53F 100%);
-  --gradient-warning: linear-gradient(135deg, #F6921E 0%, #E8DE23 100%);
-  --gradient-subtle: linear-gradient(180deg, #F2F7F6 0%, #FFFFFF 100%);
+  /* BLOOM COMPLIANCE: Gradients are prohibited - replaced with flat colors */
+  --gradient-primary: #1B75BB;
+  --gradient-primary-vertical: #1B75BB;
+  --gradient-success: #37A526;
+  --gradient-warning: #F6921E;
+  --gradient-subtle: #F8F9FA;
 
   /* ============================================================================
      SHADOWS
@@ -851,4 +852,352 @@ a:focus, .bloom-link:focus {
   color: var(--color-blue-darker, #0F4470) !important;
   background-color: var(--color-blue-darker, #0F4470) !important;
   border-color: var(--color-blue-darker, #0F4470) !important;
+}
+
+/* ============================================================================
+   BLOOM ENHANCED BUTTONS - OPTION 1
+   Modern, polished button styling with Bloom aesthetics
+   Targets ALL buttons including Halstack DxcButton components
+   ============================================================================ */
+
+/* Universal button base - applies to ALL buttons EXCEPT sidebar */
+button:not(.collapse-toggle):not(.nav-item):not(.footer-item),
+input[type="button"],
+input[type="submit"],
+[role="button"]:not(.nav-item) {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-family: var(--font-body, 'Roboto', sans-serif) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  min-height: 44px !important;
+  padding: 12px 24px !important;
+}
+
+/* PRIMARY BUTTONS - Main CTAs */
+/* Target Halstack primary mode buttons */
+button[mode="primary"],
+div[class*="primary"] > button,
+[class*="primary-button"],
+.primary-button {
+  background: var(--color-blue, #1B75BB) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 4px rgba(27, 117, 187, 0.2) !important;
+}
+
+button[mode="primary"]:hover:not([disabled]),
+div[class*="primary"] > button:hover:not([disabled]) {
+  background: var(--color-blue-dark, #155f99) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+button[mode="primary"]:active:not([disabled]),
+div[class*="primary"] > button:active:not([disabled]) {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(27, 117, 187, 0.2) !important;
+}
+
+/* SECONDARY BUTTONS - Supporting actions */
+button[mode="secondary"],
+div[class*="secondary"] > button,
+[class*="secondary-button"],
+.secondary-button {
+  background: white !important;
+  color: var(--color-blue, #1B75BB) !important;
+  border: 2px solid var(--color-blue, #1B75BB) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+button[mode="secondary"]:hover:not([disabled]),
+div[class*="secondary"] > button:hover:not([disabled]) {
+  background: #F0F7FB !important;
+  border-color: var(--color-blue-dark, #155f99) !important;
+  box-shadow: 0 3px 6px rgba(27, 117, 187, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+button[mode="secondary"]:active:not([disabled]),
+div[class*="secondary"] > button:active:not([disabled]) {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* TERTIARY BUTTONS - Minimal style */
+button[mode="tertiary"],
+div[class*="tertiary"] > button,
+[class*="tertiary-button"],
+.tertiary-button {
+  background: transparent !important;
+  color: var(--color-blue, #1B75BB) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+button[mode="tertiary"]:hover:not([disabled]),
+div[class*="tertiary"] > button:hover:not([disabled]) {
+  background: #F0F7FB !important;
+  box-shadow: 0 2px 4px rgba(27, 117, 187, 0.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+button[mode="tertiary"]:active:not([disabled]),
+div[class*="tertiary"] > button:active:not([disabled]) {
+  background: #E5F2F9 !important;
+  transform: translateY(0) !important;
+}
+
+/* TEXT BUTTONS - Inline text actions */
+button[mode="text"],
+div[class*="text"] > button,
+[class*="text-button"],
+.text-button {
+  background: transparent !important;
+  color: var(--color-blue, #1B75BB) !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 8px 16px !important;
+}
+
+button[mode="text"]:hover:not([disabled]),
+div[class*="text"] > button:hover:not([disabled]) {
+  background: #F0F7FB !important;
+  text-decoration: underline !important;
+}
+
+/* SIZE VARIANTS */
+button[size="small"],
+[class*="small"] > button,
+button.small {
+  min-height: 36px !important;
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
+}
+
+button[size="large"],
+[class*="large"] > button,
+button.large {
+  min-height: 52px !important;
+  padding: 16px 32px !important;
+  font-size: 1.125rem !important;
+}
+
+button[size="fitContent"],
+button[size="fillParent"] {
+  min-height: 44px !important;
+}
+
+/* ICON BUTTONS - Ensure icons align properly */
+button span.material-icons,
+button span[class*="icon"] {
+  vertical-align: middle !important;
+  font-size: 20px !important;
+}
+
+/* DISABLED STATE */
+button:disabled,
+button[disabled],
+[aria-disabled="true"] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button:disabled:hover,
+button[disabled]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* FOCUS STATE - Accessibility */
+button:focus-visible {
+  outline: 2px solid var(--color-blue, #1B75BB) !important;
+  outline-offset: 2px !important;
+}
+
+/* LOADING STATE */
+button[aria-busy="true"],
+button.loading {
+  pointer-events: none !important;
+  opacity: 0.7 !important;
+}
+
+/* Override any component-specific styles (except sidebar) */
+div[class*="DxcButton"] button,
+[class*="dxc-button"]:not(.nav-item):not(.collapse-toggle):not(.footer-item),
+.dxc-button:not(.nav-item):not(.collapse-toggle):not(.footer-item) {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* ============================================================================
+   SIDEBAR BUTTON OVERRIDES - Restore sidebar-specific styling
+   These have higher specificity to override the global button styles
+   ============================================================================ */
+
+/* Collapse Toggle Button */
+.modern-sidebar .collapse-toggle {
+  min-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-md) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.modern-sidebar .collapse-toggle:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+  box-shadow: none !important;
+}
+
+/* Navigation Items */
+.modern-sidebar .nav-item {
+  min-height: auto !important;
+  padding: var(--spacing-3) var(--spacing-6) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border: none !important;
+  border-left: 3px solid transparent !important;
+  box-shadow: none !important;
+  font-weight: var(--font-weight-medium) !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+/* Navigation Icons - Ensure visibility */
+.modern-sidebar .nav-item .nav-icon,
+.modern-sidebar .nav-item span.material-icons {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 20px !important;
+}
+
+.modern-sidebar.collapsed .nav-item .nav-icon,
+.modern-sidebar.collapsed .nav-item span.material-icons,
+.modern-sidebar.collapsed .nav-item .material-icons {
+  color: #FFFFFF !important;
+  font-size: 28px !important;
+  line-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: block !important;
+  text-align: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.modern-sidebar.collapsed .nav-item:hover .nav-icon,
+.modern-sidebar.collapsed .nav-item:hover span.material-icons {
+  color: white !important;
+  transform: scale(1.1) !important;
+}
+
+.modern-sidebar.collapsed .nav-item.active .nav-icon,
+.modern-sidebar.collapsed .nav-item.active span.material-icons {
+  color: white !important;
+}
+
+.modern-sidebar.collapsed .nav-item {
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 8px 8px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  border: none !important;
+  border-left: none !important;
+  min-height: 56px !important;
+  height: 56px !important;
+  width: 56px !important;
+  max-width: 56px !important;
+  position: relative !important;
+  display: flex !important;
+  overflow: visible !important;
+}
+
+/* Tooltip for collapsed sidebar items */
+.modern-sidebar.collapsed .nav-item::after {
+  content: attr(title) !important;
+  position: absolute !important;
+  left: 100% !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin-left: 12px !important;
+  padding: 8px 12px !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  border-radius: 6px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease !important;
+  z-index: 1000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.modern-sidebar.collapsed .nav-item:hover::after {
+  opacity: 1 !important;
+}
+
+.modern-sidebar .nav-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border-left-color: rgba(255, 255, 255, 0.3) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.modern-sidebar.collapsed .nav-item:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.modern-sidebar .nav-item.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  border-left-color: var(--color-orange) !important;
+  box-shadow: inset 0 0 12px rgba(246, 146, 30, 0.2) !important;
+  font-weight: var(--font-weight-bold) !important;
+  transform: none !important;
+}
+
+.modern-sidebar.collapsed .nav-item.active {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-left: none !important;
+  box-shadow: 0 0 12px rgba(246, 146, 30, 0.3) !important;
+  transform: none !important;
+}
+
+/* Footer Items */
+.modern-sidebar .footer-item {
+  min-height: auto !important;
+  padding: var(--spacing-3) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.modern-sidebar .footer-item:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+  box-shadow: none !important;
 }

@@ -95,11 +95,11 @@ const ClaimHeader = ({
                 <span className="material-icons" style={{ fontSize: '16px', color: 'var(--color-fg-neutral-strong)' }}>
                   person
                 </span>
-                <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-strong)">
+                <DxcTypography fontSize="font-scale-02" color="#000000" /* BLOOM */>
                   {claim.insured?.name || claim.claimant?.name || 'Unknown'}
                 </DxcTypography>
                 <span style={{ color: 'var(--color-fg-neutral-stronger)' }}>|</span>
-                <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+                <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                   Policy: {claim.policy?.policyNumber || 'N/A'}
                 </DxcTypography>
               </DxcFlex>
@@ -151,7 +151,7 @@ const ClaimHeader = ({
         <div className="claim-header-metrics">
           {/* Claim Amount */}
           <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+            <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
               CLAIM AMOUNT
             </DxcTypography>
             <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -161,7 +161,7 @@ const ClaimHeader = ({
 
           {/* Days Open */}
           <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+            <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
               DAYS OPEN
             </DxcTypography>
             <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -174,21 +174,21 @@ const ClaimHeader = ({
             <>
               {slaDate && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     SLA STATUS
                   </DxcTypography>
                   <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
                     <span className="material-icons" style={{ fontSize: '18px', color: metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)' }}>
                       {metSla ? 'check_circle' : 'cancel'}
                     </span>
-                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: metSla ? 'var(--color-fg-success-medium)' : 'var(--color-fg-error-medium)' }}>
+                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: '#000000' }}>
                       {metSla ? 'Met' : 'Missed'}
                     </DxcTypography>
                   </DxcFlex>
                 </DxcFlex>
               )}
               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                   CLOSED DATE
                 </DxcTypography>
                 <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
@@ -200,11 +200,11 @@ const ClaimHeader = ({
             <>
               {daysRemaining !== null && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     SLA DAYS REMAINING
                   </DxcTypography>
                   <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: getSLAColor(daysRemaining) }}>
+                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" style={{ color: '#000000' }}>
                       {daysRemaining}
                     </DxcTypography>
                     {daysRemaining <= 3 && (
@@ -217,7 +217,7 @@ const ClaimHeader = ({
               )}
               {slaDate && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     TARGET CLOSE DATE
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
@@ -231,7 +231,7 @@ const ClaimHeader = ({
           {/* Examiner */}
           {claim.workflow?.assignedTo && (
             <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                 EXAMINER
               </DxcTypography>
               <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
@@ -243,7 +243,7 @@ const ClaimHeader = ({
           {/* Requirements Progress */}
           {claim.requirements && claim.requirements.length > 0 && (
             <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                 REQUIREMENTS
               </DxcTypography>
               <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">

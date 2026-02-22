@@ -323,10 +323,14 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
         {/* Main Content Area */}
         <DxcContainer padding="var(--spacing-padding-l)">
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-            {/* Progress Card */}
+            {/* Progress Card - BLOOM: Enhanced with left accent border */}
             <DxcContainer
           padding="var(--spacing-padding-l)"
-          style={{ backgroundColor: "var(--color-bg-neutral-lightest)" }}
+          style={{
+            backgroundColor: "var(--color-bg-neutral-lightest)",
+            borderLeft: "4px solid #1B75BB", /* BLOOM: Blue accent */
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+          }}
         >
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
             <DxcHeading level={3} text="Claim Progress" />
@@ -351,7 +355,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                       <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
                         SLA DAYS REMAINING
                       </DxcTypography>
-                      <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color={color}>
+                      <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                         {isClosed ? 'Closed' : daysRemaining}
                       </DxcTypography>
                     </DxcFlex>
@@ -370,7 +374,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
                   FASTTRACK ELIGIBLE
                 </DxcTypography>
-                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color={claim.routing?.type === 'FASTTRACK' ? 'var(--color-fg-success-medium)' : 'var(--color-fg-neutral-dark)'}>
+                <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                   {claim.routing?.type === 'FASTTRACK' ? 'Yes' : 'No'}
                 </DxcTypography>
               </DxcFlex>
@@ -519,24 +523,28 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         mode="secondary"
                         icon="payments"
                         onClick={() => setActiveTab(1)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="View Policy Details"
                         mode="secondary"
                         icon="policy"
                         onClick={() => setActiveTab(2)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="Manage Requirements"
                         mode="secondary"
                         icon="checklist"
                         onClick={() => setActiveTab(4)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="Upload Documents"
                         mode="secondary"
                         icon="upload_file"
                         onClick={() => setActiveTab(5)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       {claim.deathEvent && (
                       <DxcButton
@@ -544,6 +552,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         mode="primary"
                         icon="psychology"
                         onClick={() => setActiveTab(6)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       )}
                     </DxcFlex>
@@ -554,55 +563,71 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Financials Tab */}
               {activeTab === 1 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-                  {/* Reserve Summary */}
-                  <DxcFlex gap="var(--spacing-gap-m)">
+                  {/* Reserve Summary - BLOOM: Enhanced stat cards with left accent borders */}
+                  <DxcFlex gap="32px">
                     <DxcContainer
                       padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: "var(--color-bg-info-lighter)" }}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lightest)",
+                        borderLeft: "4px solid #1B75BB", /* BLOOM: Blue accent */
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                      }}
                     >
                       <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
                         <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
                           TOTAL CLAIM AMOUNT
                         </DxcTypography>
-                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                           {formatCurrency(financialData.totalClaimAmount)}
                         </DxcTypography>
                       </DxcFlex>
                     </DxcContainer>
                     <DxcContainer
                       padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: "var(--color-bg-success-lighter)" }}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lightest)",
+                        borderLeft: "4px solid #37A526", /* BLOOM: Green accent */
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                      }}
                     >
                       <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
                         <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
                           TOTAL PAID
                         </DxcTypography>
-                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                           {formatCurrency(financialData.reserves.paid)}
                         </DxcTypography>
                       </DxcFlex>
                     </DxcContainer>
                     <DxcContainer
                       padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: "var(--color-bg-warning-lighter)" }}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lightest)",
+                        borderLeft: "4px solid #F6921E", /* BLOOM: Orange accent */
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                      }}
                     >
                       <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
                         <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
                           OUTSTANDING RESERVE
                         </DxcTypography>
-                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                        <DxcTypography fontSize="32px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                           {formatCurrency(financialData.reserves.outstanding)}
                         </DxcTypography>
                       </DxcFlex>
                     </DxcContainer>
                   </DxcFlex>
 
-                  {/* Reserve Details */}
+                  {/* Reserve Details - BLOOM: Enhanced card with left accent border */}
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcHeading level={4} text="Reserve History" />
                     <DxcContainer
                       padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lightest)",
+                        borderLeft: "4px solid #1B75BB", /* BLOOM: Blue accent */
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                      }}
                       border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
                     >
                       <DxcFlex direction="column" gap="var(--spacing-gap-s)">
@@ -614,14 +639,14 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         </DxcFlex>
                         <DxcFlex justifyContent="space-between">
                           <DxcTypography fontSize="font-scale-03">Payments Issued</DxcTypography>
-                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+                          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                             -{formatCurrency(financialData.reserves.paid)}
                           </DxcTypography>
                         </DxcFlex>
                         <div style={{ borderTop: "1px solid var(--border-color-neutral-light)", paddingTop: "var(--spacing-gap-s)" }}>
                           <DxcFlex justifyContent="space-between">
                             <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">Current Reserve</DxcTypography>
-                            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                               {formatCurrency(financialData.reserves.current)}
                             </DxcTypography>
                           </DxcFlex>
@@ -641,6 +666,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                           size="small"
                           icon="calculate"
                           onClick={() => setShowPMICalculator(true)}
+                          style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                         />
                         <DxcButton
                           label="Tax Withholding"
@@ -648,31 +674,52 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                           size="small"
                           icon="account_balance"
                           onClick={() => setShowTaxCalculator(true)}
+                          style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                         />
-                        <DxcButton label="View EOB" mode="tertiary" size="small" icon="description" />
+                        <DxcButton
+                          label="View EOB"
+                          mode="tertiary"
+                          size="small"
+                          icon="description"
+                          style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
+                        />
                       </DxcFlex>
                     </DxcFlex>
                     {financialData.payments.map((payment, index) => (
                       <DxcContainer
                         key={index}
-                        style={{ backgroundColor: "var(--color-bg-neutral-lighter)", cursor: "pointer" }}
+                        style={{
+                          backgroundColor: "var(--color-bg-neutral-lightest)",
+                          cursor: "pointer",
+                          borderLeft: "4px solid #37A526", /* BLOOM: Green accent for paid */
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                          transition: "all 0.2s ease"
+                        }}
                         border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
                         onClick={() => {
                           setSelectedPayment(payment);
                           setShowPaymentModal(true);
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)";
+                          e.currentTarget.style.transform = "translateY(-2px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+                          e.currentTarget.style.transform = "translateY(0)";
                         }}
                       >
                         <DxcInset space="var(--spacing-padding-m)">
                           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                             <DxcFlex justifyContent="space-between" alignItems="center">
                               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
-                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                   {payment.id}
                                 </DxcTypography>
                                 <DxcTypography fontSize="font-scale-03">{payment.payee}</DxcTypography>
                                 <DxcBadge label={payment.status} />
                               </DxcFlex>
-                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                 {formatCurrency(payment.amount)}
                               </DxcTypography>
                             </DxcFlex>
@@ -733,25 +780,30 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         mode="primary"
                         icon="add"
                         onClick={handleSchedulePayment}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                     </DxcFlex>
                     {financialData.pendingPayments.map((payment, index) => (
                       <DxcContainer
                         key={index}
-                        style={{ backgroundColor: "var(--color-bg-warning-lightest)" }}
+                        style={{
+                          backgroundColor: "var(--color-bg-warning-lightest)",
+                          borderLeft: "4px solid #F6921E", /* BLOOM: Orange accent for pending */
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                        }}
                         border={{ color: "var(--border-color-warning-lighter)", style: "solid", width: "1px" }}
                       >
                         <DxcInset space="var(--spacing-padding-m)">
                           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                             <DxcFlex justifyContent="space-between" alignItems="center">
                               <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
-                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                   {payment.id}
                                 </DxcTypography>
                                 <DxcTypography fontSize="font-scale-03">{payment.payee}</DxcTypography>
                                 <DxcBadge label={payment.status} />
                               </DxcFlex>
-                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                              <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                 {formatCurrency(payment.amount)}
                               </DxcTypography>
                             </DxcFlex>
@@ -765,8 +817,18 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                                 <DxcTypography fontSize="font-scale-03">{payment.scheduledDate}</DxcTypography>
                               </DxcFlex>
                               <DxcFlex gap="var(--spacing-gap-s)" style={{ marginLeft: "auto" }}>
-                                <DxcButton label="Approve" mode="primary" size="small" />
-                                <DxcButton label="Reject" mode="secondary" size="small" />
+                                <DxcButton
+                                  label="Approve"
+                                  mode="primary"
+                                  size="small"
+                                  style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
+                                />
+                                <DxcButton
+                                  label="Reject"
+                                  mode="secondary"
+                                  size="small"
+                                  style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
+                                />
                               </DxcFlex>
                             </DxcFlex>
                           </DxcFlex>
@@ -783,11 +845,21 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="Policy Details" />
-                      <DxcButton label="View Full Policy" mode="secondary" size="small" icon="open_in_new" />
+                      <DxcButton
+                        label="View Full Policy"
+                        mode="secondary"
+                        size="small"
+                        icon="open_in_new"
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
+                      />
                     </DxcFlex>
                     <DxcContainer
                       padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
+                      style={{
+                        backgroundColor: "var(--color-bg-neutral-lightest)",
+                        borderLeft: "4px solid #1B75BB", /* BLOOM: Blue accent */
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                      }}
                       border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
                     >
                       <div className="policy-details-grid">
@@ -805,7 +877,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                           <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">{claim.lossEvent ? 'Coverage Limit' : 'Face Amount'}</DxcTypography>
-                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">{claim.lossEvent ? (claim.policy?.coverageLimit ? formatCurrency(claim.policy.coverageLimit) : 'N/A') : policyDetails.coverage}</DxcTypography>
+                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>{claim.lossEvent ? (claim.policy?.coverageLimit ? formatCurrency(claim.policy.coverageLimit) : 'N/A') : policyDetails.coverage}</DxcTypography>
                         </DxcFlex>
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                           <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Issue Date</DxcTypography>
@@ -852,12 +924,17 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         mode="primary"
                         icon="psychology"
                         onClick={() => setShowBeneficiaryAnalyzer(true)}
+                        style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                     </DxcFlex>
                     {beneficiaries.map((ben, index) => (
                       <DxcContainer
                         key={index}
-                        style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
+                        style={{
+                          backgroundColor: "var(--color-bg-neutral-lightest)",
+                          borderLeft: "4px solid #37A526", /* BLOOM: Green accent */
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                        }}
                         border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
                       >
                         <DxcInset space="var(--spacing-padding-m)">
@@ -877,7 +954,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                               </DxcFlex>
                               <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Amount</DxcTypography>
-                                <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">{ben.amount}</DxcTypography>
+                                <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>{ben.amount}</DxcTypography>
                               </DxcFlex>
                               <DxcBadge label={ben.status} />
                             </DxcFlex>
@@ -904,7 +981,11 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                     timelineEvents.map((event, index) => (
                       <DxcContainer
                         key={index}
-                        style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
+                        style={{
+                          backgroundColor: "var(--color-bg-neutral-lightest)",
+                          borderLeft: "4px solid #808285", /* BLOOM: Gray accent for timeline */
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+                        }}
                         border={{ color: "var(--border-color-neutral-lighter)", style: "solid", width: "1px" }}
                       >
                         <DxcInset space="var(--spacing-padding-m)">
@@ -1043,7 +1124,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
       {/* Modal Dialogs */}
       {/* PMI Calculator Modal */}
       {showPMICalculator && (
-        <DxcDialog isCloseVisible={false}>
+        <DxcDialog
+          isCloseVisible
+          onCloseClick={() => setShowPMICalculator(false)}
+        >
           <PMICalculator
             claimData={claim}
             onCalculate={(result) => {
@@ -1060,7 +1144,10 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Tax Withholding Calculator Modal */}
       {showTaxCalculator && (
-        <DxcDialog isCloseVisible={false}>
+        <DxcDialog
+          isCloseVisible
+          onCloseClick={() => setShowTaxCalculator(false)}
+        >
           <TaxWithholdingCalculator
             claimData={claim}
             paymentData={claim.financial?.payments?.[0]}
@@ -1078,7 +1165,13 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Payment Quick View Modal */}
       {showPaymentModal && selectedPayment && (
-        <DxcDialog isCloseVisible={false}>
+        <DxcDialog
+          isCloseVisible
+          onCloseClick={() => {
+            setShowPaymentModal(false);
+            setSelectedPayment(null);
+          }}
+        >
           <PaymentQuickView
             payment={selectedPayment}
             onEdit={(payment) => {
@@ -1106,7 +1199,13 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Policy Detail View Modal */}
       {showPolicyModal && selectedPolicy && (
-        <DxcDialog isCloseVisible={false}>
+        <DxcDialog
+          isCloseVisible
+          onCloseClick={() => {
+            setShowPolicyModal(false);
+            setSelectedPolicy(null);
+          }}
+        >
           <PolicyDetailView
             policy={selectedPolicy}
             onEdit={(policy) => {
@@ -1135,7 +1234,13 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
 
       {/* Party Add/Edit Form Modal */}
       {showPartyForm && (
-        <DxcDialog isCloseVisible={false}>
+        <DxcDialog
+          isCloseVisible
+          onCloseClick={() => {
+            setShowPartyForm(false);
+            setSelectedParty(null);
+          }}
+        >
           <PartyForm
             party={selectedParty}
             onSave={(partyData) => {

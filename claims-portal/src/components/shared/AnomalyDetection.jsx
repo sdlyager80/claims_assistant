@@ -127,7 +127,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
               <DxcTypography
                 fontSize="font-scale-03"
                 fontWeight="font-weight-semibold"
-                color="var(--color-fg-error-medium)"
+                color="#000000"
               >
                 {totalAlerts} Alert{totalAlerts !== 1 ? 's' : ''}
               </DxcTypography>
@@ -171,7 +171,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
         >
           <DxcFlex gap="var(--spacing-gap-xl)">
             <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="12px" color="#000000">
                 POLICY NUMBER
               </DxcTypography>
               <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
@@ -179,7 +179,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
               </DxcTypography>
             </DxcFlex>
             <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="12px" color="#000000">
                 CLAIM NUMBER
               </DxcTypography>
               <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
@@ -219,7 +219,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                     <DxcFlex direction="column" gap="var(--spacing-gap-xs)" style={{ flex: 1 }}>
                       <DxcFlex gap="var(--spacing-gap-s)" alignItems="center" wrap="wrap">
                         <DxcFlex gap="4px" alignItems="center">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" color="#000000">
                             Business Rule ID:
                           </DxcTypography>
                           <DxcTypography
@@ -231,7 +231,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                           </DxcTypography>
                         </DxcFlex>
                         <DxcFlex gap="4px" alignItems="center">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" color="#000000">
                             Severity:
                           </DxcTypography>
                           <DxcTypography
@@ -243,7 +243,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                           </DxcTypography>
                         </DxcFlex>
                         <DxcFlex gap="4px" alignItems="center">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" color="#000000">
                             Risk Type:
                           </DxcTypography>
                           <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -251,7 +251,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                           </DxcTypography>
                         </DxcFlex>
                         <DxcFlex gap="4px" alignItems="center">
-                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" color="#000000">
                             Status:
                           </DxcTypography>
                           <DxcTypography
@@ -280,7 +280,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                     <>
                       {finding.Evidence && finding.Evidence.length > 0 && (
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ paddingTop: '8px', borderTop: '1px solid var(--border-color-neutral-light)' }}>
-                          <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="#000000">
                             Evidence:
                           </DxcTypography>
                           {finding.Evidence.map((evidence, evidenceIndex) => (
@@ -293,7 +293,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
 
                       {finding.Recommendation && (
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ paddingTop: '8px', borderTop: '1px solid var(--border-color-neutral-light)' }}>
-                          <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="12px" fontWeight="font-weight-semibold" color="#000000">
                             Recommendation:
                           </DxcTypography>
                           <DxcTypography fontSize="font-scale-02" style={{ paddingLeft: '16px' }}>
@@ -329,7 +329,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                 <DxcFlex justifyContent="space-between" alignItems="center">
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ flex: 1 }}>
                     {action.Finding_ID && (
-                      <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                      <DxcTypography fontSize="12px" color="#000000">
                         Related to: {action.Finding_ID}
                       </DxcTypography>
                     )}
@@ -338,7 +338,7 @@ const AnomalyDetection = ({ anomalyData, onClose }) => {
                     </DxcTypography>
                   </DxcFlex>
                   <DxcFlex gap="4px" alignItems="center">
-                    <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+                    <DxcTypography fontSize="12px" color="#000000">
                       Priority:
                     </DxcTypography>
                     <DxcTypography

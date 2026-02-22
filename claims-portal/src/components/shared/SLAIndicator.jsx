@@ -107,7 +107,7 @@ const SLAIndicator = ({
           <span className="material-icons" style={{ color: '#666666', fontSize: '16px' }}>
             check_circle
           </span>
-          <DxcTypography fontSize="font-scale-01" color="#666666" fontWeight="600">
+          <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM: Data values black */ fontWeight={600}>
             Closed
           </DxcTypography>
         </DxcFlex>
@@ -119,7 +119,7 @@ const SLAIndicator = ({
         <span className="material-icons" style={{ color: getColor(), fontSize: '16px' }}>
           {getIcon()}
         </span>
-        <DxcTypography fontSize="font-scale-01" color={getColor()} fontWeight="600">
+        <DxcTypography fontSize="font-scale-01" color="#000000" fontWeight={600}>
           {status === 'overdue'
             ? `SLA Overdue ${Math.abs(daysRemaining)}d`
             : status === 'critical'
@@ -145,12 +145,12 @@ const SLAIndicator = ({
             <span className="material-icons" style={{ color: '#666666', fontSize: '20px' }}>
               check_circle
             </span>
-            <DxcTypography fontSize="font-scale-02" fontWeight="600" color="#666666">
+            <DxcTypography fontSize="font-scale-02" fontWeight={600} color="#000000" /* BLOOM: Data values black */>
               Closed
             </DxcTypography>
           </DxcFlex>
           {showCountdown && (
-            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+            <DxcTypography fontSize="font-scale-01" color="#000000">
               Completed
             </DxcTypography>
           )}
@@ -159,10 +159,10 @@ const SLAIndicator = ({
           <DxcFlex direction="column" gap="0.25rem">
             <DxcProgressBar value={100} showValue={false} />
             <DxcFlex justifyContent="space-between">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="font-scale-01" color="#000000">
                 Completed in {daysOpen} days
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography fontSize="font-scale-01" color="#000000">
                 {routing === 'fasttrack' ? 'STP SLA: ≤10 days' : 'Standard SLA'}
               </DxcTypography>
             </DxcFlex>
@@ -188,8 +188,8 @@ const SLAIndicator = ({
           </span>
           <DxcTypography
             fontSize="font-scale-02"
-            fontWeight="600"
-            color={getColor()}
+            fontWeight={600}
+            color="#000000"
           >
             {status === 'overdue' && 'SLA Overdue'}
             {status === 'critical' && 'SLA Critical'}
@@ -199,7 +199,7 @@ const SLAIndicator = ({
         </DxcFlex>
 
         {showCountdown && (
-          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+          <DxcTypography fontSize="font-scale-01" color="#000000">
             {daysRemaining >= 0 ? (
               <>
                 {daysRemaining}d {hoursRemaining}h remaining
@@ -219,10 +219,10 @@ const SLAIndicator = ({
             showValue={false}
           />
           <DxcFlex justifyContent="space-between">
-            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+            <DxcTypography fontSize="font-scale-01" color="#000000">
               Day {daysOpen} of {slaDays}
             </DxcTypography>
-            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+            <DxcTypography fontSize="font-scale-01" color="#000000">
               {routing === 'fasttrack' ? 'STP SLA: ≤10 days' : 'Standard SLA'}
             </DxcTypography>
           </DxcFlex>
@@ -245,7 +245,7 @@ export const SLACountdownCompact = ({ daysRemaining, status = 'on-track', claimS
         <span className="material-icons" style={{ color: '#666666', fontSize: '16px' }}>
           check_circle
         </span>
-        <DxcTypography fontSize="font-scale-01" color="#666666" fontWeight="600">
+        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM: Data values black */ fontWeight={600}>
           Closed
         </DxcTypography>
       </DxcFlex>
@@ -272,8 +272,8 @@ export const SLACountdownCompact = ({ daysRemaining, status = 'on-track', claimS
       </span>
       <DxcTypography
         fontSize="font-scale-01"
-        color={getColor()}
-        fontWeight="600"
+        color="#000000"
+        fontWeight={600}
       >
         {daysRemaining >= 0 ? `${daysRemaining}d` : `Overdue ${Math.abs(daysRemaining)}d`}
       </DxcTypography>
