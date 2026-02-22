@@ -34,6 +34,7 @@ import SLAIndicator from '../shared/SLAIndicator';
 import RequirementsTracker from '../shared/RequirementsTracker';
 import DocumentUpload from '../shared/DocumentUpload';
 import BeneficiaryAnalysisPanel from './BeneficiaryAnalysisPanel';
+import RelatedPoliciesPanel from '../RelatedPoliciesPanel/RelatedPoliciesPanel';
 import { ClaimStatus, RoutingType, RequirementStatus } from '../../types/claim.types';
 
 /**
@@ -374,6 +375,20 @@ const ClaimDetail = ({ claimId, onClose }) => {
     // TODO: Implement override
   };
 
+  const handleInitiateClaim = (policy) => {
+    console.log('Initiating death claim for related policy:', policy.policyNumber);
+    // TODO: Navigate to FNOL form with pre-populated data
+    // Example: navigate(`/claims/new?policyNumber=${policy.policyNumber}&relatedClaim=${claim.claimNumber}`);
+    alert(`Initiating death claim for policy ${policy.policyNumber}\n\nThis would:\n1. Pre-populate FNOL with deceased information\n2. Copy death certificate from current claim\n3. Link to original claim: ${claim.claimNumber}\n4. Navigate to intake form`);
+  };
+
+  const handleViewPolicy = (policy) => {
+    console.log('Viewing policy details:', policy.policyNumber);
+    // TODO: Navigate to policy detail view
+    // Example: navigate(`/policies/${policy.policyNumber}`);
+    alert(`Viewing policy ${policy.policyNumber}\n\nThis would navigate to the Policy Detail View.`);
+  };
+
   // Loading state
   if (claimsLoading && !claim) {
     return (
@@ -494,10 +509,25 @@ const ClaimDetail = ({ claimId, onClose }) => {
                 </DxcTabs.Tab>
 
                 <DxcTabs.Tab
-                  label="Activity"
-                  icon="timeline"
+                  label="Related Policies"
+                  icon="policy"
                   active={activeTabIndex === 2}
                   onClick={() => setActiveTabIndex(2)}
+                >
+                  <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
+                    <RelatedPoliciesPanel
+                      claimData={claim}
+                      onInitiateClaim={handleInitiateClaim}
+                      onViewPolicy={handleViewPolicy}
+                    />
+                  </div>
+                </DxcTabs.Tab>
+
+                <DxcTabs.Tab
+                  label="Activity"
+                  icon="timeline"
+                  active={activeTabIndex === 3}
+                  onClick={() => setActiveTabIndex(3)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <DxcTypography fontSize="font-scale-03">
@@ -509,8 +539,8 @@ const ClaimDetail = ({ claimId, onClose }) => {
                 <DxcTabs.Tab
                   label="Notes"
                   icon="note"
-                  active={activeTabIndex === 3}
-                  onClick={() => setActiveTabIndex(3)}
+                  active={activeTabIndex === 4}
+                  onClick={() => setActiveTabIndex(4)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <DxcTypography fontSize="font-scale-03">
