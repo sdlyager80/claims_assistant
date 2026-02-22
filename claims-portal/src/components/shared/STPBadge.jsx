@@ -70,12 +70,12 @@ export const STPEligibilityIndicator = ({ eligibility }) => {
     <DxcFlex direction="column" gap="0.5rem">
       <DxcFlex gap="0.5rem" alignItems="center">
         <STPBadge eligible={eligible} />
-        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+        <DxcTypography fontSize="font-scale-01" color="#000000">
           Confidence: {confidence}%
         </DxcTypography>
       </DxcFlex>
       {reason && (
-        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+        <DxcTypography fontSize="font-scale-01" color="#000000">
           {reason}
         </DxcTypography>
       )}

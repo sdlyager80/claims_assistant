@@ -167,7 +167,7 @@ const QueueManagement = () => {
                 <span style={{
                   fontSize: '40px',
                   fontWeight: 700,
-                  color: metric.color,
+                  color: "#000000" /* BLOOM */,
                   lineHeight: 1
                 }}>
                   {metric.value}

@@ -165,22 +165,13 @@ const PartyForm = ({ party, onSave, onCancel, onCSLNSearch }) => {
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
-        <DxcFlex justifyContent="space-between" alignItems="center">
-          <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-            <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
-              person_add
-            </span>
-            <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
-              {isEditMode ? 'Edit Party' : 'Add Party'}
-            </DxcTypography>
-          </DxcFlex>
-          {onCancel && (
-            <DxcButton
-              mode="tertiary"
-              icon="close"
-              onClick={onCancel}
-            />
-          )}
+        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+          <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
+            person_add
+          </span>
+          <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
+            {isEditMode ? 'Edit Party' : 'Add Party'}
+          </DxcTypography>
         </DxcFlex>
 
         {/* Success Message */}
@@ -387,12 +378,6 @@ const PartyForm = ({ party, onSave, onCancel, onCSLNSearch }) => {
             </DxcFlex>
           </DxcContainer>
         )}
-
-        {/* Info Alert */}
-        <DxcAlert
-          type="info"
-          inlineText="Party information will be verified against cmA and Policy Admin systems. CSLN search can be performed after initial save."
-        />
 
         {/* Actions */}
         <DxcFlex gap="var(--spacing-gap-s)" justifyContent="flex-end">

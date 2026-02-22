@@ -81,19 +81,16 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
 
         {/* Total Face Amount Summary */}
         {policies.length > 0 && (
-          <DxcContainer
-            padding="var(--spacing-padding-s)"
-            style={{ backgroundColor: 'var(--color-bg-info-lighter)' }}
-          >
+          <div className="total-face-amount">
             <DxcFlex justifyContent="space-between" alignItems="center">
-              <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">
+              <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="#000000" /* BLOOM */>
                 Total Face Amount
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+              <DxcTypography fontSize="32px" fontWeight="font-weight-bold" color="#000000" /* BLOOM: Data values must be black */>
                 {formatCurrency(totalFaceAmount)}
               </DxcTypography>
             </DxcFlex>
-          </DxcContainer>
+          </div>
         )}
 
         {/* Policy Cards */}
@@ -101,13 +98,9 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
           <DxcFlex direction="column" gap="var(--spacing-gap-s)">
             {policies.map((policy, index) => (
               <div key={policy.policyNumber || index}>
-                {index > 0 && <DxcDivider />}
-                <DxcContainer
-                  padding="var(--spacing-padding-m)"
-                  style={{
-                    backgroundColor: 'var(--color-bg-neutral-lighter)',
-                    cursor: 'pointer'
-                  }}
+                {index > 0 && <div style={{ height: '16px' }} />}
+                <div
+                  className="policy-card"
                   onClick={() => onViewPolicy && onViewPolicy(policy)}
                 >
                   <DxcFlex direction="column" gap="var(--spacing-gap-m)">
@@ -117,9 +110,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                         <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
                           <DxcTypography
                             fontSize="font-scale-03"
-                            fontWeight="font-weight-semibold"
-                            color="var(--color-fg-primary-stronger)"
-                            style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                            className="policy-number-link"
                           >
                             {policy.policyNumber}
                           </DxcTypography>
@@ -133,10 +124,10 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                         </DxcFlex>
                       </DxcFlex>
                       <DxcFlex direction="column" alignItems="flex-end" gap="var(--spacing-gap-xs)">
-                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000" /* BLOOM */>
                           {formatCurrency(policy.faceAmount)}
                         </DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                           Face Amount
                         </DxcTypography>
                       </DxcFlex>
@@ -145,7 +136,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                     {/* Policy Details Grid */}
                     <div className="policy-details-grid">
                       <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                           Region
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01">
@@ -154,7 +145,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                       </DxcFlex>
 
                       <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                           Co #
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01">
@@ -163,7 +154,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                       </DxcFlex>
 
                       <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                           Issue Date
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01">
@@ -172,7 +163,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                       </DxcFlex>
 
                       <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                        <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                        <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                           Product Type
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01">
@@ -182,7 +173,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
 
                       {policy.planCode && (
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                             Plan Code
                           </DxcTypography>
                           <DxcTypography fontSize="font-scale-01">
@@ -193,7 +184,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
 
                       {policy.issueState && (
                         <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                          <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                             Issue State
                           </DxcTypography>
                           <DxcTypography fontSize="font-scale-01">
@@ -227,7 +218,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
                       />
                     </DxcFlex>
                   </DxcFlex>
-                </DxcContainer>
+                </div>
               </div>
             ))}
           </DxcFlex>
@@ -240,7 +231,7 @@ const PolicySummaryPanel = ({ policies = [], onViewPolicy, onAssociate, onDissoc
               <span className="material-icons" style={{ fontSize: '48px', color: 'var(--color-fg-neutral-stronger)' }}>
                 description
               </span>
-              <DxcTypography color="var(--color-fg-neutral-strong)">
+              <DxcTypography color="#000000" /* BLOOM */>
                 No policies associated with this claim
               </DxcTypography>
               <DxcButton

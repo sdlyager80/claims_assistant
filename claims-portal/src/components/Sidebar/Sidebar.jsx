@@ -130,30 +130,61 @@ const Sidebar = ({ currentView, onNavigationClick, collapsed = false, onToggleCo
             {isCollapsed && groupIndex > 0 && (
               <div className="nav-divider"></div>
             )}
-            <ul className="nav-items">
-              {group.items.map((item) => (
-                <li key={item.id}>
+            {isCollapsed ? (
+              /* Collapsed: Simple icon buttons matching collapse-toggle */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: 0 }}>
+                {group.items.map((item) => (
                   <button
-                    className={`nav-item ${currentView === item.id ? 'active' : ''}`}
+                    key={item.id}
                     onClick={() => onNavigationClick(item.id)}
-                    title={isCollapsed ? item.label : ''}
+                    title={item.label}
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      padding: 0,
+                      margin: '0 auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: currentView === item.id ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: 'var(--color-white)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)',
+                      position: 'relative'
+                    }}
                   >
-                    <span className="nav-icon material-icons">{item.icon}</span>
-                    {!isCollapsed && (
-                      <>
-                        <span className="nav-label">{item.label}</span>
-                        {item.badge !== null && item.badge > 0 && (
-                          <span className="nav-badge">{item.badge}</span>
-                        )}
-                      </>
-                    )}
-                    {isCollapsed && item.badge !== null && item.badge > 0 && (
+                    <span className="material-icons" style={{ fontSize: '20px', color: '#FFFFFF' }}>
+                      {item.icon}
+                    </span>
+                    {item.badge !== null && item.badge > 0 && (
                       <span className="nav-badge-dot"></span>
                     )}
                   </button>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            ) : (
+              /* Expanded: Full navigation with labels */
+              <ul className="nav-items">
+                {group.items.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      className={`nav-item ${currentView === item.id ? 'active' : ''}`}
+                      onClick={() => onNavigationClick(item.id)}
+                    >
+                      <span className="material-icons nav-icon">
+                        {item.icon}
+                      </span>
+                      <span className="nav-label">{item.label}</span>
+                      {item.badge !== null && item.badge > 0 && (
+                        <span className="nav-badge">{item.badge}</span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </nav>

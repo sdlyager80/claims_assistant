@@ -464,7 +464,7 @@ const FNOLWorkspace = ({ onClaimSelect }) => {
                         <DxcFlex justifyContent="space-between" alignItems="center" wrap="wrap" gap="var(--spacing-gap-s)">
                           <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                             <DxcFlex gap="var(--spacing-gap-s)" alignItems="center">
-                              <DxcTypography fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                              <DxcTypography fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                                 {policy.policyNumber}
                               </DxcTypography>
                               <DxcBadge label={policy.type} mode="contextual" color="info" />

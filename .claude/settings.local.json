@@ -29,7 +29,12 @@
       "Bash(timeout:*)",
       "WebFetch(domain:developer.dxc.com)",
       "WebFetch(domain:github.com)",
-      "Bash(npx vite build:*)"
+      "Bash(npx vite build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(xargs sed:*)",
+      "Bash(git check-ignore:*)"
     ]
   }
 }

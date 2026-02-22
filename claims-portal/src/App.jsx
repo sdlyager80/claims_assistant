@@ -176,18 +176,39 @@ function AppContent() {
                     ref={actionsButtonRef}
                     onClick={openActionsMenu}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      padding: '6px 14px', cursor: 'pointer',
-                      background: 'transparent',
-                      border: '1px solid var(--color-border-primary-medium)',
-                      borderRadius: 'var(--border-radius-s)',
-                      color: 'var(--color-fg-primary-stronger)',
-                      fontSize: '14px', fontWeight: '500',
-                      userSelect: 'none'
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '10px 18px',
+                      minHeight: '44px', /* BLOOM: Minimum button height */
+                      cursor: 'pointer',
+                      background: actionsMenuOpen ? '#1B75BB' : '#FFFFFF', /* BLOOM: Blue when open, white when closed */
+                      border: actionsMenuOpen ? '2px solid #1B75BB' : '2px solid #1B75BB', /* BLOOM: Always blue border */
+                      borderRadius: '8px', /* BLOOM: Rounded corners */
+                      color: actionsMenuOpen ? '#FFFFFF' : '#1B75BB', /* BLOOM: White text when open, blue when closed */
+                      fontSize: '14px',
+                      fontWeight: '700', /* BLOOM: Bold */
+                      userSelect: 'none',
+                      transition: 'all 0.2s ease',
+                      boxShadow: actionsMenuOpen ? '0 2px 6px rgba(27, 117, 187, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.1)' /* BLOOM: Shadow */
+                    }}
+                    onMouseEnter={e => {
+                      if (!actionsMenuOpen) {
+                        e.currentTarget.style.background = '#1B75BB';
+                        e.currentTarget.style.color = '#FFFFFF';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(27, 117, 187, 0.3)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!actionsMenuOpen) {
+                        e.currentTarget.style.background = '#FFFFFF';
+                        e.currentTarget.style.color = '#1B75BB';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                      }
                     }}
                   >
                     Actions
-                    <span className="material-icons" style={{ fontSize: '18px' }}>expand_more</span>
+                    <span className="material-icons" style={{ fontSize: '18px', transition: 'transform 0.2s ease', transform: actionsMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
                   </button>
                   {actionsMenuOpen && createPortal(
                     <div
@@ -196,20 +217,20 @@ function AppContent() {
                         position: 'fixed',
                         top: menuPos.top,
                         right: menuPos.right,
-                        minWidth: '250px',
-                        backgroundColor: 'var(--color-bg-neutral-lightest)',
-                        border: '1px solid var(--border-color-neutral-lighter)',
-                        borderRadius: 'var(--border-radius-m)',
-                        boxShadow: 'var(--shadow-mid-04)',
+                        minWidth: '280px',
+                        backgroundColor: '#FFFFFF', /* BLOOM: Pure white background */
+                        border: '1px solid #D1D3D4', /* BLOOM: Gray border */
+                        borderRadius: '8px', /* BLOOM: Rounded corners */
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', /* BLOOM: Enhanced shadow */
                         zIndex: 99999,
                         overflow: 'hidden'
                       }}>
                       {/* Product Line Toggle Section */}
-                      <div style={{ padding: '8px 16px 4px', borderBottom: '1px solid var(--border-color-neutral-lighter)' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-fg-neutral-strong)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
-                          Demo Product Line
+                      <div style={{ padding: '12px 16px 12px', borderBottom: '1px solid #E8E9EA' /* BLOOM: Light gray divider */ }}>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#58595B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                          DEMO PRODUCT LINE
                         </div>
-                        <div style={{ display: 'flex', gap: '6px', paddingBottom: '8px' }}>
+                        <div style={{ display: 'flex', gap: '8px', paddingBottom: '4px' }}>
                           {[
                             { id: 'la', label: 'L&A', icon: 'favorite', title: 'Life & Annuity' },
                             { id: 'pc', label: 'P&C', icon: 'directions_car', title: 'Property and Casualty' }
@@ -220,22 +241,39 @@ function AppContent() {
                               title={pl.title}
                               style={{
                                 flex: 1,
-                                padding: '7px 10px',
+                                padding: '10px 12px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '6px',
-                                background: productLine === pl.id ? 'var(--color-bg-primary-strong)' : 'var(--color-bg-neutral-lighter)',
-                                border: productLine === pl.id ? '1.5px solid var(--color-border-primary-medium)' : '1.5px solid transparent',
-                                borderRadius: 'var(--border-radius-s)',
+                                background: productLine === pl.id ? '#1B75BB' : '#F8F9FA', /* BLOOM: Blue for selected, light gray for unselected */
+                                border: productLine === pl.id ? '2px solid #1B75BB' : '2px solid #D1D3D4', /* BLOOM: Visible border */
+                                borderRadius: '8px', /* BLOOM: Rounded corners */
                                 cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: productLine === pl.id ? '600' : '400',
-                                color: productLine === pl.id ? 'var(--color-fg-primary-stronger)' : 'var(--color-fg-neutral-dark)',
-                                transition: 'all 0.15s'
+                                fontSize: '14px',
+                                fontWeight: productLine === pl.id ? '700' : '600',
+                                color: productLine === pl.id ? '#FFFFFF' : '#000000', /* BLOOM: White text on selected, black on unselected */
+                                transition: 'all 0.2s ease',
+                                boxShadow: productLine === pl.id ? '0 2px 6px rgba(27, 117, 187, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.1)', /* BLOOM: Shadow */
+                                minHeight: '44px', /* BLOOM: Minimum button height */
+                                opacity: 1 /* BLOOM: Fix visibility issue */
+                              }}
+                              onMouseEnter={e => {
+                                if (productLine !== pl.id) {
+                                  e.currentTarget.style.background = '#E8E9EA';
+                                  e.currentTarget.style.transform = 'translateY(-1px)';
+                                  e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
+                                }
+                              }}
+                              onMouseLeave={e => {
+                                if (productLine !== pl.id) {
+                                  e.currentTarget.style.background = '#F8F9FA';
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                                }
                               }}
                             >
-                              <span className="material-icons" style={{ fontSize: '15px' }}>{pl.icon}</span>
+                              <span className="material-icons" style={{ fontSize: '16px' }}>{pl.icon}</span>
                               {pl.label}
                             </button>
                           ))}
@@ -253,22 +291,31 @@ function AppContent() {
                             }}
                             style={{
                               width: '100%',
-                              padding: '10px 16px',
+                              padding: '14px 16px',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '10px',
-                              background: 'none',
+                              gap: '12px',
+                              background: '#FFFFFF', /* BLOOM: White background */
                               border: 'none',
                               cursor: 'pointer',
                               fontSize: '14px',
-                              color: 'var(--color-fg-neutral-dark)',
+                              fontWeight: '600',
+                              color: '#000000', /* BLOOM: Black text */
                               textAlign: 'left',
-                              transition: 'background 0.15s'
+                              transition: 'all 0.2s ease',
+                              minHeight: '44px', /* BLOOM: Minimum button height */
+                              opacity: 1 /* BLOOM: Fix visibility */
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-neutral-lighter)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#FEF1E8'; /* BLOOM: Light orange hover */
+                              e.currentTarget.style.boxShadow = 'inset 0 0 0 2px #F6921E'; /* BLOOM: Orange border */
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#FFFFFF';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
                           >
-                            <span className="material-icons" style={{ fontSize: '18px', color: 'var(--color-fg-error-medium)' }}>link_off</span>
+                            <span className="material-icons" style={{ fontSize: '20px', color: '#D02E2E' /* BLOOM: Red */ }}>link_off</span>
                             Disconnect from ServiceNow
                           </button>
                         ) : (
@@ -279,22 +326,31 @@ function AppContent() {
                             }}
                             style={{
                               width: '100%',
-                              padding: '10px 16px',
+                              padding: '14px 16px',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '10px',
-                              background: 'none',
+                              gap: '12px',
+                              background: '#FFFFFF', /* BLOOM: White background */
                               border: 'none',
                               cursor: 'pointer',
                               fontSize: '14px',
-                              color: 'var(--color-fg-neutral-dark)',
+                              fontWeight: '600',
+                              color: '#000000', /* BLOOM: Black text */
                               textAlign: 'left',
-                              transition: 'background 0.15s'
+                              transition: 'all 0.2s ease',
+                              minHeight: '44px', /* BLOOM: Minimum button height */
+                              opacity: 1 /* BLOOM: Fix visibility */
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-neutral-lighter)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = '#E8F5E3'; /* BLOOM: Light green hover */
+                              e.currentTarget.style.boxShadow = 'inset 0 0 0 2px #37A526'; /* BLOOM: Green border */
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = '#FFFFFF';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
                           >
-                            <span className="material-icons" style={{ fontSize: '18px', color: 'var(--color-fg-success-medium)' }}>link</span>
+                            <span className="material-icons" style={{ fontSize: '20px', color: '#37A526' /* BLOOM: Green */ }}>link</span>
                             Connect to ServiceNow
                           </button>
                         )

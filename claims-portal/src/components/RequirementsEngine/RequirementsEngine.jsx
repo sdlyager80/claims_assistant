@@ -235,57 +235,45 @@ const RequirementsEngine = ({ claim, onGenerateRequirements, onGenerateLetter, o
 
         {/* Requirements Summary */}
         <div className="requirements-summary-grid">
-          <DxcContainer
-            padding="var(--spacing-padding-m)"
-            style={{ backgroundColor: 'var(--color-bg-info-lighter)' }}
-          >
+          <DxcContainer padding="var(--spacing-padding-m)">
             <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography>
                 TOTAL REQUIREMENTS
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+              <DxcTypography color="#000000" /* BLOOM: Data values must be black */>
                 {totalRequirements}
               </DxcTypography>
             </DxcFlex>
           </DxcContainer>
 
-          <DxcContainer
-            padding="var(--spacing-padding-m)"
-            style={{ backgroundColor: 'var(--color-bg-success-lighter)' }}
-          >
+          <DxcContainer padding="var(--spacing-padding-m)">
             <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography>
                 SATISFIED (IGO)
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+              <DxcTypography color="#000000" /* BLOOM: Data values must be black */>
                 {satisfiedRequirements}
               </DxcTypography>
             </DxcFlex>
           </DxcContainer>
 
-          <DxcContainer
-            padding="var(--spacing-padding-m)"
-            style={{ backgroundColor: 'var(--color-bg-warning-lighter)' }}
-          >
+          <DxcContainer padding="var(--spacing-padding-m)">
             <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography>
                 PENDING
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+              <DxcTypography color="#000000" /* BLOOM: Data values must be black */>
                 {pendingRequirements}
               </DxcTypography>
             </DxcFlex>
           </DxcContainer>
 
-          <DxcContainer
-            padding="var(--spacing-padding-m)"
-            style={{ backgroundColor: 'var(--color-bg-error-lighter)' }}
-          >
+          <DxcContainer padding="var(--spacing-padding-m)">
             <DxcFlex direction="column" gap="var(--spacing-gap-xs)" alignItems="center">
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+              <DxcTypography>
                 NOT GOOD (NIGO)
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+              <DxcTypography color="#000000" /* BLOOM: Data values must be black */>
                 {nigoRequirements}
               </DxcTypography>
             </DxcFlex>

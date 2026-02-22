@@ -84,7 +84,7 @@ const ReportsAnalytics = () => {
             <DxcCard key={index} style={{
               flex: '1 1 22%',
               minWidth: '220px',
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+              background: '#FFFFFF' /* BLOOM: No gradients */,
               border: '1px solid #e0e0e0',
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               transition: 'transform 0.2s, box-shadow 0.2s',
@@ -114,7 +114,7 @@ const ReportsAnalytics = () => {
                 <span style={{
                   fontSize: '40px',
                   fontWeight: 700,
-                  color: metric.color,
+                  color: "#000000" /* BLOOM */,
                   lineHeight: 1
                 }}>
                   {metric.value}
@@ -147,7 +147,7 @@ const ReportsAnalytics = () => {
                     <span style={{ fontSize: '14px', fontWeight: 600, color: '#333' }}>{item.type}</span>
                     <DxcFlex gap="1rem" alignItems="center">
                       <span style={{ fontSize: '13px', color: '#666' }}>{item.count} claims</span>
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: item.color }}>{item.amount}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: "#000000" /* BLOOM */ }}>{item.amount}</span>
                     </DxcFlex>
                   </DxcFlex>
                   <div style={{
@@ -229,14 +229,14 @@ const ReportsAnalytics = () => {
                         fontSize: '12px',
                         fontWeight: 600,
                         backgroundColor: item.color + '20',
-                        color: item.color,
+                        color: "#000000" /* BLOOM */,
                         border: `1px solid ${item.color}`
                       }}>
                         {item.status}
                       </span>
                       <span style={{ fontSize: '13px', color: '#999' }}>({item.count} claims)</span>
                     </DxcFlex>
-                    <span style={{ fontSize: '18px', fontWeight: 700, color: item.color }}>{item.avgDays} days</span>
+                    <span style={{ fontSize: '18px', fontWeight: 700, color: "#000000" /* BLOOM */ }}>{item.avgDays} days</span>
                   </DxcFlex>
                   <div style={{
                     width: '100%',

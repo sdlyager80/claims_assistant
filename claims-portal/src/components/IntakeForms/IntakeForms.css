@@ -1,7 +1,303 @@
+/* BLOOM: FNOL Party Portal Enhanced Styling */
 .intake-container {
   padding: 2rem;
-  background-color: #f5f5f5;
+  background-color: #F8F9FA; /* BLOOM: Page background */
   min-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* BLOOM: Main Content Container */
+.intake-container > div > div:first-child {
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #0095FF !important; /* BLOOM: Cyan accent */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 24px !important;
+}
+
+/* BLOOM: Progress Bar Container */
+.intake-container .dxc-progress-bar {
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #37A526 !important; /* BLOOM: Green accent for progress */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+/* BLOOM: Product Selection Cards - Life Insurance (Blue) */
+.intake-container > div > div > div > div > div:nth-child(1)[style*="cursor: pointer"] {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border-radius: 8px !important;
+  border: 2px solid #1B75BB !important;
+  border-left: 4px solid #1B75BB !important;
+  box-shadow: 0 2px 6px rgba(27, 117, 187, 0.2) !important;
+  transition: all 0.2s ease !important;
+  padding: 24px !important;
+  min-height: 220px !important;
+}
+
+.intake-container > div > div > div > div > div:nth-child(1)[style*="cursor: pointer"]:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 16px rgba(27, 117, 187, 0.3) !important;
+  border-color: #155A93 !important;
+  border-left-color: #155A93 !important;
+}
+
+/* BLOOM: Product Selection Cards - Annuity (Green) */
+.intake-container > div > div > div > div > div:nth-child(2)[style*="cursor: pointer"] {
+  background: linear-gradient(135deg, #E8F5E3 0%, #C8E6C9 100%) !important;
+  border-radius: 8px !important;
+  border: 2px solid #37A526 !important;
+  border-left: 4px solid #37A526 !important;
+  box-shadow: 0 2px 6px rgba(55, 165, 38, 0.2) !important;
+  transition: all 0.2s ease !important;
+  padding: 24px !important;
+  min-height: 220px !important;
+}
+
+.intake-container > div > div > div > div > div:nth-child(2)[style*="cursor: pointer"]:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 16px rgba(55, 165, 38, 0.3) !important;
+  border-color: #2B8020 !important;
+  border-left-color: #2B8020 !important;
+}
+
+/* BLOOM: Product Selection Cards - Health (Disabled) */
+.intake-container > div > div > div > div > div:nth-child(3)[style*="cursor: not-allowed"] {
+  background-color: #F8F9FA !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #A7A8AA !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  padding: 24px !important;
+  min-height: 220px !important;
+  opacity: 0.6 !important;
+}
+
+/* BLOOM: Product Card Icons */
+.intake-container [style*="fontSize: \"48px\""] {
+  font-size: 64px !important;
+  margin-bottom: 8px !important;
+}
+
+/* BLOOM: Selected Product Card Border */
+.intake-container div[style*="border: 2px solid var(--color-fg-secondary-medium)"] {
+  border: 3px solid #1B75BB !important;
+  box-shadow: 0 8px 16px rgba(27, 117, 187, 0.4) !important;
+  transform: scale(1.02) !important;
+}
+
+/* BLOOM: Navigation Buttons Container */
+.intake-container > div > div > div > div:last-child {
+  margin-top: 24px !important;
+  padding-top: 24px !important;
+  border-top: 2px solid #D1D3D4 !important;
+}
+
+/* BLOOM: Primary Buttons (Next, Submit Claim) */
+.intake-container button[mode="primary"] {
+  min-height: 44px !important;
+  background: linear-gradient(135deg, #1B75BB 0%, #155A93 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 12px 32px !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.intake-container button[mode="primary"]:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 12px rgba(27, 117, 187, 0.4) !important;
+  background: linear-gradient(135deg, #155A93 0%, #1B75BB 100%) !important;
+}
+
+.intake-container button[mode="primary"]:disabled {
+  background: linear-gradient(135deg, #D1D3D4 0%, #A7A8AA 100%) !important;
+  border-color: #D1D3D4 !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* BLOOM: Secondary Buttons (Back) */
+.intake-container button[mode="secondary"] {
+  min-height: 44px !important;
+  background-color: #FFFFFF !important;
+  color: #58595B !important;
+  border: 2px solid #D1D3D4 !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.intake-container button[mode="secondary"]:hover:not(:disabled) {
+  background-color: #F8F9FA !important;
+  border-color: #58595B !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.intake-container button[mode="secondary"]:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* BLOOM: Tertiary Buttons (Cancel) */
+.intake-container button[mode="tertiary"] {
+  min-height: 44px !important;
+  background-color: #FEF1E8 !important;
+  color: #F6921E !important;
+  border: 2px solid #F6921E !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  transition: all 0.2s ease !important;
+}
+
+.intake-container button[mode="tertiary"]:hover {
+  background-color: #F6921E !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(246, 146, 30, 0.3) !important;
+}
+
+/* BLOOM: What Happens Next Section */
+.intake-container > div > div:nth-child(2) {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%) !important;
+  border-radius: 8px !important;
+  border: 2px solid #D1D3D4 !important;
+  border-left: 4px solid #0095FF !important; /* BLOOM: Cyan accent */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  padding: 32px !important;
+  margin-top: 24px !important;
+}
+
+/* BLOOM: What Happens Next Heading */
+.intake-container > div > div:nth-child(2) h3 {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+  position: relative !important;
+  padding-left: 32px !important;
+}
+
+.intake-container > div > div:nth-child(2) h3::before {
+  content: "✓" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 24px !important;
+  color: #37A526 !important;
+  background-color: #E8F5E3 !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid #37A526 !important;
+}
+
+/* BLOOM: What Happens Next Items */
+.intake-container > div > div:nth-child(2) > div > div > div {
+  padding: 16px !important;
+  background-color: #FFFFFF !important;
+  border-radius: 8px !important;
+  border-left: 4px solid #1B75BB !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+.intake-container > div > div:nth-child(2) > div > div > div:hover {
+  transform: translateX(8px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.15) !important;
+  border-left-color: #155A93 !important;
+}
+
+/* BLOOM: Number Styling in Steps */
+.intake-container > div > div:nth-child(2) [style*="font-weight-semibold"] {
+  color: #1B75BB !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+/* BLOOM: Badge Enhancements */
+.intake-container .dxc-badge {
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  border: 2px solid transparent !important;
+  min-height: 28px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* BLOOM: Connect Event Badge - Green */
+.intake-container .dxc-badge[class*="success"] {
+  background-color: #37A526 !important;
+  color: #FFFFFF !important;
+  border-color: #37A526 !important;
+  animation: pulse 2s ease-in-out infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(55, 165, 38, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(55, 165, 38, 0.4);
+  }
+}
+
+/* BLOOM: Future Phase Badge - Gray */
+.intake-container .dxc-badge[class*="neutral"] {
+  background-color: #A7A8AA !important;
+  color: #FFFFFF !important;
+  border-color: #A7A8AA !important;
+}
+
+/* BLOOM: Input Fields Focus States */
+.intake-container input:focus,
+.intake-container select:focus,
+.intake-container textarea:focus {
+  outline: 2px solid #1B75BB !important;
+  outline-offset: 0px !important;
+  border-color: #1B75BB !important;
+  box-shadow: 0 0 0 3px rgba(27, 117, 187, 0.1) !important;
+}
+
+/* BLOOM: Form Section Headers */
+.intake-container h3 {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+
+/* BLOOM: Data Values Must Be Black */
+.intake-container [style*="font-weight-semibold"] {
+  color: #000000 !important;
+}
+
+/* BLOOM: Container Borders and Shadows */
+.intake-container .dxc-container {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* BLOOM: Responsive Spacing for Product Cards */
+@media (max-width: 768px) {
+  .intake-container > div > div > div > div > div[style*="cursor: pointer"],
+  .intake-container > div > div > div > div > div[style*="cursor: not-allowed"] {
+    min-height: 200px !important;
+  }
 }

@@ -176,7 +176,7 @@ const Dashboard = ({ onClaimSelect }) => {
     <Box>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: 'primary.main' }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: '#1B75BB' }}>
           Claims Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -191,7 +191,8 @@ const Dashboard = ({ onClaimSelect }) => {
             <Card
               sx={{
                 height: '100%',
-                background: `linear-gradient(135deg, ${stat.bgColor} 0%, #FFFFFF 100%)`,
+                /* BLOOM COMPLIANCE: No gradients - use flat color */
+                background: '#FFFFFF',
                 border: `2px solid ${stat.color}20`,
               }}
             >
@@ -292,13 +293,13 @@ const Dashboard = ({ onClaimSelect }) => {
                         sx={{ '&:hover': { bgcolor: '#A1E6FF10' } }}
                       >
                         <TableCell>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#1B75BB' }}>
                             {claim.claimNumber}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', fontSize: '0.875rem' }}>
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#808285', fontSize: '0.875rem' }}>
                               {claim.insuredName?.[0] || 'U'}
                             </Avatar>
                             <Typography variant="body2">{claim.insuredName}</Typography>
@@ -326,8 +327,12 @@ const Dashboard = ({ onClaimSelect }) => {
                           <Tooltip title="View Details">
                             <IconButton
                               size="small"
-                              color="primary"
                               onClick={() => onClaimSelect(claim)}
+                              sx={{
+                                color: '#1B75BB',
+                                minHeight: 44,
+                                '&:hover': { bgcolor: '#1B75BB14' }
+                              }}
                             >
                               <VisibilityIcon />
                             </IconButton>
@@ -362,7 +367,13 @@ const Dashboard = ({ onClaimSelect }) => {
                     variant="contained"
                     fullWidth
                     startIcon={<AssignmentIcon />}
-                    sx={{ justifyContent: 'flex-start', py: 1.5 }}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      minHeight: 44,
+                      bgcolor: '#1B75BB',
+                      fontWeight: 600,
+                      '&:hover': { bgcolor: '#155f99' }
+                    }}
                   >
                     New Claim Entry
                   </Button>
@@ -370,7 +381,14 @@ const Dashboard = ({ onClaimSelect }) => {
                     variant="outlined"
                     fullWidth
                     startIcon={<SpeedIcon />}
-                    sx={{ justifyContent: 'flex-start', py: 1.5 }}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      minHeight: 44,
+                      color: '#1B75BB',
+                      borderColor: '#1B75BB',
+                      fontWeight: 600,
+                      '&:hover': { borderColor: '#155f99', color: '#155f99', bgcolor: '#1B75BB14' }
+                    }}
                   >
                     STP Review
                   </Button>
@@ -378,7 +396,14 @@ const Dashboard = ({ onClaimSelect }) => {
                     variant="outlined"
                     fullWidth
                     startIcon={<SearchIcon />}
-                    sx={{ justifyContent: 'flex-start', py: 1.5 }}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      minHeight: 44,
+                      color: '#1B75BB',
+                      borderColor: '#1B75BB',
+                      fontWeight: 600,
+                      '&:hover': { borderColor: '#155f99', color: '#155f99', bgcolor: '#1B75BB14' }
+                    }}
                   >
                     Search Claims
                   </Button>
@@ -396,7 +421,7 @@ const Dashboard = ({ onClaimSelect }) => {
                   {recentClaims.map((claim, index) => (
                     <Box key={index}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1B75BB' }}>
                           {claim.claimNumber}
                         </Typography>
                         <Chip

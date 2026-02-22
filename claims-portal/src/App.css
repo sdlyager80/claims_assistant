@@ -82,7 +82,8 @@ html body footer {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full, 9999px);
-  background: var(--gradient-primary, linear-gradient(135deg, #1B75BB 0%, #00ADEE 100%));
+  /* BLOOM COMPLIANCE: No gradients - use flat Bloom Blue */
+  background: #1B75BB;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -393,4 +394,321 @@ html body footer {
   color: var(--color-blue-darker, #0F4470) !important;
   background-color: var(--color-blue-darker, #0F4470) !important;
   border-color: var(--color-blue-darker, #0F4470) !important;
+}
+
+/* ============================================================================
+   ENHANCED BLOOM BUTTONS - OPTION 1
+   Modern, polished button styling applied globally
+   Targets Halstack v16 DxcButton components with high specificity
+   ============================================================================ */
+
+/* Primary Buttons - Main actions */
+button[class*="primary"],
+button[mode="primary"],
+button.dxc-button,
+button.dxc-button.primary,
+div[class*="DxcButton"] button,
+[class*="DxcButton"] button,
+button[class*="DxcButton"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 2px 4px rgba(27, 117, 187, 0.2) !important;
+  transition: all 0.2s ease !important;
+  min-height: 44px !important;
+}
+
+/* Primary mode specific */
+button.dxc-button.primary,
+div[class*="primary"] button,
+button[class*="primary"] {
+  background-color: #1B75BB !important;
+  border: none !important;
+  color: white !important;
+}
+
+button[class*="primary"]:hover,
+button[mode="primary"]:hover,
+button.dxc-button:hover,
+div[class*="primary"] button:hover,
+button[class*="DxcButton"]:hover {
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+button.dxc-button.primary:hover,
+button[class*="primary"]:hover {
+  background-color: #155f99 !important;
+}
+
+button[class*="primary"]:active,
+button[mode="primary"]:active,
+[class*="DxcButton"][class*="primary"]:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(27, 117, 187, 0.2) !important;
+}
+
+/* Secondary Buttons - Supporting actions */
+button[class*="secondary"],
+button[mode="secondary"],
+button.dxc-button.secondary,
+div[class*="secondary"] button,
+[class*="DxcButton"][class*="secondary"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  color: #1B75BB !important;
+  min-height: 44px !important;
+}
+
+button[class*="secondary"]:hover,
+button[mode="secondary"]:hover,
+button.dxc-button.secondary:hover,
+div[class*="secondary"] button:hover,
+[class*="DxcButton"][class*="secondary"]:hover {
+  background-color: #F0F7FB !important;
+  border-color: #155f99 !important;
+  box-shadow: 0 3px 6px rgba(27, 117, 187, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+button[class*="secondary"]:active,
+button[mode="secondary"]:active,
+[class*="DxcButton"][class*="secondary"]:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tertiary Buttons - Minimal actions */
+button[class*="tertiary"],
+button[mode="tertiary"],
+button.dxc-button.tertiary,
+div[class*="tertiary"] button,
+[class*="DxcButton"][class*="tertiary"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  transition: all 0.2s ease !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: #1B75BB !important;
+  min-height: 44px !important;
+  box-shadow: none !important;
+}
+
+button[class*="tertiary"]:hover,
+button[mode="tertiary"]:hover,
+button.dxc-button.tertiary:hover,
+div[class*="tertiary"] button:hover,
+[class*="DxcButton"][class*="tertiary"]:hover {
+  background-color: #F0F7FB !important;
+  box-shadow: 0 2px 4px rgba(27, 117, 187, 0.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+button[class*="tertiary"]:active,
+button[mode="tertiary"]:active,
+[class*="DxcButton"][class*="tertiary"]:active {
+  transform: translateY(0) !important;
+  background-color: #E5F2F9 !important;
+}
+
+/* Text Buttons - Inline text actions */
+button[class*="text"],
+button[mode="text"],
+[class*="DxcButton"][class*="text"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: #1B75BB !important;
+  box-shadow: none !important;
+}
+
+button[class*="text"]:hover,
+button[mode="text"]:hover,
+[class*="DxcButton"][class*="text"]:hover {
+  background-color: #F0F7FB !important;
+  text-decoration: underline !important;
+}
+
+/* Small Button Size Adjustments */
+button[class*="small"],
+[class*="DxcButton"][class*="small"] {
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
+  min-height: 36px !important;
+}
+
+/* Large Button Size Adjustments */
+button[class*="large"],
+[class*="DxcButton"][class*="large"] {
+  padding: 16px 32px !important;
+  font-size: 1.125rem !important;
+  min-height: 52px !important;
+}
+
+/* Icon Buttons - Ensure proper spacing */
+button[class*="DxcButton"] span.material-icons,
+button span.material-icons {
+  font-size: 20px !important;
+  vertical-align: middle !important;
+}
+
+/* Disabled State */
+button[disabled],
+button[class*="disabled"],
+[class*="DxcButton"][disabled] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button[disabled]:hover,
+button[class*="disabled"]:hover,
+[class*="DxcButton"][disabled]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Focus States for Accessibility */
+button:focus-visible,
+[class*="DxcButton"]:focus-visible {
+  outline: 2px solid #1B75BB !important;
+  outline-offset: 2px !important;
+}
+
+/* ============================================================================
+   ULTRA-SPECIFIC HALSTACK BUTTON OVERRIDES
+   Catches all button elements regardless of class structure
+   ============================================================================ */
+
+/* Target ALL buttons - Base styling */
+button,
+input[type="button"],
+input[type="submit"],
+[role="button"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+/* Catch-all for any button that doesn't match specific modes */
+/* Exclude sidenav navigation buttons */
+button:not([disabled]):not([class*="icon-only"]):not(.collapse-toggle):not(.nav-item):not(.footer-item) {
+  min-height: 44px !important;
+  padding: 12px 24px !important;
+}
+
+/* Override for NavigationTreeContainer buttons specifically */
+[class*="NavigationTreeContainer"] button:not([disabled]):not([class*="icon-only"]):not(.collapse-toggle):not(.nav-item):not(.footer-item) {
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+/* Small buttons override */
+button[size="small"],
+button.small,
+[class*="small"] button {
+  min-height: 36px !important;
+  padding: 8px 16px !important;
+}
+
+/* Large buttons override */
+button[size="large"],
+button.large,
+[class*="large"] button {
+  min-height: 52px !important;
+  padding: 16px 32px !important;
+}
+
+/* ============================================================================
+   DXC SIDENAV - Fancy Polished Navigation
+   Make navigation beautiful in both collapsed and expanded states
+   ============================================================================ */
+
+/* Make navigation icon spans visible with Bloom blue color */
+[class*="NavigationTreeContainer"] span[role="img"],
+[class*="NavigationTreeContainer"] span[aria-hidden="true"],
+[class*="NavigationTreeContainer"] [class*="IconContainer"] span {
+  color: #1B75BB !important;  /* BLOOM: Blue color */
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smooth animation */
+}
+
+/* Navigation buttons - smooth transitions and subtle effects */
+[class*="NavigationTreeContainer"] button {
+  transition: all 0.2s ease !important;
+  border-radius: 8px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Hover effect - subtle background with smooth transition */
+[class*="NavigationTreeContainer"] button:hover {
+  background: linear-gradient(90deg, rgba(27, 117, 187, 0.08) 0%, rgba(27, 117, 187, 0.12) 100%) !important;
+  transform: translateX(2px) !important;
+  box-shadow: 0 2px 8px rgba(27, 117, 187, 0.15) !important;
+}
+
+/* Hover: Icon scale animation */
+[class*="NavigationTreeContainer"] button:hover span[role="img"],
+[class*="NavigationTreeContainer"] button:hover [class*="IconContainer"] span {
+  transform: scale(1.15) !important;
+  color: #155A93 !important; /* Darker blue on hover */
+}
+
+/* Selected/Active state - Bloom gradient background */
+[class*="NavigationTreeContainer"] button[aria-pressed="true"],
+[class*="NavigationTreeContainer"] button[data-selected="true"] {
+  background: linear-gradient(90deg, #BBDEFB 0%, #E3F2FD 100%) !important;
+  box-shadow: inset 3px 0 0 #1B75BB, 0 2px 6px rgba(27, 117, 187, 0.2) !important;
+  font-weight: 700 !important;
+}
+
+/* Selected: Icon stays bold */
+[class*="NavigationTreeContainer"] button[aria-pressed="true"] span,
+[class*="NavigationTreeContainer"] button[data-selected="true"] span {
+  color: #1B75BB !important;
+  font-weight: 700 !important;
+}
+
+/* Active/Click effect - subtle press animation */
+[class*="NavigationTreeContainer"] button:active {
+  transform: scale(0.98) !important;
+  transition: transform 0.1s ease !important;
+}
+
+/* Spacing between nav items */
+[class*="NavigationTreeContainer"] ul {
+  gap: 16px !important;
+  padding: 12px 0 !important;
+}
+
+/* Ripple effect on click (pseudo-element) */
+[class*="NavigationTreeContainer"] button::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(27, 117, 187, 0.3) !important;
+  transform: translate(-50%, -50%) !important;
+  transition: width 0.6s, height 0.6s !important;
+}
+
+[class*="NavigationTreeContainer"] button:active::before {
+  width: 300px !important;
+  height: 300px !important;
 }

@@ -309,10 +309,11 @@ const RequirementsReceived = ({ onClaimSelect }) => {
 
         {/* Filters */}
         <div style={{
-          backgroundColor: "var(--color-bg-neutral-lightest)",
-          borderRadius: "var(--border-radius-m)",
-          boxShadow: "var(--shadow-mid-02)",
-          padding: "var(--spacing-padding-m)"
+          backgroundColor: "#FFFFFF", /* BLOOM: White */
+          borderRadius: "8px", /* BLOOM: Rounded */
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", /* BLOOM: Shadow */
+          padding: "var(--spacing-padding-m)",
+          borderLeft: "4px solid #00ADEE" /* BLOOM: Cyan accent for filters */
         }}>
           <DxcFlex gap="var(--spacing-gap-m)" alignItems="flex-end" wrap="wrap">
             <div style={{ flex: "1 1 300px" }}>
@@ -391,7 +392,7 @@ const RequirementsReceived = ({ onClaimSelect }) => {
                 <DxcFlex gap="var(--spacing-gap-l)" wrap="wrap">
                   <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
                     <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">CLAIM</DxcTypography>
-                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+                    <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                       {req.claimNumber}
                     </DxcTypography>
                   </DxcFlex>

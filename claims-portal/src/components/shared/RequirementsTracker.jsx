@@ -55,11 +55,11 @@ const RequirementItem = ({ requirement, onUpload, onWaive, onOverride, compact =
           mode="contextual"
           color={getStatusColor(requirement.status)}
         />
-        <DxcTypography fontSize="12px" color="var(--color-fg-neutral-stronger)">
+        <DxcTypography fontSize="12px" color="#000000">
           {requirement.type}
         </DxcTypography>
         {isOverdue && (
-          <DxcTypography fontSize="12px" color="var(--color-fg-error-medium)">
+          <DxcTypography fontSize="12px" color="#000000">
             Overdue
           </DxcTypography>
         )}
@@ -88,7 +88,7 @@ const RequirementItem = ({ requirement, onUpload, onWaive, onOverride, compact =
               <DxcTypography
                 fontSize="font-scale-03"
                 fontWeight="font-weight-semibold"
-                color="var(--color-fg-neutral-stronger)"
+                color="#000000"
               >
                 {requirement.type}
               </DxcTypography>
@@ -106,7 +106,7 @@ const RequirementItem = ({ requirement, onUpload, onWaive, onOverride, compact =
           </DxcFlex>
 
           {/* Description */}
-          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+          <DxcTypography fontSize="12px" color="#000000">
             {requirement.description}
           </DxcTypography>
 
@@ -114,18 +114,18 @@ const RequirementItem = ({ requirement, onUpload, onWaive, onOverride, compact =
           <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
             {requirement.dueDate && (
               <>
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                <DxcTypography fontSize="12px" color="#000000">
                   Due: {new Date(requirement.dueDate).toLocaleDateString()}
                 </DxcTypography>
                 {isOverdue && !isSatisfied && (
-                  <DxcTypography fontSize="12px" color="var(--color-fg-error-medium)" fontWeight="font-weight-semibold">
+                  <DxcTypography fontSize="12px" color="#000000" fontWeight="font-weight-semibold">
                     OVERDUE
                   </DxcTypography>
                 )}
               </>
             )}
             {requirement.documents && requirement.documents.length > 0 && (
-              <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+              <DxcTypography fontSize="12px" color="#000000">
                 Documents: {requirement.documents.length}
               </DxcTypography>
             )}
@@ -277,7 +277,7 @@ const RequirementsTracker = ({
         style={{ backgroundColor: "var(--color-bg-neutral-lighter)" }}
         padding="var(--spacing-padding-l)"
       >
-        <DxcTypography fontSize="font-scale-03" textAlign="center" color="var(--color-fg-neutral-dark)">
+        <DxcTypography fontSize="font-scale-03" textAlign="center" color="#000000">
           No requirements generated yet
         </DxcTypography>
       </DxcContainer>
@@ -297,7 +297,7 @@ const RequirementsTracker = ({
               <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
                 Requirements Progress
               </DxcTypography>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="var(--color-fg-secondary-medium)">
+              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                 {stats.completionPercentage}%
               </DxcTypography>
             </DxcFlex>
@@ -309,7 +309,7 @@ const RequirementsTracker = ({
 
             <DxcFlex gap="var(--spacing-gap-l)" wrap="wrap">
               <DxcFlex gap="var(--spacing-gap-xxs)" direction="column">
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                <DxcTypography fontSize="12px" color="#000000">
                   Total
                 </DxcTypography>
                 <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -318,38 +318,38 @@ const RequirementsTracker = ({
               </DxcFlex>
 
               <DxcFlex gap="var(--spacing-gap-xxs)" direction="column">
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                <DxcTypography fontSize="12px" color="#000000">
                   Satisfied
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
                   {stats.satisfied}
                 </DxcTypography>
               </DxcFlex>
 
               <DxcFlex gap="var(--spacing-gap-xxs)" direction="column">
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                <DxcTypography fontSize="12px" color="#000000">
                   Pending
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-warning-medium)">
+                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
                   {stats.pending}
                 </DxcTypography>
               </DxcFlex>
 
               <DxcFlex gap="var(--spacing-gap-xxs)" direction="column">
-                <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                <DxcTypography fontSize="12px" color="#000000">
                   In Review
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-info-medium)">
+                <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>
                   {stats.inReview}
                 </DxcTypography>
               </DxcFlex>
 
               {stats.overdue > 0 && (
                 <DxcFlex gap="var(--spacing-gap-xxs)" direction="column">
-                  <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">
+                  <DxcTypography fontSize="12px" color="#000000">
                     Overdue
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-error-medium)">
+                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000">
                     {stats.overdue}
                   </DxcTypography>
                 </DxcFlex>

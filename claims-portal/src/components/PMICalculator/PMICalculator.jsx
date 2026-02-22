@@ -136,22 +136,13 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
-        <DxcFlex justifyContent="space-between" alignItems="center">
-          <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-            <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
-              calculate
-            </span>
-            <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
-              Post Mortem Interest Calculator
-            </DxcTypography>
-          </DxcFlex>
-          {onClose && (
-            <DxcButton
-              mode="tertiary"
-              icon="close"
-              onClick={onClose}
-            />
-          )}
+        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+          <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
+            calculate
+          </span>
+          <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
+            Post Mortem Interest Calculator
+          </DxcTypography>
         </DxcFlex>
 
         {/* Error Alert */}
@@ -257,7 +248,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
 
               <div className="pmi-results-grid">
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     Days Between DOD and Settlement
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -266,7 +257,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                 </DxcFlex>
 
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     Interest Rate ({calculationResult.state})
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -275,7 +266,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                 </DxcFlex>
 
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     Claim Amount
                   </DxcTypography>
                   <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
@@ -284,10 +275,10 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                 </DxcFlex>
 
                 <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
-                  <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                  <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                     Interest Amount
                   </DxcTypography>
-                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="var(--color-fg-success-medium)">
+                  <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold" color="#000000" /* BLOOM */>
                     {formatCurrency(calculationResult.interestAmount)}
                   </DxcTypography>
                 </DxcFlex>
@@ -309,7 +300,7 @@ const PMICalculator = ({ claimData, onCalculate, onApply, onClose }) => {
                 </DxcContainer>
               </DxcInset>
 
-              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">
+              <DxcTypography fontSize="font-scale-01" color="#000000" /* BLOOM */>
                 {calculationResult.stateDescription}
               </DxcTypography>
             </DxcFlex>

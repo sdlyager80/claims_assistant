@@ -1,36 +1,243 @@
 .requirements-received {
   padding: 24px;
   width: 100%;
-  background-color: #f5f5f5;
+  background-color: #F8F9FA; /* BLOOM: Page background */
 }
 
 .requirements-received .requirement-item {
   padding: 16px;
-  border: 1px solid var(--border-color-neutral-lighter);
-  border-radius: var(--border-radius-m);
-  background-color: var(--color-bg-neutral-lightest);
-  transition: box-shadow 0.15s;
+  border: 1px solid #D1D3D4; /* BLOOM: Border */
+  border-radius: 8px; /* BLOOM: Rounded corners */
+  background-color: #FFFFFF; /* BLOOM: White background */
+  transition: all 0.2s ease; /* BLOOM: Smooth transition */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* BLOOM: Card shadow */
 }
 
 .requirements-received .requirement-item:hover {
-  box-shadow: var(--shadow-mid-04);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* BLOOM: Enhanced hover shadow */
+  transform: translateY(-2px); /* BLOOM: Lift effect */
 }
 
 .requirements-received .requirement-item.urgent {
-  border-left: 4px solid var(--color-fg-error-medium, #D0021B);
+  border-left: 4px solid #D02E2E; /* BLOOM: Red for urgent */
 }
 
 .requirements-received .requirement-item.pending {
-  border-left: 4px solid var(--color-fg-warning-medium, #FF6B00);
+  border-left: 4px solid #F6921E; /* BLOOM: Orange for pending */
 }
 
 .requirements-received .requirement-item.received {
-  border-left: 4px solid var(--color-fg-success-medium, #24A148);
+  border-left: 4px solid #37A526; /* BLOOM: Green for received */
+}
+
+/* BLOOM: Fancy Badge Styling */
+.requirements-received .dxc-badge,
+.requirements-received [class*="Badge"] {
+  font-weight: 700 !important; /* BLOOM: Bold text */
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important; /* BLOOM: Rounded */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* BLOOM: Shadow */
+  border: 2px solid transparent !important;
+  transition: all 0.2s ease !important;
+  min-height: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-transform: capitalize !important;
+}
+
+/* BLOOM: Badge hover effect */
+.requirements-received .dxc-badge:hover,
+.requirements-received [class*="Badge"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* BLOOM: Info badge (Policy level) - Blue */
+.requirements-received [class*="info"],
+.requirements-received [class*="Info"] {
+  background-color: #1B75BB !important; /* BLOOM: Blue */
+  color: #FFFFFF !important;
+  border-color: #1B75BB !important;
+}
+
+/* BLOOM: Success badge (received) - Green */
+.requirements-received [class*="success"],
+.requirements-received [class*="Success"] {
+  background-color: #37A526 !important; /* BLOOM: Green */
+  color: #FFFFFF !important;
+  border-color: #37A526 !important;
+}
+
+/* BLOOM: Warning badge (pending, medium) - Orange */
+.requirements-received [class*="warning"],
+.requirements-received [class*="Warning"] {
+  background-color: #F6921E !important; /* BLOOM: Orange */
+  color: #FFFFFF !important;
+  border-color: #F6921E !important;
+}
+
+/* BLOOM: Error badge (urgent, high) - Red */
+.requirements-received [class*="error"],
+.requirements-received [class*="Error"] {
+  background-color: #D02E2E !important; /* BLOOM: Red */
+  color: #FFFFFF !important;
+  border-color: #D02E2E !important;
+}
+
+/* BLOOM: Neutral badge (low priority) - Gray */
+.requirements-received [class*="neutral"],
+.requirements-received [class*="Neutral"] {
+  background-color: #808285 !important; /* BLOOM: Gray */
+  color: #FFFFFF !important;
+  border-color: #808285 !important;
 }
 
 .requirements-received .level-section {
-  background-color: var(--color-bg-neutral-lightest);
-  border-radius: var(--border-radius-m);
-  box-shadow: var(--shadow-mid-02);
+  background-color: #FFFFFF; /* BLOOM: White */
+  border-radius: 8px; /* BLOOM: Rounded */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* BLOOM: Shadow */
   padding: var(--spacing-padding-m);
+}
+
+/* BLOOM: Fancy Document Chip Styling */
+.requirements-received .dxc-chip,
+.requirements-received [class*="Chip"] {
+  background-color: #E8F5E3 !important; /* BLOOM: Light green background */
+  border: 2px solid #37A526 !important; /* BLOOM: Green border */
+  border-radius: 8px !important; /* BLOOM: Rounded */
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #000000 !important; /* BLOOM: Black text */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* BLOOM: Shadow */
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  min-height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.requirements-received .dxc-chip:hover,
+.requirements-received [class*="Chip"]:hover {
+  background-color: #D4EAD0 !important; /* BLOOM: Darker green on hover */
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(55, 165, 38, 0.2) !important; /* BLOOM: Green shadow */
+}
+
+/* BLOOM: Fancy Action Buttons */
+.requirements-received button[mode="tertiary"],
+.requirements-received .dxc-button {
+  min-height: 44px !important; /* BLOOM: Minimum button height */
+  border-radius: 8px !important; /* BLOOM: Rounded corners */
+  font-weight: 700 !important; /* BLOOM: Bold */
+  font-size: 14px !important;
+  padding: 10px 18px !important;
+  transition: all 0.2s ease !important;
+  border: 2px solid transparent !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* BLOOM: Mark Received button - Green */
+.requirements-received button[mode="tertiary"]:not(:disabled):has([class*="check"]) {
+  background-color: #E8F5E3 !important; /* BLOOM: Light green */
+  color: #37A526 !important; /* BLOOM: Green text */
+  border-color: #37A526 !important;
+}
+
+.requirements-received button[mode="tertiary"]:not(:disabled):has([class*="check"]):hover {
+  background-color: #37A526 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(55, 165, 38, 0.3) !important;
+}
+
+/* BLOOM: Request button - Blue */
+.requirements-received button[mode="tertiary"]:has([class*="send"]) {
+  background-color: #E3F2FD !important; /* BLOOM: Light blue */
+  color: #1B75BB !important; /* BLOOM: Blue text */
+  border-color: #1B75BB !important;
+}
+
+.requirements-received button[mode="tertiary"]:has([class*="send"]):hover {
+  background-color: #1B75BB !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.3) !important;
+}
+
+/* BLOOM: Waive button - Orange/Warning */
+.requirements-received button[mode="tertiary"]:has([class*="do_not_disturb"]) {
+  background-color: #FEF1E8 !important; /* BLOOM: Light orange */
+  color: #F6921E !important; /* BLOOM: Orange text */
+  border-color: #F6921E !important;
+}
+
+.requirements-received button[mode="tertiary"]:has([class*="do_not_disturb"]):hover {
+  background-color: #F6921E !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(246, 146, 30, 0.3) !important;
+}
+
+/* BLOOM: Disabled button state */
+.requirements-received button[mode="tertiary"]:disabled {
+  background-color: #E8E9EA !important; /* BLOOM: Light gray */
+  color: #A7A8AA !important; /* BLOOM: Gray text */
+  border-color: #D1D3D4 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  box-shadow: none !important;
+}
+
+.requirements-received button[mode="tertiary"]:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* BLOOM: Primary Buttons (Confirm, etc.) */
+.requirements-received button[mode="primary"],
+.requirements-received .dxc-button--primary {
+  min-height: 44px !important;
+  background-color: #1B75BB !important; /* BLOOM: Blue */
+  color: #FFFFFF !important;
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 2px 6px rgba(27, 117, 187, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.requirements-received button[mode="primary"]:hover,
+.requirements-received .dxc-button--primary:hover {
+  background-color: #155A93 !important; /* BLOOM: Darker blue */
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 10px rgba(27, 117, 187, 0.4) !important;
+}
+
+/* BLOOM: Secondary Buttons (Cancel, etc.) */
+.requirements-received button[mode="secondary"],
+.requirements-received .dxc-button--secondary {
+  min-height: 44px !important;
+  background-color: #FFFFFF !important;
+  color: #1B75BB !important; /* BLOOM: Blue text */
+  border: 2px solid #1B75BB !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.requirements-received button[mode="secondary"]:hover,
+.requirements-received .dxc-button--secondary:hover {
+  background-color: #E3F2FD !important; /* BLOOM: Light blue */
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(27, 117, 187, 0.2) !important;
 }

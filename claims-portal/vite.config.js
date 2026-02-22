@@ -44,38 +44,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: true,
           rewrite: () => '/oauth_token.do',
-        
+          // Let http-proxy-middleware handle the body automatically
+          selfHandleResponse: false,
+
           configure(proxy) {
-        
-            proxy.on('proxyReq', (proxyReq, req) => {
-        
-              console.log('[OAuth Proxy] Forwarding token request');
-        
-              // ⭐ Properly forward form-urlencoded body
-              if (req.method === 'POST') {
-        
-                let body = '';
-        
-                req.on('data', chunk => {
-                  body += chunk;
-                });
-        
-                req.on('end', () => {
-                  if (body) {
-                    proxyReq.setHeader(
-                      'Content-Length',
-                      Buffer.byteLength(body)
-                    );
-                    proxyReq.write(body);
-                  }
-                });
-              }
-            });
-        
             proxy.on('proxyRes', (proxyRes) => {
               console.log('[OAuth Proxy] Status:', proxyRes.statusCode);
             });
-        
+
             proxy.on('error', (err) => {
               console.error('[OAuth Proxy] Error:', err.message);
             });
@@ -116,6 +92,30 @@ export default defineConfig(({ mode }) => {
 
             proxy.on('error', (err) => {
               console.error('[API Proxy] Error:', err.message);
+            });
+          }
+        },
+
+        // =====================================================
+        // IDP (DOCUMENT PROCESSING) API PROXY
+        // =====================================================
+        '/idp-api': {
+          target: 'https://api.sandbox-500.hub-52.ai-product-dev.assure.dxc.com',
+          changeOrigin: true,
+          secure: true,
+          rewrite: path => path.replace(/^\/idp-api/, ''),
+
+          configure(proxy) {
+            proxy.on('proxyReq', (proxyReq, req) => {
+              console.log('[IDP Proxy]', req.method, req.url);
+            });
+
+            proxy.on('proxyRes', (proxyRes) => {
+              console.log('[IDP Proxy] Status:', proxyRes.statusCode);
+            });
+
+            proxy.on('error', (err) => {
+              console.error('[IDP Proxy] Error:', err.message);
             });
           }
         }

@@ -10,6 +10,7 @@ const ClaimsHandlerDashboard = () => {
   const inventoryData = {
     totalOpen: 54,
     buckets: [
+      { id: 'all', label: 'All Claims', count: 54, color: '#000000', icon: 'list_alt' },
       { id: 'new-fnol', label: 'New FNOL', count: 8, color: '#1B75BB', icon: 'fiber_new' },
       { id: 'waiting-requirements', label: 'Waiting on Requirements', count: 12, color: '#F6921E', icon: 'pending_actions' },
       { id: 'manual-followup', label: 'Manual Follow-Up Required', count: 6, color: '#D02E2E', icon: 'phone_in_talk' },
@@ -213,7 +214,7 @@ const ClaimsHandlerDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions - Compact */}
+      {/* Quick Actions - Compact - BLOOM: All buttons minHeight 44 */}
       <div className="quick-actions-section">
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
@@ -223,6 +224,7 @@ const ClaimsHandlerDashboard = () => {
             size="small"
             icon="add_circle_outline"
             onClick={() => console.log('New FNOL')}
+            style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
           />
           <DxcButton
             label="Search Claims"
@@ -230,6 +232,7 @@ const ClaimsHandlerDashboard = () => {
             size="small"
             icon="search"
             onClick={() => console.log('Search')}
+            style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
           />
           <DxcButton
             label="View All Cases"
@@ -237,6 +240,7 @@ const ClaimsHandlerDashboard = () => {
             size="small"
             icon="view_list"
             onClick={() => console.log('View all')}
+            style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
           />
           <DxcButton
             label="Reports"
@@ -244,6 +248,7 @@ const ClaimsHandlerDashboard = () => {
             size="small"
             icon="analytics"
             onClick={() => console.log('Reports')}
+            style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
           />
         </div>
       </div>

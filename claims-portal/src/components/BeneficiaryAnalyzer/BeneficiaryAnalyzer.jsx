@@ -521,7 +521,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
               Beneficiary Analysis in Progress
             </DxcTypography>
             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)" textAlign="center">
-              AI is extracting and comparing beneficiary data from DMS documents and PAS records.
+              System is extracting and comparing beneficiary data from DMS documents and PAS records.
             </DxcTypography>
             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)" textAlign="center">
               This may take up to 60 seconds. Please wait...
@@ -877,7 +877,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: extractedBen.relationship === 'Primary' ? '#E3F2FD' : '#FFF3E0',
                             color: extractedBen.relationship === 'Primary' ? '#1565C0' : '#E65100',
                             fontSize: '13px',
-                            fontWeight: '600',
+                            fontWeight: 600,
                             border: `1px solid ${extractedBen.relationship === 'Primary' ? '#90CAF9' : '#FFB74D'}`
                           }}>
                             {extractedBen.relationship}
@@ -888,7 +888,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: '#F3F4F6',
                             color: '#1F2937',
                             fontSize: '13px',
-                            fontWeight: '700',
+                            fontWeight: 700,
                             border: '1px solid #D1D5DB'
                           }}>
                             {extractedBen.percentage}%
@@ -900,7 +900,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                               backgroundColor: '#E8F5E9',
                               color: '#2E7D32',
                               fontSize: '13px',
-                              fontWeight: '600',
+                              fontWeight: 600,
                               display: 'flex',
                               alignItems: 'center',
                               gap: '6px',
@@ -1045,7 +1045,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                     backgroundColor: '#FFFFFF',
                                     color: '#1565C0',
                                     fontSize: '12px',
-                                    fontWeight: '600'
+                                    fontWeight: 600
                                   }}>
                                     ID: {extractedBen.sourceDocument.id}
                                   </span>
@@ -1056,7 +1056,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                       backgroundColor: '#FFFFFF',
                                       color: '#1565C0',
                                       fontSize: '12px',
-                                      fontWeight: '600'
+                                      fontWeight: 600
                                     }}>
                                       Page {extractedBen.sourceDocument.pageNumber}
                                     </span>
@@ -1071,7 +1071,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                 <DxcFlex gap="8px" alignItems="center">
                                   <span className="material-icons" style={{ fontSize: '18px', color: '#1565C0' }}>psychology</span>
                                   <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#1565C0">
-                                    AI Analysis
+                                    Automated Analysis
                                   </DxcTypography>
                                 </DxcFlex>
                                 <DxcTypography fontSize="font-scale-02" color="#1F2937" style={{ lineHeight: '1.5' }}>

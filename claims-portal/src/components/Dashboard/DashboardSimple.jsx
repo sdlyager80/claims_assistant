@@ -163,7 +163,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
             <DxcCard key={index} style={{
               flex: '1 1 22%',
               minWidth: '220px',
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+              background: '#FFFFFF' /* BLOOM: No gradients */,
               border: '1px solid #e0e0e0',
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               transition: 'transform 0.2s, box-shadow 0.2s',
@@ -193,7 +193,7 @@ const DashboardSimple = ({ onClaimSelect, onNewClaim }) => {
                 <span style={{
                   fontSize: '40px',
                   fontWeight: 700,
-                  color: metric.color,
+                  color: "#000000" /* BLOOM */,
                   lineHeight: 1
                 }}>
                   {metric.value}

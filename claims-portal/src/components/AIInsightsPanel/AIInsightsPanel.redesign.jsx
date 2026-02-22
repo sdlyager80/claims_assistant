@@ -137,7 +137,7 @@ const AIInsightsPanel = ({ claimData, insights = [], anomalyData }) => {
                   borderRadius: '12px',
                   fontSize: '12px',
                   color: '#D32F2F',
-                  fontWeight: '600'
+                  fontWeight: 600
                 }}>
                   {highAlerts.length} High
                 </div>
@@ -149,7 +149,7 @@ const AIInsightsPanel = ({ claimData, insights = [], anomalyData }) => {
                   borderRadius: '12px',
                   fontSize: '12px',
                   color: '#F57C00',
-                  fontWeight: '600'
+                  fontWeight: 600
                 }}>
                   {mediumAlerts.length} Medium
                 </div>
@@ -161,7 +161,7 @@ const AIInsightsPanel = ({ claimData, insights = [], anomalyData }) => {
                   borderRadius: '12px',
                   fontSize: '12px',
                   color: '#1976D2',
-                  fontWeight: '600'
+                  fontWeight: 600
                 }}>
                   {lowAlerts.length} Low
                 </div>
