@@ -48,6 +48,22 @@ const ClaimHeader = ({
     return 'var(--color-fg-success-medium)';
   };
 
+  const getStatusColor = (status) => {
+    const statusUpper = (status || '').toUpperCase();
+    if (statusUpper === 'APPROVED' || statusUpper === 'CLOSED' || statusUpper === 'PAYMENT_COMPLETE') {
+      return 'success';
+    }
+    if (statusUpper === 'DENIED' || statusUpper === 'DECLINED' || statusUpper === 'REJECTED') {
+      return 'error';
+    }
+    if (statusUpper.includes('PENDING') || statusUpper.includes('REVIEW') ||
+        statusUpper === 'SUBMITTED' || statusUpper === 'IN_APPROVAL' ||
+        statusUpper === 'PAYMENT_SCHEDULED' || statusUpper === 'SUSPENDED') {
+      return 'warning';
+    }
+    return 'info';
+  };
+
   const slaDate = claim.workflow?.sla?.dueDate ? new Date(claim.workflow.sla.dueDate) : null;
   const today = new Date();
   const daysRemaining = slaDate ? Math.ceil((slaDate - today) / (1000 * 60 * 60 * 24)) : null;
@@ -85,7 +101,11 @@ const ClaimHeader = ({
                 <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
                   {claim.claimNumber}
                 </DxcTypography>
-                <DxcBadge label={claim.status} />
+                <DxcBadge
+                  label={claim.status}
+                  mode="contextual"
+                  {...(getStatusColor(claim.status) && { color: getStatusColor(claim.status) })}
+                />
                 {claim.routing && (
                   <STPBadge routing={claim.routing.type} size="medium" />
                 )}

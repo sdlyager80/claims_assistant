@@ -1,3 +1,28 @@
+/* Ensure wrapper and all children display full content */
+.beneficiary-analyzer-wrapper {
+  width: 100%;
+  height: auto;
+}
+
+/* Remove all height constraints - let content flow naturally */
+.beneficiary-analyzer-grid {
+  width: 100%;
+}
+
+.beneficiary-analyzer-grid .dxc-card {
+  height: auto;
+}
+
+/* Ensure all grid and flex containers don't constrain height */
+.beneficiary-analyzer-wrapper * {
+  max-height: none;
+}
+
+/* But ensure modal dialog can scroll the entire content */
+.beneficiary-analyzer-wrapper {
+  min-height: min-content;
+}
+
 /* Responsive overrides for DxcGrid — collapse to single column on narrow viewports */
 
 @media (max-width: 1200px) {

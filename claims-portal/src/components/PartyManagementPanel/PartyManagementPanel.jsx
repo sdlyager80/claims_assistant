@@ -55,6 +55,32 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
     return 'neutral';
   };
 
+  // Badge color functions for DxcBadge (expects "green", "red", "orange", "yellow", "purple", "blue", or undefined)
+  const getRoleColor = (role) => {
+    const roleUpper = (role || '').toUpperCase();
+    if (roleUpper.includes('INSURED')) return 'info';
+    if (roleUpper.includes('PRIMARY BENEFICIARY') || roleUpper.includes('BENEFICIARY')) return 'success';
+    if (roleUpper.includes('OWNER')) return 'info';
+    if (roleUpper.includes('AGENT')) return 'warning';
+    return undefined;
+  };
+
+  const getVerificationStatusColor = (status) => {
+    const statusUpper = (status || '').toUpperCase();
+    if (statusUpper.includes('VERIFIED') || statusUpper.includes('PASSED')) return 'success';
+    if (statusUpper.includes('PENDING') || statusUpper.includes('PROGRESS')) return 'warning';
+    if (statusUpper.includes('FAILED') || statusUpper.includes('NOT_VERIFIED')) return 'error';
+    return 'info';
+  };
+
+  const getCSLNColor = (result) => {
+    const resultUpper = (result || '').toUpperCase();
+    if (resultUpper.includes('PASS') || resultUpper.includes('MATCH')) return 'success';
+    if (resultUpper.includes('PENDING') || resultUpper.includes('REVIEW')) return 'warning';
+    if (resultUpper.includes('FAIL') || resultUpper.includes('NO_MATCH')) return 'error';
+    return undefined;
+  };
+
   // Group parties by type
   const partyGroups = {};
   parties.forEach(party => {
@@ -135,7 +161,10 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                             {party.name || 'Unknown'}
                           </DxcTypography>
                           <DxcFlex gap="var(--spacing-gap-xs)">
-                            <DxcBadge label={party.role || 'Unknown Role'} />
+                            <DxcBadge
+                              label={party.role || 'Unknown Role'}
+                              {...(getRoleColor(party.role) && { color: getRoleColor(party.role) })}
+                            />
                             {party.source && (
                               <DxcChip label={`Source: ${party.source}`} size="small" />
                             )}
@@ -144,7 +173,10 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                       </DxcFlex>
                       <DxcFlex direction="column" alignItems="flex-end" gap="var(--spacing-gap-xs)">
                         {party.verificationStatus && (
-                          <DxcBadge label={party.verificationStatus} />
+                          <DxcBadge
+                            label={party.verificationStatus}
+                            {...(getVerificationStatusColor(party.verificationStatus) && { color: getVerificationStatusColor(party.verificationStatus) })}
+                          />
                         )}
                         {party.verificationScore !== undefined && (
                           <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
@@ -248,7 +280,10 @@ const PartyManagementPanel = ({ parties = [], onAddParty, onEditParty, onChangeI
                           <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
                             CSLN Result
                           </DxcTypography>
-                          <DxcBadge label={party.cslnResult || 'N/A'} />
+                          <DxcBadge
+                            label={party.cslnResult || 'N/A'}
+                            {...(getCSLNColor(party.cslnResult) && { color: getCSLNColor(party.cslnResult) })}
+                          />
                         </DxcFlex>
                       </DxcFlex>
                     )}

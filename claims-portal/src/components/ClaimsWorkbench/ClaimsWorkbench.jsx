@@ -255,6 +255,21 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
     }).format(amount);
   };
 
+  const getBeneficiaryStatusColor = (status) => {
+    const statusUpper = (status || '').toUpperCase();
+    if (statusUpper.includes('VERIFIED') || statusUpper.includes('APPROVED') || statusUpper.includes('COMPLETE')) {
+      return 'success';
+    }
+    if (statusUpper.includes('PENDING') || statusUpper.includes('REVIEW') || statusUpper.includes('PROGRESS')) {
+      return 'warning';
+    }
+    if (statusUpper.includes('REJECTED') || statusUpper.includes('INVALID') || statusUpper.includes('FAILED')) {
+      return 'error';
+    }
+    return 'info';
+  };
+
+
   // Extract financial data from claim
   const totalClaimAmount = claim.financial?.claimAmount || claim.financial?.totalClaimed || 0;
   const payments = claim.financial?.payments || claim.payments || [];
@@ -967,7 +982,11 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                                 <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Amount</DxcTypography>
                                 <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000" /* BLOOM: Data values must be black */>{ben.amount}</DxcTypography>
                               </DxcFlex>
-                              <DxcBadge label={ben.status} />
+                              <DxcBadge
+                                label={ben.status}
+                                mode="contextual"
+                                {...(getBeneficiaryStatusColor(ben.status) && { color: getBeneficiaryStatusColor(ben.status) })}
+                              />
                             </DxcFlex>
                           </DxcFlex>
                         </DxcInset>
