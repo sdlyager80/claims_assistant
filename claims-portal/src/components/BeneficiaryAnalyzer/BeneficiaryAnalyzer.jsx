@@ -521,7 +521,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
               Beneficiary Analysis in Progress
             </DxcTypography>
             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)" textAlign="center">
-              System is extracting and comparing beneficiary data from DMS documents and PAS records.
+              AI is extracting and comparing beneficiary data from DMS documents and PAS records.
             </DxcTypography>
             <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)" textAlign="center">
               This may take up to 60 seconds. Please wait...
@@ -593,20 +593,20 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
             padding: '12px',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            border: `2px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02'}`,
+            border: `2px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#ED6C02'}`,
             transition: 'transform 0.2s, box-shadow 0.2s'
           }}>
             <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
-                  backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#E8F5E9' : '#FFF3E0',
+                  backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#E3F2FD' : '#FFF3E0',
                   borderRadius: '8px',
                   padding: '8px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02' }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#ED6C02' }}>
                     {analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'check_circle' : 'warning'}
                   </span>
                 </div>
@@ -614,14 +614,14 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   Match Score
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
+              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#ED6C02', lineHeight: '1' }}>
                 {(analysisData.overallAnalysis.confidence * 100).toFixed(0)}%
               </DxcTypography>
               <div style={{ width: '100%', height: '6px', backgroundColor: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${analysisData.overallAnalysis.confidence * 100}%`,
                   height: '100%',
-                  backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02',
+                  backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#ED6C02',
                   transition: 'width 0.3s ease'
                 }} />
               </div>
@@ -674,14 +674,14 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
             <DxcFlex direction="column" gap="8px">
               <DxcFlex gap="10px" alignItems="center">
                 <div style={{
-                  backgroundColor: analysisData.overallAnalysis.discrepancies.length === 0 ? '#E8F5E9' : '#FFEBEE',
+                  backgroundColor: analysisData.overallAnalysis.discrepancies.length === 0 ? '#E3F2FD' : '#FFEBEE',
                   borderRadius: '8px',
                   padding: '8px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F' }}>
+                  <span className="material-icons" style={{ fontSize: '24px', color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#1565C0' : '#D32F2F' }}>
                     {analysisData.overallAnalysis.discrepancies.length === 0 ? 'check_circle' : 'error_outline'}
                   </span>
                 </div>
@@ -689,7 +689,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   Discrepancies
                 </DxcTypography>
               </DxcFlex>
-              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#2E7D32' : '#D32F2F', lineHeight: '1' }}>
+              <DxcTypography fontSize="28px" fontWeight="font-weight-bold" style={{ color: analysisData.overallAnalysis.discrepancies.length === 0 ? '#1565C0' : '#D32F2F', lineHeight: '1' }}>
                 {analysisData.overallAnalysis.discrepancies.length}
               </DxcTypography>
               <DxcTypography fontSize="font-scale-02" color="#6B7280">
@@ -727,8 +727,8 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                 DMS ↔ PAS
               </DxcTypography>
               <DxcFlex gap="6px" alignItems="center">
-                <span className="material-icons" style={{ fontSize: '18px', color: '#2E7D32' }}>check_circle</span>
-                <DxcTypography fontSize="font-scale-02" color="#2E7D32" fontWeight="font-weight-semibold">
+                <span className="material-icons" style={{ fontSize: '18px', color: '#1565C0' }}>check_circle</span>
+                <DxcTypography fontSize="font-scale-02" color="#1565C0" fontWeight="font-weight-semibold">
                   Synced
                 </DxcTypography>
               </DxcFlex>
@@ -760,20 +760,20 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
 
         {analysisData.overallAnalysis.recommendation && (
           <div style={{
-            backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#F1F8F4' : '#FFF4E5',
-            border: `1px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#FF9800'}`,
+            backgroundColor: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#EFF6FF' : '#FFF4E5',
+            border: `1px solid ${analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#FF9800'}`,
             borderRadius: '8px',
             padding: '16px'
           }}>
             <DxcFlex gap="12px" alignItems="flex-start">
-              <span className="material-icons" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#ED6C02' }}>
+              <span className="material-icons" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#ED6C02' }}>
                 {analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'check_circle' : 'info'}
               </span>
               <DxcFlex direction="column" gap="4px">
-                <DxcTypography fontWeight="font-weight-semibold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1B5E20' : '#663C00' }}>
+                <DxcTypography fontWeight="font-weight-semibold" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#0D47A1' : '#663C00' }}>
                   {analysisData.overallAnalysis.matchStatus === 'MATCH' ? 'Match Confirmed' : 'Review Required'}
                 </DxcTypography>
-                <DxcTypography fontSize="font-scale-01" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#2E7D32' : '#663C00' }}>
+                <DxcTypography fontSize="font-scale-01" style={{ color: analysisData.overallAnalysis.matchStatus === 'MATCH' ? '#1565C0' : '#663C00' }}>
                   {analysisData.overallAnalysis.recommendation}
                 </DxcTypography>
               </DxcFlex>
@@ -825,7 +825,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   backgroundColor: '#FFFFFF',
                   borderRadius: '12px',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  border: `3px solid ${isHighMatch ? '#2E7D32' : '#ED6C02'}`,
+                  border: `3px solid ${isHighMatch ? '#1565C0' : '#ED6C02'}`,
                   overflow: 'hidden',
                   transition: 'all 0.2s ease',
                   cursor: 'pointer'
@@ -847,7 +847,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                   >
                     <DxcFlex gap="16px" alignItems="center" style={{ flex: 1 }}>
                       <div style={{
-                        backgroundColor: isHighMatch ? '#E8F5E9' : '#FFF3E0',
+                        backgroundColor: isHighMatch ? '#E3F2FD' : '#FFF3E0',
                         borderRadius: '8px',
                         padding: '8px',
                         display: 'flex',
@@ -858,7 +858,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                           className="material-icons"
                           style={{
                             fontSize: '24px',
-                            color: isHighMatch ? '#2E7D32' : '#ED6C02',
+                            color: isHighMatch ? '#1565C0' : '#ED6C02',
                             transition: 'transform 0.2s',
                             transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
                           }}
@@ -877,7 +877,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: extractedBen.relationship === 'Primary' ? '#E3F2FD' : '#FFF3E0',
                             color: extractedBen.relationship === 'Primary' ? '#1565C0' : '#E65100',
                             fontSize: '13px',
-                            fontWeight: 600,
+                            fontWeight: '600',
                             border: `1px solid ${extractedBen.relationship === 'Primary' ? '#90CAF9' : '#FFB74D'}`
                           }}>
                             {extractedBen.relationship}
@@ -888,7 +888,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             backgroundColor: '#F3F4F6',
                             color: '#1F2937',
                             fontSize: '13px',
-                            fontWeight: 700,
+                            fontWeight: '700',
                             border: '1px solid #D1D5DB'
                           }}>
                             {extractedBen.percentage}%
@@ -897,14 +897,14 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                             <span style={{
                               padding: '6px 14px',
                               borderRadius: '16px',
-                              backgroundColor: '#E8F5E9',
-                              color: '#2E7D32',
+                              backgroundColor: '#E3F2FD',
+                              color: '#1565C0',
                               fontSize: '13px',
-                              fontWeight: 600,
+                              fontWeight: '600',
                               display: 'flex',
                               alignItems: 'center',
                               gap: '6px',
-                              border: '1px solid #81C784'
+                              border: '1px solid #90CAF9'
                             }}>
                               <span className="material-icons" style={{ fontSize: '16px' }}>check_circle</span>
                               Perfect Match
@@ -919,7 +919,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                       gap: '16px'
                     }}>
                       <div style={{ textAlign: 'right' }}>
-                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-bold" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02', lineHeight: '1' }}>
+                        <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-bold" style={{ color: isHighMatch ? '#1565C0' : '#ED6C02', lineHeight: '1' }}>
                           {(matchScore * 100).toFixed(0)}%
                         </DxcTypography>
                         <DxcTypography fontSize="font-scale-01" style={{ color: '#6B7280', marginTop: '4px' }}>
@@ -930,13 +930,13 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                         width: '48px',
                         height: '48px',
                         borderRadius: '12px',
-                        backgroundColor: isHighMatch ? '#E8F5E9' : '#FFF3E0',
+                        backgroundColor: isHighMatch ? '#E3F2FD' : '#FFF3E0',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: `2px solid ${isHighMatch ? '#81C784' : '#FFB74D'}`
+                        border: `2px solid ${isHighMatch ? '#90CAF9' : '#FFB74D'}`
                       }}>
-                        <span className="material-icons" style={{ color: isHighMatch ? '#2E7D32' : '#ED6C02', fontSize: '28px' }}>
+                        <span className="material-icons" style={{ color: isHighMatch ? '#1565C0' : '#ED6C02', fontSize: '28px' }}>
                           {isHighMatch ? 'verified' : 'priority_high'}
                         </span>
                       </div>
@@ -1045,7 +1045,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                     backgroundColor: '#FFFFFF',
                                     color: '#1565C0',
                                     fontSize: '12px',
-                                    fontWeight: 600
+                                    fontWeight: '600'
                                   }}>
                                     ID: {extractedBen.sourceDocument.id}
                                   </span>
@@ -1056,7 +1056,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                       backgroundColor: '#FFFFFF',
                                       color: '#1565C0',
                                       fontSize: '12px',
-                                      fontWeight: 600
+                                      fontWeight: '600'
                                     }}>
                                       Page {extractedBen.sourceDocument.pageNumber}
                                     </span>
@@ -1071,7 +1071,7 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
                                 <DxcFlex gap="8px" alignItems="center">
                                   <span className="material-icons" style={{ fontSize: '18px', color: '#1565C0' }}>psychology</span>
                                   <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-bold" color="#1565C0">
-                                    Automated Analysis
+                                    AI Analysis
                                   </DxcTypography>
                                 </DxcFlex>
                                 <DxcTypography fontSize="font-scale-02" color="#1F2937" style={{ lineHeight: '1.5' }}>
@@ -1227,7 +1227,7 @@ const DetailWithConfidence = ({ label, value, confidence }) => {
   };
 
   const getConfidenceColor = (score) => {
-    if (score >= 0.9) return '#2E7D32';
+    if (score >= 0.9) return '#1565C0';
     if (score >= 0.75) return '#F57C00';
     return '#D32F2F';
   };
@@ -1251,7 +1251,7 @@ const DetailWithConfidence = ({ label, value, confidence }) => {
       <div style={{
         padding: '6px 12px',
         borderRadius: '8px',
-        backgroundColor: confidence >= 0.9 ? '#E8F5E9' : confidence >= 0.75 ? '#FFF3E0' : '#FFEBEE',
+        backgroundColor: confidence >= 0.9 ? '#E3F2FD' : confidence >= 0.75 ? '#FFF3E0' : '#FFEBEE',
         border: `2px solid ${getConfidenceColor(confidence)}`,
         display: 'flex',
         alignItems: 'center',
