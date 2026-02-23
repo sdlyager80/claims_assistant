@@ -1068,6 +1068,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                     <DxcHeading level={3} text="Upload Documents" />
                     <DocumentUpload
                       claimId={claim.id}
+                      tableSysId={claim.sysId || claim.servicenow_sys_id || claim.sys_id}
                       onUploadComplete={(result) => {
                         console.log('Upload complete:', result);
                         // TODO: Refresh documents list

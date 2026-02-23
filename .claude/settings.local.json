@@ -34,7 +34,10 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(xargs sed:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(git clone:*)",
+      "Bash(pkill:*)",
+      "Bash(gh api:*)"
     ]
   }
 }

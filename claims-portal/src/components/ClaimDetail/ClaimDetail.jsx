@@ -495,7 +495,7 @@ const ClaimDetail = ({ claimId, onClose }) => {
                       <DocumentUpload
                         claimId={claimId}
                         tableName="x_dxcis_claims_a_0_claims_fnol"
-                        tableSysId={claimId}
+                        tableSysId={claim.sysId || claim.sys_id || claimId}
                         onUploadComplete={(result) => {
                           console.log('Upload complete:', result);
                         }}

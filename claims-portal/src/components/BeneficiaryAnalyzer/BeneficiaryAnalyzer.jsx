@@ -368,15 +368,18 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
 
         // Poll the API endpoint for completion (analysis was already triggered on record click)
         let pollAttempts = 0;
-        const maxPollAttempts = 24; // Poll for ~60 seconds (24 attempts x 2.5 seconds)
-        const pollInterval = 2500; // 2.5 seconds between polls
+        const maxPollAttempts = 10; // Poll for ~5 minutes (10 attempts x 30 seconds)
+        const pollInterval = 30000; // 30 seconds between polls
 
         const pollForCompletion = async () => {
           try {
             pollAttempts++;
-            const elapsedTime = pollAttempts * 2.5;
-            console.log(`[BeneficiaryAnalyzer] Polling attempt ${pollAttempts}/${maxPollAttempts} (${elapsedTime}s elapsed)`);
-            setLoadingMessage(`Analyzing... (${elapsedTime}s)`);
+            const elapsedSeconds = pollAttempts * 30;
+            const elapsedTime = elapsedSeconds >= 60
+              ? `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`
+              : `${elapsedSeconds}s`;
+            console.log(`[BeneficiaryAnalyzer] Polling attempt ${pollAttempts}/${maxPollAttempts} (${elapsedTime} elapsed)`);
+            setLoadingMessage(`Analyzing... (${elapsedTime})`);
 
             // Poll the beneficiary analyzer API endpoint
             const apiResponse = await serviceNowService.getBeneficiaryAnalyzer(sysId);
@@ -411,8 +414,8 @@ const BeneficiaryAnalyzer = ({ claimId, claim, onApproveBeneficiaries, onCancel 
             if (pollAttempts < maxPollAttempts) {
               setTimeout(() => pollForCompletion(), pollInterval);
             } else {
-              console.warn('[BeneficiaryAnalyzer] Max poll attempts reached after 60 seconds');
-              setError('Analysis is taking longer than expected (>60s). The process may still be running. Please try refreshing or check back later.');
+              console.warn('[BeneficiaryAnalyzer] Max poll attempts reached after 5 minutes');
+              setError('Analysis is taking longer than expected (>5 min). The process may still be running. Please try refreshing or check back later.');
               setAnalysisData(buildAnalysisData());
               setLoading(false);
             }
