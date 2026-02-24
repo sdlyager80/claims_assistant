@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
   const SN_TARGET =
     env.VITE_SERVICENOW_URL || 'https://nextgenbpmnp1.service-now.com';
 
+  const IDP_TARGET =
+    env.VITE_IDP_API_BASE_URL || 'https://api.dev-1.hub-1.sai-dev.assure.dxc.com';
+
   // =============================
   // BASIC AUTH HEADER (DEV ONLY)
   // =============================
@@ -100,7 +103,7 @@ export default defineConfig(({ mode }) => {
         // IDP (DOCUMENT PROCESSING) API PROXY
         // =====================================================
         '/idp-api': {
-          target: 'https://api.sandbox-500.hub-52.ai-product-dev.assure.dxc.com',
+          target: IDP_TARGET,
           changeOrigin: true,
           secure: true,
           rewrite: path => path.replace(/^\/idp-api/, ''),
