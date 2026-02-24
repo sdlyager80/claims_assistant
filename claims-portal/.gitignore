@@ -26,3 +26,4 @@ dist-ssr
 *.bak
 # .env intentionally tracked for demo deployment
 .env.backup
+.env.local
