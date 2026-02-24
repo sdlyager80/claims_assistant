@@ -151,7 +151,7 @@ class IDPService {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${this.apiBaseURL}/idp/core/v1/ingestion/data/claim`, {
+      const response = await fetch(`${this.apiBaseURL}/idp/core/v1/ingestion/data`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
