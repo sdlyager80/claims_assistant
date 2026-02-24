@@ -1049,7 +1049,7 @@ const Dashboard = ({ onClaimSelect }) => {
                               backgroundColor: "var(--color-fg-neutral-strong)"
                             }} />
                             <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Submitted: {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                              Notify Date: {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
                             </DxcTypography>
                             {hasSLA && (
                               <>
@@ -1066,6 +1066,29 @@ const Dashboard = ({ onClaimSelect }) => {
                                 />
                               </>
                             )}
+                          </DxcFlex>
+                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              DOD: {claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              Manner: {claim.deathEvent?.mannerOfDeath || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              Packet Sent: {claim.claimPacketSentDate ? new Date(claim.claimPacketSentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                            </DxcTypography>
                           </DxcFlex>
                         </DxcFlex>
                       </DxcInset>
@@ -1367,7 +1390,7 @@ const Dashboard = ({ onClaimSelect }) => {
                             backgroundColor: "var(--color-fg-neutral-strong)"
                           }} />
                           <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                            Submitted: {displaySubmitted}
+                            Notify Date: {displaySubmitted}
                           </DxcTypography>
                           {hasSLA && (
                             <>
@@ -1407,6 +1430,32 @@ const Dashboard = ({ onClaimSelect }) => {
                             </>
                           )}
                         </DxcFlex>
+
+                        {isClaim && (
+                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              DOD: {submission.deathEvent?.dateOfDeath || submission.insured?.dateOfDeath || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              Manner: {submission.deathEvent?.mannerOfDeath || 'N/A'}
+                            </DxcTypography>
+                            <div style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: "var(--color-fg-neutral-strong)"
+                            }} />
+                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
+                              Packet Sent: {submission.claimPacketSentDate ? new Date(submission.claimPacketSentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                            </DxcTypography>
+                          </DxcFlex>
+                        )}
 
                         {/* Lifecycle Tracker */}
                         {isClaim && (

@@ -224,7 +224,8 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 76, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000001', currentTask: 'Review Requirements', assignedTo: 'John Smith', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-1'; claim.fnolNumber = 'FNOL0000001';
+    claim.sysId = 'demo-sys-id-1'; claim.fnolNumber = 'FNOL0000001'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
+    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
     claims.push(claim);
   }
@@ -321,7 +322,8 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 78, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000004', currentTask: 'Schedule Payment', assignedTo: 'John Smith', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-4'; claim.fnolNumber = 'FNOL0000004';
+    claim.sysId = 'demo-sys-id-4'; claim.fnolNumber = 'FNOL0000004'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
+    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
     claims.push(claim);
   }
@@ -355,7 +357,8 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 71, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000005', currentTask: 'Review Requirements', assignedTo: 'Jane Examiner', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-5'; claim.fnolNumber = 'FNOL0000005';
+    claim.sysId = 'demo-sys-id-5'; claim.fnolNumber = 'FNOL0000005'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
+    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
     claims.push(claim);
   }
