@@ -1,5 +1,11 @@
 {
   "buildCommand": "cd claims-portal && npm run build",
   "installCommand": "cd claims-portal && npm install",
-  "outputDirectory": "claims-portal/dist"
+  "outputDirectory": "claims-portal/dist",
+  "rewrites": [
+    {
+      "source": "/idp-api/:path*",
+      "destination": "https://api.dev-1.hub-1.sai-dev.assure.dxc.com/:path*"
+    }
+  ]
 }
