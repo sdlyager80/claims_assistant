@@ -301,3 +301,48 @@
     min-height: 200px !important;
   }
 }
+
+/* ── FNOL Two-Column Layout ─────────────────────────────────────────────── */
+.fnol-layout {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.fnol-form-column {
+  min-width: 0; /* prevent grid blowout */
+}
+
+.fnol-sidebar-column {
+  position: sticky;
+  top: 16px;
+  min-width: 0;
+}
+
+/* Mobile horizontal stepper — hidden on desktop */
+.fnol-mobile-stepper {
+  display: none;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+  .fnol-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fnol-sidebar-column {
+    display: none; /* progress sidebar collapses on mobile */
+    position: static;
+  }
+
+  .fnol-mobile-stepper {
+    display: block; /* show compact step indicator on mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .intake-container {
+    padding: 1rem;
+  }
+}
