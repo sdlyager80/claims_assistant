@@ -12,7 +12,10 @@ import {
   DxcAlert,
   DxcChip,
   DxcDialog,
-  DxcSpinner
+  DxcSpinner,
+  DxcCheckbox,
+  DxcSelect,
+  DxcTextInput
 } from '@dxc-technology/halstack-react';
 import FastTrackBadge from '../shared/FastTrackBadge';
 import DocumentUpload from '../shared/DocumentUpload';
@@ -54,6 +57,12 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [anomalyLoadingMessage, setAnomalyLoadingMessage] = useState('');
   const [anomalyRetryCount, setAnomalyRetryCount] = useState(0);
   const [aiInsights, setAiInsights] = useState([]);
+  const [claimFlags, setClaimFlags] = useState({
+    reviewForClient: false,
+    highPriority: false,
+    secureClaim: 'Not a Secure Claim'
+  });
+  const [adjDecision, setAdjDecision] = useState({ decision: '', reason: '' });
 
   console.log('[ClaimsWorkbench] Received claim:', claim);
 
@@ -324,6 +333,36 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
         {/* Main Content Area */}
         <DxcContainer padding="var(--spacing-padding-l)">
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+            {/* Claim Flags Bar */}
+            <DxcContainer
+              style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+              padding="var(--spacing-padding-m)"
+            >
+              <DxcFlex gap="var(--spacing-gap-xl)" alignItems="center" wrap="wrap">
+                <DxcCheckbox
+                  label="Review for Client"
+                  checked={claimFlags.reviewForClient}
+                  onChange={v => setClaimFlags(f => ({ ...f, reviewForClient: v }))}
+                />
+                <DxcCheckbox
+                  label="High Priority Claim"
+                  checked={claimFlags.highPriority}
+                  onChange={v => setClaimFlags(f => ({ ...f, highPriority: v }))}
+                />
+                <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                  <DxcTypography fontSize="font-scale-01">Secure Claim:</DxcTypography>
+                  <DxcSelect
+                    options={[
+                      { label: 'Not a Secure Claim', value: 'Not a Secure Claim' },
+                      { label: 'Secure', value: 'Secure' },
+                    ]}
+                    value={claimFlags.secureClaim}
+                    onChange={v => setClaimFlags(f => ({ ...f, secureClaim: v }))}
+                  />
+                </DxcFlex>
+              </DxcFlex>
+            </DxcContainer>
+
             {/* Progress Card - BLOOM: Enhanced with left accent border */}
             <DxcContainer
           padding="var(--spacing-padding-l)"
@@ -438,12 +477,20 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 >
                   <div />
                 </DxcTabs.Tab>
+                <DxcTabs.Tab
+                  label="Adjudicate"
+                  icon="gavel"
+                  active={activeTab === 6}
+                  onClick={() => setActiveTab(6)}
+                >
+                  <div />
+                </DxcTabs.Tab>
                 {claim.deathEvent && (
                 <DxcTabs.Tab
                   label="Beneficiary Analyzer"
                   icon="psychology"
-                  active={activeTab === 6}
-                  onClick={() => setActiveTab(6)}
+                  active={activeTab === 7}
+                  onClick={() => setActiveTab(7)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -452,8 +499,8 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcTabs.Tab
                   label="Related Policies"
                   icon="policy"
-                  active={activeTab === 7}
-                  onClick={() => setActiveTab(7)}
+                  active={activeTab === 8}
+                  onClick={() => setActiveTab(8)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -562,7 +609,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         label="Analyze Beneficiaries"
                         mode="primary"
                         icon="psychology"
-                        onClick={() => setActiveTab(6)}
+                        onClick={() => setActiveTab(7)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       )}
@@ -1098,8 +1145,178 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 </DxcFlex>
               )}
 
+              {/* Adjudicate Tab */}
+              {activeTab === 6 && (() => {
+                const adjPolicies = claim.policies || (claim.policy ? [claim.policy] : []);
+                const adjSelectedPolicy = adjPolicies[0] || {};
+                const adjPrimaryBene = (claim.parties || []).find(p => p.role === 'Primary Beneficiary');
+                const adjClaimAmount = claim.financial?.claimAmount || 0;
+                const adjNetAmount = claim.financial?.netBenefitProceeds || adjClaimAmount;
+                const fmtAdj = (amt) => amt == null ? '$0.00' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amt);
+                return (
+                  <DxcFlex direction="column" gap="var(--spacing-gap-l)">
+
+                    {/* Adjudication Tree */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">
+                        ADJUDICATION DETAILS
+                      </DxcTypography>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', borderBottom: '2px solid var(--color-border-neutral-medium)', padding: '6px 8px', backgroundColor: 'var(--color-bg-neutral-lighter)' }}>
+                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">CLAIM / POLICY</DxcTypography>
+                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">GROSS BENEFIT</DxcTypography>
+                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">NET BENEFIT</DxcTypography>
+                      </div>
+                      {/* Claim row */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '6px 8px', backgroundColor: 'var(--color-bg-neutral-white)', borderRadius: '4px' }}>
+                        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                          <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-primary-stronger)' }}>chevron_right</span>
+                          <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">{claim.claimNumber || claim.id}</DxcTypography>
+                        </DxcFlex>
+                        <DxcTypography fontSize="font-scale-02">{fmtAdj(adjClaimAmount)}</DxcTypography>
+                        <DxcTypography fontSize="font-scale-02">{fmtAdj(adjNetAmount)}</DxcTypography>
+                      </div>
+                      {/* Policy rows */}
+                      {adjPolicies.map((pol, idx) => (
+                        <div key={pol.policyNumber || idx}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '6px 8px', paddingLeft: '24px', backgroundColor: 'var(--color-bg-neutral-lightest)', borderRadius: '4px', borderLeft: '3px solid #1B75BB' }}>
+                            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                              <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-success-darker)' }}>subdirectory_arrow_right</span>
+                              <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">{pol.policyNumber}</DxcTypography>
+                              <DxcBadge label={pol.policyType || 'Term Life'} mode="contextual" color="info" />
+                              <DxcBadge label={pol.policyStatus || 'In Force'} mode="contextual" color="success" />
+                            </DxcFlex>
+                            <DxcTypography fontSize="font-scale-02">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                            <DxcTypography fontSize="font-scale-02">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '4px 8px', paddingLeft: '48px' }}>
+                            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                              <span className="material-icons" style={{ fontSize: '12px', color: 'var(--color-fg-neutral-strong)' }}>subdirectory_arrow_right</span>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{pol.planCode || pol.policyNumber}</DxcTypography>
+                            </DxcFlex>
+                            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                          </div>
+                          {adjPrimaryBene && (
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '4px 8px', paddingLeft: '64px' }}>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">{adjPrimaryBene.name} (Primary 100%)</DxcTypography>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </DxcFlex>
+
+                    {/* Claim Details */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">CLAIM DETAILS</DxcTypography>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                        {[
+                          { label: 'Proof of Loss Date', value: claim.proofOfLossDate || 'N/A' },
+                          { label: 'Proof of Death Date', value: claim.deathEvent?.proofOfDeathDate || 'N/A' },
+                          { label: 'Proof of Death Source', value: claim.deathEvent?.proofOfDeathSourceType || 'N/A' },
+                          { label: 'Certified DOB', value: claim.deathEvent?.certifiedDOB || 'N/A' },
+                        ].map((f, i) => (
+                          <DxcFlex key={i} direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">{f.label.toUpperCase()}</DxcTypography>
+                            <DxcTypography fontSize="font-scale-02">{f.value}</DxcTypography>
+                          </DxcFlex>
+                        ))}
+                      </div>
+                    </DxcFlex>
+
+                    {/* Policy Details */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">POLICY DETAILS — {adjSelectedPolicy.policyNumber || 'N/A'}</DxcTypography>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                        {[
+                          { label: 'Claim Policy Status', value: adjSelectedPolicy.policyStatus || 'N/A' },
+                          { label: 'Issue Date', value: adjSelectedPolicy.issueDate || 'N/A' },
+                          { label: 'Issue State', value: adjSelectedPolicy.issueState || 'N/A' },
+                          { label: 'Par Type', value: adjSelectedPolicy.parType || 'Non-Par' },
+                          { label: 'Paid to Date', value: adjSelectedPolicy.paidToDate || 'N/A' },
+                          { label: 'Plan Code', value: adjSelectedPolicy.planCode || 'N/A' },
+                          { label: 'Reporting Product Type', value: adjSelectedPolicy.policyType || 'N/A' },
+                          { label: 'Insured Indicator', value: 'Base' },
+                          { label: 'Acknowledgment Date', value: 'N/A' },
+                          { label: 'Policy Closed Date', value: claim.closedAt ? new Date(claim.closedAt).toLocaleDateString() : 'N/A' },
+                        ].map((f, i) => (
+                          <DxcFlex key={i} direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">{f.label.toUpperCase()}</DxcTypography>
+                            <DxcTypography fontSize="font-scale-02">{f.value}</DxcTypography>
+                          </DxcFlex>
+                        ))}
+                      </div>
+                    </DxcFlex>
+
+                    {/* Adjudication Decision */}
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', borderLeft: '4px solid #1B75BB', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                        <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">ADJUDICATION DECISION</DxcTypography>
+                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap" alignItems="flex-end">
+                          <DxcSelect
+                            label="Adjudication Decision"
+                            options={[
+                              { label: '— Select —', value: '' },
+                              { label: 'Approved', value: 'approved' },
+                              { label: 'Denied', value: 'denied' },
+                            ]}
+                            value={adjDecision.decision}
+                            onChange={v => setAdjDecision(d => ({ ...d, decision: v }))}
+                          />
+                          <div style={{ flex: 1, minWidth: '240px' }}>
+                            <DxcTextInput
+                              label="Decision Reason"
+                              value={adjDecision.reason}
+                              onChange={({ value }) => setAdjDecision(d => ({ ...d, reason: value }))}
+                            />
+                          </div>
+                        </DxcFlex>
+                      </DxcFlex>
+                    </DxcContainer>
+
+                    {/* Proceed Details */}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">PROCEED DETAILS</DxcTypography>
+                      <div style={{ border: '1px solid var(--color-border-neutral-medium)', borderRadius: '8px', overflow: 'hidden' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px 140px', backgroundColor: 'var(--color-bg-neutral-lighter)', borderBottom: '1px solid var(--color-border-neutral-medium)', padding: '8px 12px' }}>
+                          {['Claim Amount Item Type', 'Credit', 'Debit', 'Account #'].map((h, i) => (
+                            <DxcTypography key={i} fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">{h}</DxcTypography>
+                          ))}
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px 140px', padding: '8px 12px', backgroundColor: 'var(--color-bg-neutral-white)' }}>
+                          <DxcTypography fontSize="font-scale-02">Face Amount</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">{fmtAdj(adjSelectedPolicy.faceAmount || adjClaimAmount)}</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">$0.00</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">2412800</DxcTypography>
+                        </div>
+                      </div>
+                      <DxcFlex gap="var(--spacing-gap-s)">
+                        <DxcButton
+                          label="Benefit Quote (PMI)"
+                          mode="secondary"
+                          icon="calculate"
+                          onClick={() => setShowPMICalculator(true)}
+                          style={{ minHeight: 44 }}
+                        />
+                        <DxcButton
+                          label="Update"
+                          mode="primary"
+                          onClick={() => console.log('Update adjudication', adjDecision)}
+                          style={{ minHeight: 44 }}
+                        />
+                      </DxcFlex>
+                    </DxcFlex>
+
+                  </DxcFlex>
+                );
+              })()}
+
               {/* Beneficiary Analyzer Tab */}
-              {activeTab === 6 && (
+              {activeTab === 7 && (
                 <BeneficiaryAnalyzer
                   claimId={claim.claimNumber || claim.id}
                   claim={claim}
@@ -1117,7 +1334,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Related Policies Tab */}
-              {activeTab === 7 && (
+              {activeTab === 8 && (
                 <RelatedPoliciesPanel
                   claimData={claim}
                   onInitiateClaim={(policy) => {
