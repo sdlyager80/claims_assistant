@@ -17,11 +17,8 @@ class IDPService {
     this.submissionKey = import.meta.env.VITE_IDP_SUBMISSION_KEY;
     this.env = import.meta.env.VITE_IDP_ENV;
 
-    // Use proxy in development to avoid CORS issues
-    const isDevelopment = import.meta.env.DEV;
-    this.apiBaseURL = isDevelopment
-      ? '/idp-api'  // Vite proxy in development
-      : import.meta.env.VITE_IDP_API_BASE_URL;  // Direct URL in production
+    // Always use /idp-api - routed through Vite proxy in dev, Vercel rewrite in prod
+    this.apiBaseURL = '/idp-api';
 
     // Token management
     this.accessToken = null;
@@ -32,7 +29,7 @@ class IDPService {
     this._restoreToken();
 
     console.log('[IDP Service] Initialized');
-    console.log('[IDP Service] Environment:', isDevelopment ? 'Development' : 'Production');
+    console.log('[IDP Service] Environment:', import.meta.env.DEV ? 'Development' : 'Production');
     console.log('[IDP Service] API Base URL:', this.apiBaseURL);
     console.log('[IDP Service] Token cached:', !!this.accessToken);
   }
