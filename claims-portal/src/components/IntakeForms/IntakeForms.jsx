@@ -23,7 +23,6 @@ import {
   DxcTypography,
   DxcTextInput,
   DxcSelect,
-  DxcDateInput,
   DxcTextarea,
   DxcButton,
   DxcRadioGroup,
@@ -144,6 +143,14 @@ const formatSSNInput = (raw) => {
   if (digits.length <= 3) return digits;
   if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+};
+
+/** Auto-format digits as MM/DD/YYYY, inserting slashes as the user types */
+const formatDateInput = (raw) => {
+  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 };
 
 const today = () => new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
@@ -701,12 +708,13 @@ const IntakeForms = () => {
       />
 
       <div style={{ maxWidth: '280px' }}>
-        <DxcDateInput
+        <DxcTextInput
           label="Your Date of Birth *"
           value={formData.beneficiaryDOB}
-          onChange={({ value }) => updateField('beneficiaryDOB', value)}
+          onChange={({ value }) => updateField('beneficiaryDOB', formatDateInput(value))}
           placeholder="MM/DD/YYYY"
           error={validationErrors.beneficiaryDOB}
+          size="fillParent"
         />
       </div>
 
@@ -843,10 +851,9 @@ const IntakeForms = () => {
           <div style={{ maxWidth: '260px' }}>
             <DxcTextInput
               label="Social Security Number *"
-              placeholder="•••-••-XXXX"
-              value={formData.beneficiarySSN ? displaySSN(formData.beneficiarySSN) : ''}
+              placeholder="###-##-####"
+              value={formatSSNInput(formData.beneficiarySSN || '')}
               onChange={({ value }) => {
-                // Accept new digits being typed
                 const digits = value.replace(/\D/g, '').slice(0, 9);
                 updateField('beneficiarySSN', digits);
               }}
@@ -965,21 +972,23 @@ const IntakeForms = () => {
 
       <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap">
         <div style={{ flex: '1 1 200px' }}>
-          <DxcDateInput
+          <DxcTextInput
             label="Date of Birth *"
             value={formData.deceasedDOB}
-            onChange={({ value }) => updateField('deceasedDOB', value)}
+            onChange={({ value }) => updateField('deceasedDOB', formatDateInput(value))}
             placeholder="MM/DD/YYYY"
             error={validationErrors.deceasedDOB}
+            size="fillParent"
           />
         </div>
         <div style={{ flex: '1 1 200px' }}>
-          <DxcDateInput
+          <DxcTextInput
             label="Date of Death *"
             value={formData.dateOfDeath}
-            onChange={({ value }) => updateField('dateOfDeath', value)}
+            onChange={({ value }) => updateField('dateOfDeath', formatDateInput(value))}
             placeholder="MM/DD/YYYY"
             error={validationErrors.dateOfDeath}
+            size="fillParent"
           />
         </div>
       </DxcFlex>
@@ -988,8 +997,8 @@ const IntakeForms = () => {
         <div style={{ flex: '1 1 220px' }}>
           <DxcTextInput
             label="Social Security Number"
-            placeholder="•••-••-XXXX"
-            value={formData.deceasedSSN ? displaySSN(formData.deceasedSSN) : ''}
+            placeholder="###-##-####"
+            value={formatSSNInput(formData.deceasedSSN || '')}
             onChange={({ value }) => {
               const digits = value.replace(/\D/g, '').slice(0, 9);
               updateField('deceasedSSN', digits);
