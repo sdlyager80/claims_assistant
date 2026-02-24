@@ -787,7 +787,7 @@ const IntakeForms = () => {
             { label: 'Other', value: 'Other' },
           ]}
           value={formData.contactCountry}
-          onChange={v => updateField('contactCountry', v)}
+          onChange={({ value }) => updateField('contactCountry', value)}
           size="fillParent"
         />
       </div>
@@ -817,7 +817,7 @@ const IntakeForms = () => {
               label="State *"
               options={US_STATES}
               value={formData.contactState}
-              onChange={v => updateField('contactState', v)}
+              onChange={({ value }) => updateField('contactState', value)}
               size="fillParent"
             />
             {validationErrors.contactState && (
