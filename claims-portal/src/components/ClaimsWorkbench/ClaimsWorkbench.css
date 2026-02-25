@@ -4,6 +4,327 @@
   min-height: 100vh;
 }
 
+/* ════════════════════════════════════════
+   Death Details Edit Modal
+════════════════════════════════════════ */
+.death-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 47, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: death-overlay-in 0.18s ease;
+}
+
+@keyframes death-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.death-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 620px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,60,120,0.22), 0 4px 16px rgba(0,0,0,0.10);
+  animation: death-modal-in 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes death-modal-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Header */
+.death-modal__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #0f2d52 0%, #0067b3 100%);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.death-modal__header-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.death-modal__header-icon .material-icons {
+  font-size: 22px;
+  color: #fff;
+}
+
+.death-modal__header-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.death-modal__header-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.72);
+  margin-top: 2px;
+}
+
+.death-modal__close {
+  margin-left: auto;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.death-modal__close:hover { background: rgba(255,255,255,0.25); }
+.death-modal__close .material-icons { font-size: 18px; }
+
+/* Body */
+.death-modal__body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Sections */
+.death-modal__section {
+  background: #f8fbff;
+  border: 1px solid #e0ecf8;
+  border-radius: 10px;
+  padding: 14px 16px 16px;
+  margin-bottom: 12px;
+}
+
+.death-modal__section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0067b3;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d0e5f5;
+}
+
+.death-modal__section-label .material-icons {
+  font-size: 15px;
+}
+
+/* Grid */
+.death-modal__grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.death-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.death-modal__field--full {
+  grid-column: 1 / -1;
+}
+
+/* Labels */
+.death-modal__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.death-modal__required {
+  color: #e53e3e;
+  margin-left: 2px;
+}
+
+.death-modal__optional {
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* Input wrapper */
+.death-modal__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.death-modal__input-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.death-modal__input,
+.death-modal__select {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px 0 34px;
+  border: 1.5px solid #d1d9e6;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.death-modal__input:focus,
+.death-modal__select:focus {
+  border-color: #0067b3;
+  box-shadow: 0 0 0 3px rgba(0, 103, 179, 0.12);
+}
+
+.death-modal__input::placeholder { color: #b0bac9; }
+
+.death-modal__select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* Toggle buttons (Yes/No) */
+.death-modal__toggle-row {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid #d1d9e6;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 38px;
+}
+
+.death-modal__toggle {
+  flex: 1;
+  border: none;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.death-modal__toggle + .death-modal__toggle {
+  border-left: 1.5px solid #d1d9e6;
+}
+
+.death-modal__toggle--active {
+  background: #0067b3;
+  color: #fff;
+  font-weight: 600;
+}
+
+.death-modal__toggle:hover:not(.death-modal__toggle--active) {
+  background: #f0f7ff;
+  color: #0067b3;
+}
+
+/* Footer */
+.death-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid #e5eaf2;
+  background: #f8fbff;
+  flex-shrink: 0;
+}
+
+.death-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+}
+
+.death-modal__btn .material-icons { font-size: 17px; }
+
+.death-modal__btn--cancel {
+  background: #fff;
+  color: #374151;
+  border: 1.5px solid #d1d9e6;
+}
+
+.death-modal__btn--cancel:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.death-modal__btn--save {
+  background: linear-gradient(135deg, #0067b3, #0f2d52);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,103,179,0.3);
+}
+
+.death-modal__btn--save:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0078d4, #1a3f6f);
+  box-shadow: 0 4px 14px rgba(0,103,179,0.4);
+  transform: translateY(-1px);
+}
+
+.death-modal__btn--save:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,103,179,0.25);
+}
+
+.death-modal__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+@keyframes death-spin {
+  to { transform: rotate(360deg); }
+}
+
+.death-modal__spin {
+  animation: death-spin 1s linear infinite;
+  font-size: 16px;
+}
+
 .timeline {
   position: relative;
   padding-left: 2rem;
