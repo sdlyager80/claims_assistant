@@ -572,6 +572,32 @@ class ServiceNowService {
   }
 
   /**
+   * Update only death-related fields on an FNOL record (targeted PATCH)
+   * @param {string} sysId - FNOL sys_id
+   * @param {Object} deathData - Death detail fields
+   */
+  async updateDeathDetails(sysId, deathData) {
+    try {
+      const payload = {};
+      if (deathData.dateOfDeath   !== undefined) payload.insured_date_of_death   = deathData.dateOfDeath;
+      if (deathData.causeOfDeath  !== undefined) payload.insured_cause_of_death  = deathData.causeOfDeath;
+      if (deathData.mannerOfDeath !== undefined) payload.insured_manner_of_death = deathData.mannerOfDeath;
+
+      const headers = await this.getAuthHeaders();
+      const response = await apiClient.patch(
+        `${this.baseURL}${this.apiVersion}/${this.fnolTable}/${sysId}`,
+        payload,
+        { headers }
+      );
+      console.log('[ServiceNow] Death details updated for sys_id:', sysId);
+      return response.data.result;
+    } catch (error) {
+      console.error('[ServiceNow] Error updating death details:', error);
+      throw new Error(`Failed to update death details: ${error.message}`);
+    }
+  }
+
+  /**
    * Get all FNOL records (with optional filters)
    * @param {Object} filters - Query filters
    * @returns {Promise<Array>} Array of FNOL records
@@ -1383,6 +1409,30 @@ class ServiceNowService {
     } catch (error) {
       console.error('[ServiceNow] Error fetching attachments:', error);
       throw new Error(`Failed to fetch attachments from ServiceNow: ${error.message}`);
+    }
+  }
+
+  /**
+   * Fetch an attachment file as a Blob and return an object URL for in-browser viewing
+   * @param {string} attachmentSysId - sys_id of the attachment
+   * @returns {Promise<string>} Object URL (remember to call URL.revokeObjectURL when done)
+   */
+  async fetchAttachmentBlob(attachmentSysId, contentType) {
+    try {
+      const path = `/api/now/attachment/${attachmentSysId}/file`;
+      const url = this.buildProxyURL(path);
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) throw new Error(`Failed to fetch attachment: ${response.status}`);
+      const rawBlob = await response.blob();
+      // Use provided contentType, or response header, or default to application/pdf.
+      // Proxies often strip Content-Type, so we must force it so the browser renders inline.
+      const mimeType = contentType || response.headers.get('content-type') || 'application/pdf';
+      const typedBlob = new Blob([await rawBlob.arrayBuffer()], { type: mimeType.split(';')[0] });
+      return URL.createObjectURL(typedBlob);
+    } catch (error) {
+      console.error('[ServiceNow] Error fetching attachment blob:', error);
+      throw new Error(`Failed to load document: ${error.message}`);
     }
   }
 
