@@ -13,9 +13,8 @@ import {
   DxcChip,
   DxcDialog,
   DxcSpinner,
-  DxcCheckbox,
-  DxcSelect,
-  DxcTextInput
+  DxcTextInput,
+  DxcSelect
 } from '@dxc-technology/halstack-react';
 import FastTrackBadge from '../shared/FastTrackBadge';
 import DocumentUpload from '../shared/DocumentUpload';
@@ -53,16 +52,17 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [selectedParty, setSelectedParty] = useState(null);
   const [showAnomalyDetection, setShowAnomalyDetection] = useState(false);
   const [anomalyData, setAnomalyData] = useState(null);
+
+  // Death details edit modal
+  const [showDeathEditModal, setShowDeathEditModal] = useState(false);
+  const [localDeathEvent, setLocalDeathEvent] = useState(claim.deathEvent || {});
+  const [deathForm, setDeathForm] = useState({});
+  const [deathSaving, setDeathSaving] = useState(false);
+  const [deathSaveError, setDeathSaveError] = useState(null);
   const [anomalyLoading, setAnomalyLoading] = useState(false);
   const [anomalyLoadingMessage, setAnomalyLoadingMessage] = useState('');
   const [anomalyRetryCount, setAnomalyRetryCount] = useState(0);
   const [aiInsights, setAiInsights] = useState([]);
-  const [claimFlags, setClaimFlags] = useState({
-    reviewForClient: false,
-    highPriority: false,
-    secureClaim: 'Not a Secure Claim'
-  });
-  const [adjDecision, setAdjDecision] = useState({ decision: '', reason: '' });
 
   console.log('[ClaimsWorkbench] Received claim:', claim);
 
@@ -333,36 +333,6 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
         {/* Main Content Area */}
         <DxcContainer padding="var(--spacing-padding-l)">
           <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-            {/* Claim Flags Bar */}
-            <DxcContainer
-              style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
-              padding="var(--spacing-padding-m)"
-            >
-              <DxcFlex gap="var(--spacing-gap-xl)" alignItems="center" wrap="wrap">
-                <DxcCheckbox
-                  label="Review for Client"
-                  checked={claimFlags.reviewForClient}
-                  onChange={v => setClaimFlags(f => ({ ...f, reviewForClient: v }))}
-                />
-                <DxcCheckbox
-                  label="High Priority Claim"
-                  checked={claimFlags.highPriority}
-                  onChange={v => setClaimFlags(f => ({ ...f, highPriority: v }))}
-                />
-                <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                  <DxcTypography fontSize="font-scale-01">Secure Claim:</DxcTypography>
-                  <DxcSelect
-                    options={[
-                      { label: 'Not a Secure Claim', value: 'Not a Secure Claim' },
-                      { label: 'Secure', value: 'Secure' },
-                    ]}
-                    value={claimFlags.secureClaim}
-                    onChange={v => setClaimFlags(f => ({ ...f, secureClaim: v }))}
-                  />
-                </DxcFlex>
-              </DxcFlex>
-            </DxcContainer>
-
             {/* Progress Card - BLOOM: Enhanced with left accent border */}
             <DxcContainer
           padding="var(--spacing-padding-l)"
@@ -477,20 +447,12 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 >
                   <div />
                 </DxcTabs.Tab>
-                <DxcTabs.Tab
-                  label="Adjudicate"
-                  icon="gavel"
-                  active={activeTab === 6}
-                  onClick={() => setActiveTab(6)}
-                >
-                  <div />
-                </DxcTabs.Tab>
                 {claim.deathEvent && (
                 <DxcTabs.Tab
                   label="Beneficiary Analyzer"
                   icon="psychology"
-                  active={activeTab === 7}
-                  onClick={() => setActiveTab(7)}
+                  active={activeTab === 6}
+                  onClick={() => setActiveTab(6)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -499,8 +461,8 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcTabs.Tab
                   label="Related Policies"
                   icon="policy"
-                  active={activeTab === 8}
-                  onClick={() => setActiveTab(8)}
+                  active={activeTab === 7}
+                  onClick={() => setActiveTab(7)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -514,22 +476,35 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
                   {/* Top Row: Death Event (L&A only) and AI Insights */}
                   <div className="dashboard-grid-top">
-                    {claim.deathEvent && (
+                    {(claim.deathEvent || localDeathEvent?.dateOfDeath) && (
                       <DeathEventPanel
                         claimData={{
-                          dateOfDeath: claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
-                          mannerOfDeath: claim.deathEvent?.mannerOfDeath || 'Natural',
-                          causeOfDeath: claim.deathEvent?.causeOfDeath,
-                          deathInUSA: claim.deathEvent?.deathInUSA || 'Yes',
-                          countryOfDeath: claim.deathEvent?.countryOfDeath || 'United States',
-                          proofOfDeathSourceType: claim.deathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
-                          proofOfDeathDate: claim.deathEvent?.proofOfDeathDate,
+                          dateOfDeath: localDeathEvent?.dateOfDeath || claim.insured?.dateOfDeath,
+                          mannerOfDeath: localDeathEvent?.mannerOfDeath || 'Natural',
+                          causeOfDeath: localDeathEvent?.causeOfDeath,
+                          deathInUSA: localDeathEvent?.deathInUSA || 'Yes',
+                          countryOfDeath: localDeathEvent?.countryOfDeath || 'United States',
+                          proofOfDeathSourceType: localDeathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
+                          proofOfDeathDate: localDeathEvent?.proofOfDeathDate,
                           certifiedDOB: claim.insured?.dateOfBirth,
-                          verificationSource: claim.deathEvent?.verificationSource || 'LexisNexis',
-                          verificationScore: claim.deathEvent?.verificationScore || 95,
-                          specialEvent: claim.deathEvent?.specialEvent
+                          verificationSource: localDeathEvent?.verificationSource || 'LexisNexis',
+                          verificationScore: localDeathEvent?.verificationScore || 95,
+                          specialEvent: localDeathEvent?.specialEvent
                         }}
-                        onEdit={() => console.log('Edit death event')}
+                        onEdit={() => {
+                          setDeathForm({
+                            dateOfDeath:          localDeathEvent?.dateOfDeath || '',
+                            mannerOfDeath:        localDeathEvent?.mannerOfDeath || 'Natural',
+                            causeOfDeath:         localDeathEvent?.causeOfDeath || '',
+                            deathInUSA:           localDeathEvent?.deathInUSA === false ? 'No' : 'Yes',
+                            countryOfDeath:       localDeathEvent?.countryOfDeath || '',
+                            proofOfDeathSourceType: localDeathEvent?.proofOfDeathSourceType || 'Certified Death Certificate',
+                            proofOfDeathDate:     localDeathEvent?.proofOfDeathDate || '',
+                            specialEvent:         localDeathEvent?.specialEvent || '',
+                          });
+                          setDeathSaveError(null);
+                          setShowDeathEditModal(true);
+                        }}
                       />
                     )}
                     <AIInsightsPanel
@@ -609,7 +584,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         label="Analyze Beneficiaries"
                         mode="primary"
                         icon="psychology"
-                        onClick={() => setActiveTab(7)}
+                        onClick={() => setActiveTab(6)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       )}
@@ -1145,178 +1120,8 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 </DxcFlex>
               )}
 
-              {/* Adjudicate Tab */}
-              {activeTab === 6 && (() => {
-                const adjPolicies = claim.policies || (claim.policy ? [claim.policy] : []);
-                const adjSelectedPolicy = adjPolicies[0] || {};
-                const adjPrimaryBene = (claim.parties || []).find(p => p.role === 'Primary Beneficiary');
-                const adjClaimAmount = claim.financial?.claimAmount || 0;
-                const adjNetAmount = claim.financial?.netBenefitProceeds || adjClaimAmount;
-                const fmtAdj = (amt) => amt == null ? '$0.00' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amt);
-                return (
-                  <DxcFlex direction="column" gap="var(--spacing-gap-l)">
-
-                    {/* Adjudication Tree */}
-                    <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">
-                        ADJUDICATION DETAILS
-                      </DxcTypography>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', borderBottom: '2px solid var(--color-border-neutral-medium)', padding: '6px 8px', backgroundColor: 'var(--color-bg-neutral-lighter)' }}>
-                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">CLAIM / POLICY</DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">GROSS BENEFIT</DxcTypography>
-                        <DxcTypography fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">NET BENEFIT</DxcTypography>
-                      </div>
-                      {/* Claim row */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '6px 8px', backgroundColor: 'var(--color-bg-neutral-white)', borderRadius: '4px' }}>
-                        <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                          <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-primary-stronger)' }}>chevron_right</span>
-                          <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">{claim.claimNumber || claim.id}</DxcTypography>
-                        </DxcFlex>
-                        <DxcTypography fontSize="font-scale-02">{fmtAdj(adjClaimAmount)}</DxcTypography>
-                        <DxcTypography fontSize="font-scale-02">{fmtAdj(adjNetAmount)}</DxcTypography>
-                      </div>
-                      {/* Policy rows */}
-                      {adjPolicies.map((pol, idx) => (
-                        <div key={pol.policyNumber || idx}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '6px 8px', paddingLeft: '24px', backgroundColor: 'var(--color-bg-neutral-lightest)', borderRadius: '4px', borderLeft: '3px solid #1B75BB' }}>
-                            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                              <span className="material-icons" style={{ fontSize: '14px', color: 'var(--color-fg-success-darker)' }}>subdirectory_arrow_right</span>
-                              <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold">{pol.policyNumber}</DxcTypography>
-                              <DxcBadge label={pol.policyType || 'Term Life'} mode="contextual" color="info" />
-                              <DxcBadge label={pol.policyStatus || 'In Force'} mode="contextual" color="success" />
-                            </DxcFlex>
-                            <DxcTypography fontSize="font-scale-02">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                            <DxcTypography fontSize="font-scale-02">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                          </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '4px 8px', paddingLeft: '48px' }}>
-                            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-                              <span className="material-icons" style={{ fontSize: '12px', color: 'var(--color-fg-neutral-strong)' }}>subdirectory_arrow_right</span>
-                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{pol.planCode || pol.policyNumber}</DxcTypography>
-                            </DxcFlex>
-                            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                            <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                          </div>
-                          {adjPrimaryBene && (
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px', padding: '4px 8px', paddingLeft: '64px' }}>
-                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-strong)">{adjPrimaryBene.name} (Primary 100%)</DxcTypography>
-                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                              <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">{fmtAdj(pol.faceAmount)}</DxcTypography>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </DxcFlex>
-
-                    {/* Claim Details */}
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">CLAIM DETAILS</DxcTypography>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                        {[
-                          { label: 'Proof of Loss Date', value: claim.proofOfLossDate || 'N/A' },
-                          { label: 'Proof of Death Date', value: claim.deathEvent?.proofOfDeathDate || 'N/A' },
-                          { label: 'Proof of Death Source', value: claim.deathEvent?.proofOfDeathSourceType || 'N/A' },
-                          { label: 'Certified DOB', value: claim.deathEvent?.certifiedDOB || 'N/A' },
-                        ].map((f, i) => (
-                          <DxcFlex key={i} direction="column" gap="var(--spacing-gap-xxs)">
-                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">{f.label.toUpperCase()}</DxcTypography>
-                            <DxcTypography fontSize="font-scale-02">{f.value}</DxcTypography>
-                          </DxcFlex>
-                        ))}
-                      </div>
-                    </DxcFlex>
-
-                    {/* Policy Details */}
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">POLICY DETAILS — {adjSelectedPolicy.policyNumber || 'N/A'}</DxcTypography>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                        {[
-                          { label: 'Claim Policy Status', value: adjSelectedPolicy.policyStatus || 'N/A' },
-                          { label: 'Issue Date', value: adjSelectedPolicy.issueDate || 'N/A' },
-                          { label: 'Issue State', value: adjSelectedPolicy.issueState || 'N/A' },
-                          { label: 'Par Type', value: adjSelectedPolicy.parType || 'Non-Par' },
-                          { label: 'Paid to Date', value: adjSelectedPolicy.paidToDate || 'N/A' },
-                          { label: 'Plan Code', value: adjSelectedPolicy.planCode || 'N/A' },
-                          { label: 'Reporting Product Type', value: adjSelectedPolicy.policyType || 'N/A' },
-                          { label: 'Insured Indicator', value: 'Base' },
-                          { label: 'Acknowledgment Date', value: 'N/A' },
-                          { label: 'Policy Closed Date', value: claim.closedAt ? new Date(claim.closedAt).toLocaleDateString() : 'N/A' },
-                        ].map((f, i) => (
-                          <DxcFlex key={i} direction="column" gap="var(--spacing-gap-xxs)">
-                            <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">{f.label.toUpperCase()}</DxcTypography>
-                            <DxcTypography fontSize="font-scale-02">{f.value}</DxcTypography>
-                          </DxcFlex>
-                        ))}
-                      </div>
-                    </DxcFlex>
-
-                    {/* Adjudication Decision */}
-                    <DxcContainer
-                      padding="var(--spacing-padding-m)"
-                      style={{ backgroundColor: 'var(--color-bg-neutral-lightest)', borderLeft: '4px solid #1B75BB', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
-                    >
-                      <DxcFlex direction="column" gap="var(--spacing-gap-m)">
-                        <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">ADJUDICATION DECISION</DxcTypography>
-                        <DxcFlex gap="var(--spacing-gap-m)" wrap="wrap" alignItems="flex-end">
-                          <DxcSelect
-                            label="Adjudication Decision"
-                            options={[
-                              { label: '— Select —', value: '' },
-                              { label: 'Approved', value: 'approved' },
-                              { label: 'Denied', value: 'denied' },
-                            ]}
-                            value={adjDecision.decision}
-                            onChange={v => setAdjDecision(d => ({ ...d, decision: v }))}
-                          />
-                          <div style={{ flex: 1, minWidth: '240px' }}>
-                            <DxcTextInput
-                              label="Decision Reason"
-                              value={adjDecision.reason}
-                              onChange={({ value }) => setAdjDecision(d => ({ ...d, reason: value }))}
-                            />
-                          </div>
-                        </DxcFlex>
-                      </DxcFlex>
-                    </DxcContainer>
-
-                    {/* Proceed Details */}
-                    <DxcFlex direction="column" gap="var(--spacing-gap-s)">
-                      <DxcTypography fontSize="font-scale-02" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-dark)">PROCEED DETAILS</DxcTypography>
-                      <div style={{ border: '1px solid var(--color-border-neutral-medium)', borderRadius: '8px', overflow: 'hidden' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px 140px', backgroundColor: 'var(--color-bg-neutral-lighter)', borderBottom: '1px solid var(--color-border-neutral-medium)', padding: '8px 12px' }}>
-                          {['Claim Amount Item Type', 'Credit', 'Debit', 'Account #'].map((h, i) => (
-                            <DxcTypography key={i} fontSize="font-scale-01" fontWeight="font-weight-semibold" color="var(--color-fg-neutral-stronger)">{h}</DxcTypography>
-                          ))}
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px 150px 140px', padding: '8px 12px', backgroundColor: 'var(--color-bg-neutral-white)' }}>
-                          <DxcTypography fontSize="font-scale-02">Face Amount</DxcTypography>
-                          <DxcTypography fontSize="font-scale-02">{fmtAdj(adjSelectedPolicy.faceAmount || adjClaimAmount)}</DxcTypography>
-                          <DxcTypography fontSize="font-scale-02">$0.00</DxcTypography>
-                          <DxcTypography fontSize="font-scale-02">2412800</DxcTypography>
-                        </div>
-                      </div>
-                      <DxcFlex gap="var(--spacing-gap-s)">
-                        <DxcButton
-                          label="Benefit Quote (PMI)"
-                          mode="secondary"
-                          icon="calculate"
-                          onClick={() => setShowPMICalculator(true)}
-                          style={{ minHeight: 44 }}
-                        />
-                        <DxcButton
-                          label="Update"
-                          mode="primary"
-                          onClick={() => console.log('Update adjudication', adjDecision)}
-                          style={{ minHeight: 44 }}
-                        />
-                      </DxcFlex>
-                    </DxcFlex>
-
-                  </DxcFlex>
-                );
-              })()}
-
               {/* Beneficiary Analyzer Tab */}
-              {activeTab === 7 && (
+              {activeTab === 6 && (
                 <BeneficiaryAnalyzer
                   claimId={claim.claimNumber || claim.id}
                   claim={claim}
@@ -1334,7 +1139,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Related Policies Tab */}
-              {activeTab === 8 && (
+              {activeTab === 7 && (
                 <RelatedPoliciesPanel
                   claimData={claim}
                   onInitiateClaim={(policy) => {
@@ -1477,31 +1282,227 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
         </DxcDialog>
       )}
 
-      {/* Party Add/Edit Form Modal */}
+      {/* Party Add/Edit Form Modal — custom overlay (same design as Update Death Details) */}
       {showPartyForm && (
-        <DxcDialog
-          isCloseVisible
-          onCloseClick={() => {
+        <PartyForm
+          party={selectedParty}
+          onSave={(partyData) => {
+            console.log('Party saved:', partyData);
             setShowPartyForm(false);
             setSelectedParty(null);
           }}
-        >
-          <PartyForm
-            party={selectedParty}
-            onSave={(partyData) => {
-              console.log('Party saved:', partyData);
-              setShowPartyForm(false);
-              setSelectedParty(null);
-            }}
-            onCancel={() => {
-              setShowPartyForm(false);
-              setSelectedParty(null);
-            }}
-            onCSLNSearch={(partyData) => {
-              console.log('CSLN search for:', partyData);
-            }}
-          />
-        </DxcDialog>
+          onCancel={() => {
+            setShowPartyForm(false);
+            setSelectedParty(null);
+          }}
+          onCSLNSearch={(partyData) => {
+            console.log('CSLN search for:', partyData);
+          }}
+        />
+      )}
+
+      {/* Death Details Edit Modal — custom overlay */}
+      {showDeathEditModal && (
+        <div className="death-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget && !deathSaving) { setShowDeathEditModal(false); setDeathSaveError(null); } }}>
+          <div className="death-modal">
+
+            {/* Header */}
+            <div className="death-modal__header">
+              <div className="death-modal__header-icon">
+                <span className="material-icons">event</span>
+              </div>
+              <div>
+                <div className="death-modal__header-title">Update Death Details</div>
+                <div className="death-modal__header-sub">Edit insured death event information</div>
+              </div>
+              <button className="death-modal__close" onClick={() => { setShowDeathEditModal(false); setDeathSaveError(null); }} disabled={deathSaving}>
+                <span className="material-icons">close</span>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="death-modal__body">
+              {deathSaveError && (
+                <DxcAlert type="error" inlineText={deathSaveError} onClose={() => setDeathSaveError(null)} />
+              )}
+
+              {/* Section: Core Info */}
+              <div className="death-modal__section">
+                <div className="death-modal__section-label">
+                  <span className="material-icons">info</span> Core Information
+                </div>
+                <div className="death-modal__grid-2">
+                  <div className="death-modal__field">
+                    <label className="death-modal__label">Date of Death <span className="death-modal__required">*</span></label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">calendar_today</span>
+                      <input
+                        type="date"
+                        className="death-modal__input"
+                        value={deathForm.dateOfDeath}
+                        onChange={(e) => setDeathForm(p => ({ ...p, dateOfDeath: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div className="death-modal__field">
+                    <label className="death-modal__label">Manner of Death</label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">policy</span>
+                      <select
+                        className="death-modal__select"
+                        value={deathForm.mannerOfDeath}
+                        onChange={(e) => setDeathForm(p => ({ ...p, mannerOfDeath: e.target.value }))}
+                      >
+                        {['Natural','Accident','Homicide','Suicide','Undetermined'].map(o => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="death-modal__field death-modal__field--full">
+                    <label className="death-modal__label">Cause of Death</label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">medical_information</span>
+                      <input
+                        type="text"
+                        className="death-modal__input"
+                        placeholder="e.g. Heart Failure, Natural Causes"
+                        value={deathForm.causeOfDeath}
+                        onChange={(e) => setDeathForm(p => ({ ...p, causeOfDeath: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: Location */}
+              <div className="death-modal__section">
+                <div className="death-modal__section-label">
+                  <span className="material-icons">location_on</span> Location
+                </div>
+                <div className="death-modal__grid-2">
+                  <div className="death-modal__field">
+                    <label className="death-modal__label">Death in USA</label>
+                    <div className="death-modal__toggle-row">
+                      {['Yes','No'].map(opt => (
+                        <button
+                          key={opt}
+                          className={`death-modal__toggle ${deathForm.deathInUSA === opt ? 'death-modal__toggle--active' : ''}`}
+                          onClick={() => setDeathForm(p => ({ ...p, deathInUSA: opt }))}
+                          type="button"
+                        >{opt}</button>
+                      ))}
+                    </div>
+                  </div>
+                  {deathForm.deathInUSA === 'No' && (
+                    <div className="death-modal__field">
+                      <label className="death-modal__label">Country of Death</label>
+                      <div className="death-modal__input-wrap">
+                        <span className="material-icons death-modal__input-icon">public</span>
+                        <input
+                          type="text"
+                          className="death-modal__input"
+                          placeholder="Country name"
+                          value={deathForm.countryOfDeath}
+                          onChange={(e) => setDeathForm(p => ({ ...p, countryOfDeath: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Section: Documentation */}
+              <div className="death-modal__section">
+                <div className="death-modal__section-label">
+                  <span className="material-icons">description</span> Documentation
+                </div>
+                <div className="death-modal__grid-2">
+                  <div className="death-modal__field">
+                    <label className="death-modal__label">Proof of Death Source</label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">verified</span>
+                      <select
+                        className="death-modal__select"
+                        value={deathForm.proofOfDeathSourceType}
+                        onChange={(e) => setDeathForm(p => ({ ...p, proofOfDeathSourceType: e.target.value }))}
+                      >
+                        {['Certified Death Certificate','Death Certificate Copy','Online Obituary','Funeral Home Records','Hospital Records'].map(o => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="death-modal__field">
+                    <label className="death-modal__label">Proof of Death Date</label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">calendar_today</span>
+                      <input
+                        type="date"
+                        className="death-modal__input"
+                        value={deathForm.proofOfDeathDate}
+                        onChange={(e) => setDeathForm(p => ({ ...p, proofOfDeathDate: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <div className="death-modal__field death-modal__field--full">
+                    <label className="death-modal__label">Special Event <span className="death-modal__optional">(optional)</span></label>
+                    <div className="death-modal__input-wrap">
+                      <span className="material-icons death-modal__input-icon">warning</span>
+                      <input
+                        type="text"
+                        className="death-modal__input"
+                        placeholder="e.g. Airline Disaster, War, Pandemic"
+                        value={deathForm.specialEvent}
+                        onChange={(e) => setDeathForm(p => ({ ...p, specialEvent: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="death-modal__footer">
+              <button
+                className="death-modal__btn death-modal__btn--cancel"
+                onClick={() => { setShowDeathEditModal(false); setDeathSaveError(null); }}
+                disabled={deathSaving}
+              >Cancel</button>
+              <button
+                className={`death-modal__btn death-modal__btn--save ${deathSaving ? 'death-modal__btn--saving' : ''}`}
+                disabled={deathSaving || !deathForm.dateOfDeath}
+                onClick={async () => {
+                  setDeathSaving(true);
+                  setDeathSaveError(null);
+                  try {
+                    const sysId = claim.sys_id || claim.id;
+                    await serviceNowService.updateDeathDetails(sysId, {
+                      dateOfDeath:   deathForm.dateOfDeath,
+                      causeOfDeath:  deathForm.causeOfDeath,
+                      mannerOfDeath: deathForm.mannerOfDeath,
+                    });
+                    setLocalDeathEvent(prev => ({
+                      ...prev,
+                      ...deathForm,
+                      deathInUSA: deathForm.deathInUSA === 'Yes',
+                    }));
+                    setShowDeathEditModal(false);
+                  } catch (err) {
+                    setDeathSaveError(err.message || 'Failed to save death details.');
+                  } finally {
+                    setDeathSaving(false);
+                  }
+                }}
+              >
+                {deathSaving
+                  ? <><span className="material-icons death-modal__spin">sync</span> Saving…</>
+                  : <><span className="material-icons">save</span> Save Changes</>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Beneficiary Analyzer Modal */}
