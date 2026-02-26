@@ -136,7 +136,7 @@ const Dashboard = ({ onClaimSelect }) => {
     if (!serviceNowService.isAuthenticated()) return;
     try {
       setSnowLoading(true);
-      const fnolRecords = await serviceNowService.getFNOLsGlobal({ limit: 50 });
+      const fnolRecords = await serviceNowService.getFNOLsGlobal({ limit: 50, enrichWithPolicy: true });
       const mappedClaims = fnolRecords.map(fnol => serviceNowService.mapFNOLToClaim(fnol));
       setSnowClaims(mappedClaims);
       console.log('[Dashboard] ServiceNow FNOL claims loaded:', mappedClaims.length);
@@ -986,9 +986,32 @@ const Dashboard = ({ onClaimSelect }) => {
                               >
                                 {claim.fnolNumber || claim.claimNumber || 'N/A'}
                               </DxcTypography>
-                              <DxcTypography fontSize="font-scale-03">
-                                {claim.claimant?.name || claim.insured?.name || 'N/A'}
-                              </DxcTypography>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+                                {claim.insured?.name && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span className="material-icons" style={{ fontSize: '15px', color: '#4A4A4A' }}>person_off</span>
+                                    <div>
+                                      <div style={{ fontSize: '10px', color: '#6b7280', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Insured</div>
+                                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3 }}>{claim.insured.name}</div>
+                                    </div>
+                                  </div>
+                                )}
+                                {claim.claimant?.name && claim.claimant.name !== claim.insured?.name && (
+                                  <>
+                                    <div style={{ width: '1px', height: '28px', backgroundColor: '#d1d9e6', margin: '0 12px' }} />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                      <span className="material-icons" style={{ fontSize: '15px', color: '#1B75BB' }}>person</span>
+                                      <div>
+                                        <div style={{ fontSize: '10px', color: '#1B75BB', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Claimant</div>
+                                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3 }}>{claim.claimant.name}</div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                                {!claim.insured?.name && !claim.claimant?.name && (
+                                  <div style={{ fontSize: '13px', color: '#9ca3af' }}>N/A</div>
+                                )}
+                              </div>
                               {hasSTP && (
                                 <STPBadge eligible={true} showLabel={true} size="small" label={plConfig.terms.stpLabel} />
                               )}
@@ -1040,16 +1063,7 @@ const Dashboard = ({ onClaimSelect }) => {
                               backgroundColor: "var(--color-fg-neutral-strong)"
                             }} />
                             <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Insured: {claim.insured?.name || 'N/A'}
-                            </DxcTypography>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-fg-neutral-strong)"
-                            }} />
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Notify Date: {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
+                              Submitted: {claim.createdAt ? new Date(claim.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
                             </DxcTypography>
                             {hasSLA && (
                               <>
@@ -1066,29 +1080,6 @@ const Dashboard = ({ onClaimSelect }) => {
                                 />
                               </>
                             )}
-                          </DxcFlex>
-                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              DOD: {claim.deathEvent?.dateOfDeath || claim.insured?.dateOfDeath || 'N/A'}
-                            </DxcTypography>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-fg-neutral-strong)"
-                            }} />
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Manner: {claim.deathEvent?.mannerOfDeath || 'N/A'}
-                            </DxcTypography>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-fg-neutral-strong)"
-                            }} />
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Packet Sent: {claim.claimPacketSentDate ? new Date(claim.claimPacketSentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
-                            </DxcTypography>
                           </DxcFlex>
                         </DxcFlex>
                       </DxcInset>
@@ -1309,7 +1300,8 @@ const Dashboard = ({ onClaimSelect }) => {
                 const isClaim = submission.claimNumber !== undefined;
                 const isServiceNow = submission.source === 'servicenow';
                 const displayId = isClaim ? (submission.fnolNumber || submission.claimNumber) : submission.id;
-                const displayName = isClaim ? (submission.claimant?.name || submission.insured?.name) : submission.name;
+                const displayInsured = isClaim ? (submission.insured?.name || submission.claimant?.name) : submission.name;
+                const displayClaimant = isClaim && submission.insured?.name && submission.claimant?.name && submission.insured.name !== submission.claimant.name ? submission.claimant.name : null;
                 const displayStatus = isClaim ? submission.status : submission.status;
                 const displayType = isClaim
                   ? `LOB: ${isPC ? (plConfig.claimTypeLabels[submission.type] || submission.type) : (submission.type === 'death' ? 'Life' : 'Annuity')}`
@@ -1342,9 +1334,36 @@ const Dashboard = ({ onClaimSelect }) => {
                             >
                               {displayId}
                             </DxcTypography>
-                            <DxcTypography fontSize="font-scale-03">
-                              {displayName}
-                            </DxcTypography>
+                            {isClaim ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+                                {submission.insured?.name && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span className="material-icons" style={{ fontSize: '15px', color: '#4A4A4A' }}>person_off</span>
+                                    <div>
+                                      <div style={{ fontSize: '10px', color: '#6b7280', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Insured</div>
+                                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3 }}>{displayInsured}</div>
+                                    </div>
+                                  </div>
+                                )}
+                                {displayClaimant && (
+                                  <>
+                                    <div style={{ width: '1px', height: '28px', backgroundColor: '#d1d9e6', margin: '0 12px' }} />
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                      <span className="material-icons" style={{ fontSize: '15px', color: '#1B75BB' }}>person</span>
+                                      <div>
+                                        <div style={{ fontSize: '10px', color: '#1B75BB', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Claimant</div>
+                                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3 }}>{displayClaimant}</div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                                {!submission.insured?.name && !submission.claimant?.name && (
+                                  <div style={{ fontSize: '13px', color: '#9ca3af' }}>{displayInsured}</div>
+                                )}
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a' }}>{displayInsured}</div>
+                            )}
                             {hasSTP && (
                               <STPBadge eligible={true} showLabel={true} size="small" label={plConfig.terms.stpLabel} />
                             )}
@@ -1390,7 +1409,7 @@ const Dashboard = ({ onClaimSelect }) => {
                             backgroundColor: "var(--color-fg-neutral-strong)"
                           }} />
                           <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                            Notify Date: {displaySubmitted}
+                            Submitted: {displaySubmitted}
                           </DxcTypography>
                           {hasSLA && (
                             <>
@@ -1430,32 +1449,6 @@ const Dashboard = ({ onClaimSelect }) => {
                             </>
                           )}
                         </DxcFlex>
-
-                        {isClaim && (
-                          <DxcFlex gap="var(--spacing-gap-m)" alignItems="center" wrap="wrap">
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              DOD: {submission.deathEvent?.dateOfDeath || submission.insured?.dateOfDeath || 'N/A'}
-                            </DxcTypography>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-fg-neutral-strong)"
-                            }} />
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Manner: {submission.deathEvent?.mannerOfDeath || 'N/A'}
-                            </DxcTypography>
-                            <div style={{
-                              width: "6px",
-                              height: "6px",
-                              borderRadius: "50%",
-                              backgroundColor: "var(--color-fg-neutral-strong)"
-                            }} />
-                            <DxcTypography fontSize="12px" color="#000000" /* BLOOM */>
-                              Packet Sent: {submission.claimPacketSentDate ? new Date(submission.claimPacketSentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A'}
-                            </DxcTypography>
-                          </DxcFlex>
-                        )}
 
                         {/* Lifecycle Tracker */}
                         {isClaim && (
