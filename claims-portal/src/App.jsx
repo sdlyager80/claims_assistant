@@ -22,13 +22,20 @@ import serviceNowService from './services/api/serviceNowService';
 
 import './App.css';
 
+// Demo personas for role switching
+const DEMO_PERSONAS = [
+  { id: 'user-sj', name: 'Sarah Johnson', email: 's.johnson@bloom.com', role: 'examiner', title: 'Claims Examiner', permissions: ['view_claims', 'edit_claims', 'approve_payments'] },
+  { id: 'user-tb', name: 'Taylor Brooks', email: 't.brooks@bloom.com', role: 'supervisor', title: 'Supervisor', permissions: ['view_claims', 'edit_claims', 'approve_payments', 'manage_team', 'view_reports'] },
+  { id: 'user-jc', name: 'Jayden Clarke', email: 'j.clarke@bloom.com', role: 'supervisor', title: 'Supervisor', permissions: ['view_claims', 'edit_claims', 'approve_payments', 'manage_team', 'view_reports'] },
+];
+
 /**
  * Main Application Component (wrapped with context providers)
  */
 function AppContent() {
 
   // Access global app context
-  const { user, productLine, switchProductLine } = useApp();
+  const { user, productLine, switchProductLine, updateUserProfile } = useApp();
 
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedClaim, setSelectedClaim] = useState(null);
@@ -38,6 +45,32 @@ function AppContent() {
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const actionsButtonRef = useRef(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [userMenuPos, setUserMenuPos] = useState({ top: 0, right: 0 });
+  const userAvatarRef = useRef(null);
+
+  // Scroll to top after every view/claim change.
+  // Halstack uses Emotion CSS-in-JS so we can't target its scroll container by class name.
+  // Instead find all scrollable divs by computed style and reset them.
+  useEffect(() => {
+    const scrollAll = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.querySelectorAll('div').forEach(el => {
+        if (el.scrollTop > 0) {
+          const ov = window.getComputedStyle(el).overflowY;
+          if (ov === 'auto' || ov === 'scroll') el.scrollTop = 0;
+        }
+      });
+    };
+    // Double-rAF: first frame React commits the DOM, second frame the browser has laid it out
+    const r1 = requestAnimationFrame(() => {
+      const r2 = requestAnimationFrame(scrollAll);
+      return () => cancelAnimationFrame(r2);
+    });
+    return () => cancelAnimationFrame(r1);
+  }, [currentView, selectedClaim?.id]);
 
   // Track ServiceNow connection state
   useEffect(() => {
@@ -60,6 +93,19 @@ function AppContent() {
     };
   }, [actionsMenuOpen]);
 
+  // Close user menu on outside click or scroll
+  useEffect(() => {
+    const close = () => setUserMenuOpen(false);
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', close);
+      document.addEventListener('scroll', close, true);
+    }
+    return () => {
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('scroll', close, true);
+    };
+  }, [userMenuOpen]);
+
   const openActionsMenu = useCallback((e) => {
     e.stopPropagation();
     const rect = actionsButtonRef.current?.getBoundingClientRect();
@@ -67,6 +113,15 @@ function AppContent() {
       setMenuPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right });
     }
     setActionsMenuOpen(prev => !prev);
+  }, []);
+
+  const openUserMenu = useCallback((e) => {
+    e.stopPropagation();
+    const rect = userAvatarRef.current?.getBoundingClientRect();
+    if (rect) {
+      setUserMenuPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right });
+    }
+    setUserMenuOpen(prev => !prev);
   }, []);
 
   const handleClaimSelect = async (claim) => {
@@ -384,30 +439,135 @@ function AppContent() {
                 >
                   <span className="material-icons">palette</span>
                 </div>
-                <DxcFlex direction="column" gap="var(--spacing-gap-none)">
-                  <DxcTypography>{user?.name || 'User'}</DxcTypography>
-                  <DxcTypography
-                    fontSize="font-scale-01"
-                    color="var(--color-fg-neutral-stronger)"
+                <div style={{ position: 'relative' }}>
+                  <button
+                    ref={userAvatarRef}
+                    onClick={openUserMenu}
+                    onMouseDown={e => e.stopPropagation()}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px 6px',
+                      borderRadius: '8px',
+                      transition: 'background 0.15s ease',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(27,117,187,0.08)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    title="Switch persona"
                   >
-                    {user?.email || ''}
-                  </DxcTypography>
-                </DxcFlex>
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--color-bg-primary-lighter)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--color-fg-primary-stronger)",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                  }}
-                >
-                  {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                    <DxcFlex direction="column" gap="var(--spacing-gap-none)" alignItems="flex-end">
+                      <DxcTypography>{user?.name || 'User'}</DxcTypography>
+                      <DxcTypography
+                        fontSize="font-scale-01"
+                        color="var(--color-fg-neutral-stronger)"
+                      >
+                        {user?.email || ''}
+                      </DxcTypography>
+                    </DxcFlex>
+                    <div
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        backgroundColor: userMenuOpen ? '#1B75BB' : "var(--color-bg-primary-lighter)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: userMenuOpen ? '#FFFFFF' : "var(--color-fg-primary-stronger)",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                    </div>
+                  </button>
+
+                  {/* User / Persona Dropdown */}
+                  {userMenuOpen && createPortal(
+                    <div
+                      onMouseDown={e => e.stopPropagation()}
+                      style={{
+                        position: 'fixed',
+                        top: userMenuPos.top,
+                        right: userMenuPos.right,
+                        minWidth: '260px',
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #D1D3D4',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        zIndex: 99999,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {/* Active user info header */}
+                      <div style={{ padding: '14px 16px', borderBottom: '1px solid #E8E9EA', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '40px', height: '40px', borderRadius: '50%',
+                          backgroundColor: '#1B75BB', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#FFFFFF', fontWeight: '700', fontSize: '15px',
+                        }}>
+                          {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#000000' }}>{user?.name || 'User'}</div>
+                          <div style={{ fontSize: '12px', color: '#58595B' }}>{user?.title || ''}</div>
+                          <div style={{ fontSize: '11px', color: '#8C8E90' }}>{user?.email || ''}</div>
+                        </div>
+                      </div>
+
+                      {/* Persona Switcher */}
+                      <div style={{ padding: '12px 16px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#58595B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                          SWITCH PERSONA
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {DEMO_PERSONAS.map(persona => {
+                            const isActive = user?.name === persona.name;
+                            return (
+                              <button
+                                key={persona.id}
+                                onClick={() => { updateUserProfile(persona); setUserMenuOpen(false); }}
+                                style={{
+                                  padding: '8px 12px',
+                                  display: 'flex', alignItems: 'center', gap: '10px',
+                                  background: isActive ? '#1B75BB' : '#F8F9FA',
+                                  border: isActive ? '2px solid #1B75BB' : '2px solid #D1D3D4',
+                                  borderRadius: '8px',
+                                  cursor: 'pointer',
+                                  fontSize: '13px',
+                                  fontWeight: isActive ? '700' : '500',
+                                  color: isActive ? '#FFFFFF' : '#000000',
+                                  textAlign: 'left',
+                                  width: '100%',
+                                  minHeight: '44px',
+                                  transition: 'all 0.2s ease',
+                                }}
+                                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = '#E8E9EA'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+                                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = '#F8F9FA'; e.currentTarget.style.transform = 'translateY(0)'; } }}
+                              >
+                                <span className="material-icons" style={{ fontSize: '18px', flexShrink: 0 }}>
+                                  {persona.role === 'supervisor' ? 'supervisor_account' : 'person'}
+                                </span>
+                                <div>
+                                  <div style={{ fontWeight: isActive ? '700' : '600' }}>{persona.name}</div>
+                                  <div style={{ fontSize: '11px', opacity: 0.75 }}>{persona.title}</div>
+                                </div>
+                                {isActive && (
+                                  <span className="material-icons" style={{ fontSize: '16px', marginLeft: 'auto', color: '#FFFFFF' }}>check_circle</span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>,
+                    document.body
+                  )}
                 </div>
               </DxcFlex>
             )
