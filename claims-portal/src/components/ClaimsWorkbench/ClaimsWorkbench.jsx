@@ -41,6 +41,23 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showBeneficiaryAnalyzer, setShowBeneficiaryAnalyzer] = useState(false);
 
+  // Scroll to top on every tab switch or claim change
+  useEffect(() => {
+    const scrollAll = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.querySelectorAll('div').forEach(el => {
+        if (el.scrollTop > 0) {
+          const ov = window.getComputedStyle(el).overflowY;
+          if (ov === 'auto' || ov === 'scroll') el.scrollTop = 0;
+        }
+      });
+    };
+    const r1 = requestAnimationFrame(() => { requestAnimationFrame(scrollAll); });
+    return () => cancelAnimationFrame(r1);
+  }, [activeTab, claim?.id]);
+
   // Modal states
   const [showPMICalculator, setShowPMICalculator] = useState(false);
   const [showTaxCalculator, setShowTaxCalculator] = useState(false);
@@ -52,6 +69,30 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
   const [selectedParty, setSelectedParty] = useState(null);
   const [showAnomalyDetection, setShowAnomalyDetection] = useState(false);
   const [anomalyData, setAnomalyData] = useState(null);
+
+  // Death claim (ServiceNow sn_ins_claim_indl_death_case) — fetched when available
+  const [deathClaimRecord, setDeathClaimRecord] = useState(null);
+  useEffect(() => {
+    console.log('[ClaimsWorkbench] deathClaimId:', claim.deathClaimId);
+    if (claim.deathClaimId) {
+      serviceNowService.getDeathClaim(claim.deathClaimId).then(dc => {
+        console.log('[ClaimsWorkbench] deathClaimRecord fetched:', dc);
+        if (dc) {
+          setDeathClaimRecord(dc);
+          // Merge into localDeathEvent so DeathEventPanel also benefits
+          setLocalDeathEvent(prev => ({
+            ...prev,
+            dateOfDeath:         dc.date_and_time_of_incident?.display_value || dc.date_and_time_of_incident || prev.dateOfDeath,
+            mannerOfDeath:       dc.nature_of_loss?.display_value            || dc.nature_of_loss            || prev.mannerOfDeath,
+            stateOfDeath:        dc.state_province?.display_value            || dc.state_province            || prev.stateOfDeath,
+            deathInUSA:          (dc.country === 'US' || dc.country === 'USA') ? 'Yes' : (dc.country ? 'No' : prev.deathInUSA),
+            proofOfDeathDate:    dc.report_date?.display_value               || dc.report_date               || prev.proofOfDeathDate,
+            incidentDescription: dc.describe_the_incident?.display_value     || dc.describe_the_incident     || prev.incidentDescription,
+          }));
+        }
+      });
+    }
+  }, [claim.id, claim.deathClaimId]);
 
   // Death details edit modal
   const [showDeathEditModal, setShowDeathEditModal] = useState(false);
@@ -474,6 +515,125 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
               {activeTab === 0 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
+
+                  {/* FNOL People Row: Insured + Claimant identity cards */}
+                  {(claim.insured?.name || claim.claimant?.name) && (
+                  <div className="dashboard-grid-people">
+                    {/* Insured Card */}
+                    {claim.insured?.name && (
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{
+                        backgroundColor: 'var(--color-bg-neutral-lightest)',
+                        borderLeft: '4px solid #4A4A4A',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.10)'
+                      }}
+                      border={{ color: 'var(--border-color-neutral-lighter)', style: 'solid', width: '1px' }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcFlex alignItems="center" gap="var(--spacing-gap-xs)">
+                          <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#4A4A4A' }}>person_off</span>
+                          <DxcTypography fontSize="11px" fontWeight="font-weight-semibold" color="#4A4A4A"
+                            style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            Insured (Deceased)
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000">
+                          {claim.insured.name}
+                        </DxcTypography>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          {claim.insured.dateOfBirth && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Date of Birth</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.insured.dateOfBirth}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {claim.insured.maritalStatus && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Marital Status</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.insured.maritalStatus}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {(claim.insured.address?.city || claim.insured.address?.state) && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ gridColumn: '1 / -1' }}>
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Last Known Address</DxcTypography>
+                            <DxcTypography fontSize="14px">
+                              {[claim.insured.address?.street, claim.insured.address?.city, claim.insured.address?.state, claim.insured.address?.zipCode].filter(Boolean).join(', ')}
+                            </DxcTypography>
+                          </DxcFlex>
+                          )}
+                        </div>
+                      </DxcFlex>
+                    </DxcContainer>
+                    )}
+
+                    {/* Claimant Card */}
+                    {claim.claimant?.name && (
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{
+                        backgroundColor: 'var(--color-bg-neutral-lightest)',
+                        borderLeft: '4px solid #1B75BB',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.10)'
+                      }}
+                      border={{ color: 'var(--border-color-neutral-lighter)', style: 'solid', width: '1px' }}
+                    >
+                      <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                        <DxcFlex alignItems="center" gap="var(--spacing-gap-xs)">
+                          <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1B75BB' }}>person</span>
+                          <DxcTypography fontSize="11px" fontWeight="font-weight-semibold" color="#1B75BB"
+                            style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            Claimant / Notifier
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex alignItems="center" gap="var(--spacing-gap-s)" wrap="wrap">
+                          <DxcTypography fontSize="20px" fontWeight="font-weight-semibold" color="#000000">
+                            {claim.claimant.name}
+                          </DxcTypography>
+                          {claim.claimant.relationship && (
+                          <DxcBadge label={claim.claimant.relationship} />
+                          )}
+                        </DxcFlex>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          {claim.claimant.phoneNumber && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Phone</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.claimant.phoneNumber}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {claim.claimant.emailAddress && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Email</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.claimant.emailAddress}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {claim.claimant.dateOfBirth && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Date of Birth</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.claimant.dateOfBirth}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {claim.claimant.capacity && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Capacity</DxcTypography>
+                            <DxcTypography fontSize="14px">{claim.claimant.capacity}</DxcTypography>
+                          </DxcFlex>
+                          )}
+                          {(claim.claimant.address?.city || claim.claimant.address?.state) && (
+                          <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ gridColumn: '1 / -1' }}>
+                            <DxcTypography fontSize="11px" color="var(--color-fg-neutral-dark)">Address</DxcTypography>
+                            <DxcTypography fontSize="14px">
+                              {[claim.claimant.address?.street, claim.claimant.address?.city, claim.claimant.address?.state, claim.claimant.address?.zipCode].filter(Boolean).join(', ')}
+                            </DxcTypography>
+                          </DxcFlex>
+                          )}
+                        </div>
+                      </DxcFlex>
+                    </DxcContainer>
+                    )}
+                  </div>
+                  )}
+
                   {/* Top Row: Death Event (L&A only) and AI Insights */}
                   <div className="dashboard-grid-top">
                     {(claim.deathEvent || localDeathEvent?.dateOfDeath) && (
@@ -875,6 +1035,83 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               {/* Policy 360 Tab */}
               {activeTab === 2 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
+
+                  {/* Death Claim Record — shown first for FNOL claims */}
+                  {deathClaimRecord && (
+                  <DxcFlex direction="column" gap="var(--spacing-gap-s)">
+                    <DxcFlex justifyContent="space-between" alignItems="center">
+                      <DxcHeading level={4} text="Death Claim Details" />
+                      <span style={{ fontSize: '12px', color: '#808285', fontWeight: 600 }}>
+                        {deathClaimRecord.number} · ServiceNow
+                      </span>
+                    </DxcFlex>
+                    <DxcContainer
+                      padding="var(--spacing-padding-m)"
+                      style={{
+                        backgroundColor: 'var(--color-bg-neutral-lightest)',
+                        borderLeft: '4px solid #D02E2E',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                      }}
+                      border={{ color: 'var(--border-color-neutral-lighter)', style: 'solid', width: '1px' }}
+                    >
+                      <div className="policy-details-grid">
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Type of Death</DxcTypography>
+                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
+                            {deathClaimRecord.nature_of_loss?.display_value || deathClaimRecord.nature_of_loss || 'N/A'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Date of Death</DxcTypography>
+                          <DxcTypography fontSize="16px" fontWeight="font-weight-semibold">
+                            {deathClaimRecord.date_and_time_of_incident?.display_value || deathClaimRecord.date_and_time_of_incident || 'N/A'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Report Date</DxcTypography>
+                          <DxcTypography fontSize="16px">
+                            {deathClaimRecord.report_date?.display_value || deathClaimRecord.report_date || 'N/A'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">State at Time of Death</DxcTypography>
+                          <DxcTypography fontSize="16px">
+                            {deathClaimRecord.state_province?.display_value || deathClaimRecord.state_province || 'N/A'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Country</DxcTypography>
+                          <DxcTypography fontSize="16px">
+                            {deathClaimRecord.country?.display_value || deathClaimRecord.country || 'N/A'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Status</DxcTypography>
+                          <DxcTypography fontSize="16px">
+                            {deathClaimRecord.state?.display_value || deathClaimRecord.state || 'New'}
+                          </DxcTypography>
+                        </DxcFlex>
+                        {(deathClaimRecord.description?.display_value || deathClaimRecord.description) && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ gridColumn: '1 / -1' }}>
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Description</DxcTypography>
+                          <DxcTypography fontSize="14px">
+                            {deathClaimRecord.description?.display_value || deathClaimRecord.description}
+                          </DxcTypography>
+                        </DxcFlex>
+                        )}
+                        {(deathClaimRecord.describe_the_incident?.display_value || deathClaimRecord.describe_the_incident) && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)" style={{ gridColumn: '1 / -1' }}>
+                          <DxcTypography fontSize="12px" color="var(--color-fg-neutral-dark)">Incident Description</DxcTypography>
+                          <DxcTypography fontSize="14px">
+                            {deathClaimRecord.describe_the_incident?.display_value || deathClaimRecord.describe_the_incident}
+                          </DxcTypography>
+                        </DxcFlex>
+                        )}
+                      </div>
+                    </DxcContainer>
+                  </DxcFlex>
+                  )}
+
                   <DxcFlex direction="column" gap="var(--spacing-gap-s)">
                     <DxcFlex justifyContent="space-between" alignItems="center">
                       <DxcHeading level={4} text="Policy Details" />
