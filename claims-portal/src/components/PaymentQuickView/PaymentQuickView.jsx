@@ -66,21 +66,19 @@ const PaymentQuickView = ({ payment, onEdit, onCancel, onResend, onView1099, onC
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
-        <DxcFlex justifyContent="space-between" alignItems="flex-start">
-          <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-              <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
-                payment
-              </span>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
-                Payment Details
-              </DxcTypography>
-            </DxcFlex>
-            <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-strong)">
-              {payment.paymentNumber || payment.id}
+        <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+          <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+            <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
+              payment
+            </span>
+            <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
+              Payment Details
             </DxcTypography>
+            <DxcBadge label={payment.status || 'Unknown'} />
           </DxcFlex>
-          <DxcBadge label={payment.status || 'Unknown'} />
+          <DxcTypography fontSize="font-scale-02" color="var(--color-fg-neutral-strong)">
+            {payment.paymentNumber || payment.id}
+          </DxcTypography>
         </DxcFlex>
 
         <DxcDivider />
