@@ -98,6 +98,7 @@ const Dashboard = ({ onClaimSelect }) => {
   const [productFilter, setProductFilter] = useState('');
   const [stateFilter, setStateFilter] = useState('');
   const [amountRangeFilter, setAmountRangeFilter] = useState('');
+  const [workflowStageFilter, setWorkflowStageFilter] = useState('');
 
   // Get data from contexts
   const {
@@ -377,6 +378,30 @@ const Dashboard = ({ onClaimSelect }) => {
       }
     }
 
+    // Workflow stage filter
+    if (workflowStageFilter) {
+      switch (workflowStageFilter) {
+        case 'new_claim_notification':
+          filtered = filtered.filter(c => c.status === ClaimStatus.NEW || c.status === ClaimStatus.SUBMITTED);
+          break;
+        case 'awaiting_requirements':
+          filtered = filtered.filter(c => c.status === ClaimStatus.PENDING_REQUIREMENTS);
+          break;
+        case 'mail_received':
+          filtered = filtered.filter(c => c.status === ClaimStatus.IN_REVIEW || c.status === ClaimStatus.REQUIREMENTS_COMPLETE);
+          break;
+        case 'quality_review':
+          filtered = filtered.filter(c => c.status === ClaimStatus.IN_APPROVAL);
+          break;
+        case 'manager':
+          filtered = filtered.filter(c => c.status === ClaimStatus.APPROVED);
+          break;
+        case 'other_department':
+          filtered = filtered.filter(c => c.status === ClaimStatus.UNDER_REVIEW || c.status === ClaimStatus.SUSPENDED || c.status === ClaimStatus.PAYMENT_SCHEDULED);
+          break;
+      }
+    }
+
     // Filter by search
     if (searchValue) {
       const search = searchValue.toLowerCase();
@@ -390,7 +415,7 @@ const Dashboard = ({ onClaimSelect }) => {
     }
 
     return filtered;
-  }, [allClaims, activeTabIndex, subsetFilter, searchValue, typeFilter, productFilter, amountRangeFilter]);
+  }, [allClaims, activeTabIndex, subsetFilter, searchValue, typeFilter, productFilter, amountRangeFilter, workflowStageFilter]);
 
   // Paginate claims
   const paginatedClaims = useMemo(() => {
@@ -1198,7 +1223,7 @@ const Dashboard = ({ onClaimSelect }) => {
                 label="Closed Claims"
                 icon="assignment_turned_in"
                 active={activeTabIndex === 1}
-                onClick={() => { setActiveTabIndex(1); setSubsetFilter(null); setCurrentPage(1); }}
+                onClick={() => { setActiveTabIndex(1); setSubsetFilter(null); setWorkflowStageFilter(''); setCurrentPage(1); }}
               >
                 <div />
               </DxcTabs.Tab>
@@ -1248,6 +1273,22 @@ const Dashboard = ({ onClaimSelect }) => {
                   { label: '$50K - $250K', value: '50k_250k' },
                   { label: '$250K - $1M', value: '250k_1m' },
                   { label: 'Over $1M', value: 'over_1m' }
+                ]}
+                size="small"
+              />
+              <DxcSelect
+                label="Workflow Stage"
+                placeholder="All Stages"
+                value={workflowStageFilter}
+                onChange={({ value }) => { setWorkflowStageFilter(value); setCurrentPage(1); }}
+                options={[
+                  { label: 'All Stages', value: '' },
+                  { label: 'New Claim Notification', value: 'new_claim_notification' },
+                  { label: 'Awaiting Requirements', value: 'awaiting_requirements' },
+                  { label: 'Mail Received', value: 'mail_received' },
+                  { label: 'Quality Review', value: 'quality_review' },
+                  { label: 'Manager', value: 'manager' },
+                  { label: 'Other Department', value: 'other_department' },
                 ]}
                 size="small"
               />
