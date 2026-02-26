@@ -51,12 +51,27 @@ const DocumentUpload = ({
   const [viewerError, setViewerError] = useState(null);
   const [idpResultsByDoc, setIdpResultsByDoc] = useState({});   // fileName → IDP result
   const [idpPendingDocs, setIdpPendingDocs] = useState({});     // fileName → submissionId
+  const [blobUrls, setBlobUrls] = useState({});                 // sys_id → blobUrl | 'error'
+  const [blobLoading, setBlobLoading] = useState({});           // sys_id → bool
+  const [fieldEdits, setFieldEdits] = useState({});             // `${fileName}__${sec}__${label}` → corrected value
   const fileInputRef = useRef(null);
   const idpPollRef = useRef(null);
   const idpPendingRef = useRef({});  // mirror of idpPendingDocs for use inside interval
 
-  const toggleDoc = (index) => {
+  const toggleDoc = (index, attachment) => {
+    const willExpand = !expandedDocs[index];
     setExpandedDocs(prev => ({ ...prev, [index]: !prev[index] }));
+    if (willExpand && attachment?.sys_id) {
+      const sid = attachment.sys_id;
+      if (!blobUrls[sid] && !blobLoading[sid]) {
+        setBlobLoading(pl => ({ ...pl, [sid]: true }));
+        const rawType = attachment.content_type?.display_value || attachment.content_type || 'application/pdf';
+        serviceNowService.fetchAttachmentBlob(sid, rawType)
+          .then(url => setBlobUrls(bu => ({ ...bu, [sid]: url })))
+          .catch(() => setBlobUrls(bu => ({ ...bu, [sid]: 'error' })))
+          .finally(() => setBlobLoading(pl => ({ ...pl, [sid]: false })));
+      }
+    }
   };
 
   const openViewer = async (attachment) => {
@@ -165,6 +180,385 @@ const DocumentUpload = ({
     if (n >= 0.8) return '#1b7a4b';
     if (n >= 0.6) return '#b45309';
     return '#c0392b';
+  };
+
+  // ── Demo IDP fields per document type ──────────────────────
+  const getDemoSections = (fileName) => {
+    const n = (fileName || '').toLowerCase();
+    if (n.includes('death_cert')) return {
+      intent: 'death_certificate',
+      classification: 'Death Certificate',
+      sections: [
+        { title: 'Insured Information', fields: [
+          { label: 'Full Name',      value: 'Robert Jones',     conf: 0.96 },
+          { label: 'Date of Birth',  value: '1958-06-15',       conf: 0.95 },
+          { label: 'Date of Death',  value: '2026-01-15',       conf: 0.97 },
+          { label: 'Age at Death',   value: '67',               conf: 0.99 },
+          { label: 'SSN (last 4)',   value: '****-4821',        conf: 0.93 },
+        ]},
+        { title: 'Death Information', fields: [
+          { label: 'Cause of Death',   value: 'Natural Causes', conf: 0.94 },
+          { label: 'Manner of Death',  value: 'Natural',        conf: 0.96 },
+          { label: 'State of Death',   value: 'Illinois',       conf: 0.98 },
+          { label: 'Place of Death',   value: 'Springfield, IL',conf: 0.91 },
+          { label: 'Certificate No.',  value: 'IL-2026-48291',  conf: 0.99 },
+        ]},
+        { title: 'Verification', fields: [
+          { label: 'Source',           value: 'LexisNexis',     conf: 0.99 },
+          { label: 'Match Points',     value: 'SSN · Name · DOB', conf: 0.95 },
+          { label: 'Issue Date',       value: '2026-01-18',     conf: 0.99 },
+        ]},
+      ],
+    };
+    if (n.includes('claimant_statement') || n.includes('claim_form')) return {
+      intent: 'claimant_statement',
+      classification: 'Claimant Statement',
+      sections: [
+        { title: 'Policy Information', fields: [
+          { label: 'Policy Number',  value: 'POL-847291',          conf: 0.98 },
+          { label: 'Policy Type',    value: 'Term Life',           conf: 0.96 },
+          { label: 'Insured Name',   value: 'Robert Jones',        conf: 0.95 },
+          { label: 'Date of Death',  value: '2026-01-15',          conf: 0.97 },
+        ]},
+        { title: 'Claimant Information', fields: [
+          { label: 'Claimant Name',  value: 'Elizabeth Jones',     conf: 0.94 },
+          { label: 'Relationship',   value: 'Spouse',              conf: 0.92 },
+          { label: 'Phone',          value: '312-555-0147',        conf: 0.89 },
+          { label: 'Email',          value: 'elizabeth.jones@email.com', conf: 0.91 },
+        ]},
+        { title: 'Checklist', checklist: [
+          { label: 'All pages included',     value: true,  conf: 0.88 },
+          { label: 'Signature present',      value: false, conf: 0.78 },
+          { label: 'Notary stamp visible',   value: false, conf: 0.81 },
+          { label: 'Date completed',         value: true,  conf: 0.90 },
+        ]},
+      ],
+    };
+    if (n.includes('drivers_license') || n.includes('dl_') || n.includes('photo_id') || n.includes('govt_id')) return {
+      intent: 'government_id',
+      classification: 'Driver\'s License',
+      sections: [
+        { title: 'Identity', fields: [
+          { label: 'Last Name',    value: 'Jones',            conf: 0.98 },
+          { label: 'First Name',   value: 'Elizabeth',        conf: 0.97 },
+          { label: 'Date of Birth',value: '1960-03-22',       conf: 0.96 },
+          { label: 'DL Number',    value: 'J423-5718-9210',   conf: 0.99 },
+          { label: 'Expiry',       value: '2028-03-22',       conf: 0.98 },
+          { label: 'State',        value: 'Illinois',         conf: 0.99 },
+        ]},
+        { title: 'Address', fields: [
+          { label: 'Street',       value: '742 Maple Drive',  conf: 0.93 },
+          { label: 'City',         value: 'Springfield',      conf: 0.95 },
+          { label: 'State',        value: 'IL',               conf: 0.99 },
+          { label: 'Zip Code',     value: '62704',            conf: 0.97 },
+        ]},
+        { title: 'Verification', fields: [
+          { label: 'ID Class',     value: 'D — Non-Commercial', conf: 0.99 },
+          { label: 'Restrictions', value: 'None',               conf: 0.99 },
+        ]},
+      ],
+    };
+    if (n.includes('w9') || n.includes('w-9')) return {
+      intent: 'tax_form_w9',
+      classification: 'IRS Form W-9',
+      sections: [
+        { title: 'Taxpayer Information', fields: [
+          { label: 'Full Name',        value: 'Elizabeth Jones',          conf: 0.97 },
+          { label: 'Business Name',    value: '—',                        conf: 0.99 },
+          { label: 'Classification',   value: 'Individual / Sole proprietor', conf: 0.95 },
+          { label: 'TIN (SSN)',        value: '***-**-7193',              conf: 0.92 },
+          { label: 'Exempt Code',      value: 'None',                     conf: 0.99 },
+        ]},
+        { title: 'Address', fields: [
+          { label: 'Street',           value: '742 Maple Drive',          conf: 0.94 },
+          { label: 'City / State / Zip', value: 'Springfield, IL 62704', conf: 0.93 },
+        ]},
+        { title: 'Certification', checklist: [
+          { label: 'TIN is correct',             value: true,  conf: 0.97 },
+          { label: 'Not subject to backup withholding', value: true, conf: 0.93 },
+          { label: 'Signature present',           value: true,  conf: 0.91 },
+        ]},
+      ],
+    };
+    if (n.includes('aps') || n.includes('physician')) return {
+      intent: 'attending_physician_statement',
+      classification: 'APS — Medical',
+      sections: [
+        { title: 'Patient', fields: [
+          { label: 'Patient Name',   value: 'Robert Jones',    conf: 0.91 },
+          { label: 'Date of Birth',  value: '1958-06-15',      conf: 0.88 },
+          { label: 'Date of Death',  value: '2026-01-15',      conf: 0.85 },
+          { label: 'Date Last Seen', value: '2026-01-14',      conf: 0.79 },
+        ]},
+        { title: 'Clinical', fields: [
+          { label: 'Diagnosis',      value: 'Natural Causes',  conf: 0.72 },
+          { label: 'Manner',         value: 'Natural',         conf: 0.74 },
+          { label: 'ICD-10 Code',    value: 'R99',             conf: 0.44 },
+        ]},
+        { title: 'Checklist', checklist: [
+          { label: 'Physician signature',  value: true,  conf: 0.67 },
+          { label: 'NPI number visible',   value: false, conf: 0.44 },
+          { label: 'Legible document',     value: false, conf: 0.44 },
+          { label: 'Date completed',       value: true,  conf: 0.71 },
+        ]},
+      ],
+    };
+    // Generic
+    return {
+      intent: 'document',
+      classification: 'Uploaded Document',
+      sections: [
+        { title: 'Document Details', fields: [
+          { label: 'File Name',    value: fileName,         conf: 0.99 },
+          { label: 'Status',       value: 'Processing…',   conf: null },
+        ]},
+      ],
+    };
+  };
+
+  // ── Render right-side staged document preview ────────────────
+  const renderDocPreview = (fileName) => {
+    const n = (fileName || '').toLowerCase();
+    if (n.includes('death_cert')) return (
+      <div className="du-staged du-staged-cert">
+        <div className="du-staged-cert-hdr">
+          <div className="du-staged-cert-seal">⚖️</div>
+          <div>
+            <div className="du-staged-state">STATE OF ILLINOIS</div>
+            <div className="du-staged-title">CERTIFICATE OF DEATH</div>
+            <div className="du-staged-sub">Office of Vital Records · File No. IL-2026-48291</div>
+          </div>
+          <div className="du-staged-cert-seal">⚖️</div>
+        </div>
+        <div className="du-staged-fields">
+          <div className="du-staged-field du-full"><span>Full Legal Name</span><strong>Robert Jones</strong></div>
+          <div className="du-staged-field"><span>Date of Birth</span><strong>June 15, 1958</strong></div>
+          <div className="du-staged-field"><span>Date of Death</span><strong>January 15, 2026</strong></div>
+          <div className="du-staged-field"><span>Age</span><strong>67</strong></div>
+          <div className="du-staged-field"><span>Place of Death</span><strong>Springfield, IL</strong></div>
+          <div className="du-staged-field du-full"><span>Cause of Death</span><strong>Natural Causes</strong></div>
+          <div className="du-staged-field"><span>Manner</span><strong>Natural</strong></div>
+          <div className="du-staged-field"><span>Proof Received</span><strong>Jan 18, 2026</strong></div>
+        </div>
+        <div className="du-staged-cert-footer">
+          <div className="du-staged-stamp">✅ CERTIFIED COPY</div>
+          <div className="du-staged-sig">
+            <div className="du-staged-sig-line" />
+            <div>State Registrar of Vital Records</div>
+          </div>
+        </div>
+      </div>
+    );
+    if (n.includes('claimant_statement') || n.includes('claim_form')) return (
+      <div className="du-staged du-staged-form">
+        <div className="du-staged-form-hdr">
+          <div className="du-staged-form-logo">🌸 Bloom Insurance</div>
+          <div>
+            <div className="du-staged-title" style={{ textAlign: 'right', fontSize: 13 }}>CLAIMANT'S STATEMENT</div>
+            <div className="du-staged-sub" style={{ textAlign: 'right' }}>Form BLM-1042 (Rev. 01/2026)</div>
+          </div>
+        </div>
+        <div className="du-staged-section-label">A. INSURED INFORMATION — THE DECEASED PERSON</div>
+        <table className="du-staged-table">
+          <tbody>
+            <tr><td>Name</td><td><strong>Robert Jones</strong></td><td>Date of Death</td><td><strong>01/15/2026</strong></td></tr>
+            <tr><td>Address</td><td colSpan={3}><strong>742 Maple Drive, Springfield, IL 62704</strong></td></tr>
+            <tr><td>Date of Birth</td><td><strong>06/15/1958</strong></td><td>Place of Birth</td><td><strong>Chicago, IL</strong></td></tr>
+            <tr><td>Cause of Death</td><td><strong>Natural Causes</strong></td><td>Manner</td><td><strong>☑ Natural</strong></td></tr>
+          </tbody>
+        </table>
+        <div className="du-staged-section-label" style={{ marginTop: 10 }}>B. CLAIMANT INFORMATION</div>
+        <table className="du-staged-table">
+          <tbody>
+            <tr><td>Claimant Name</td><td><strong>Elizabeth Jones</strong></td><td>Relationship</td><td><strong>Spouse</strong></td></tr>
+            <tr><td>Policy No.</td><td><strong>POL-847291</strong></td><td>Phone</td><td><strong>312-555-0147</strong></td></tr>
+          </tbody>
+        </table>
+        <div className="du-staged-nigo-note">⚠️ IDP: Signature missing on page 3 — confidence 78%</div>
+        <div className="du-staged-sig-row">
+          <div><div className="du-staged-sig-line" style={{ borderStyle: 'dashed' }} /><div className="du-staged-sig-label">Claimant Signature</div></div>
+          <div><div className="du-staged-sig-line" /><div className="du-staged-sig-label">Date</div></div>
+        </div>
+      </div>
+    );
+    if (n.includes('drivers_license') || n.includes('dl_') || n.includes('photo_id') || n.includes('govt_id')) return (
+      <div className="du-staged du-staged-id">
+        <div className="du-staged-id-hdr">
+          <span>🇺🇸 ILLINOIS</span><span>DRIVER LICENSE</span>
+        </div>
+        <div className="du-staged-id-body">
+          <div className="du-staged-id-photo">👤</div>
+          <div className="du-staged-id-fields">
+            <div className="du-staged-id-row"><span>LN</span><strong>JONES</strong></div>
+            <div className="du-staged-id-row"><span>FN</span><strong>ELIZABETH</strong></div>
+            <div className="du-staged-id-row"><span>DOB</span><strong>03/22/1960</strong></div>
+            <div className="du-staged-id-row"><span>EXP</span><strong>03/22/2028</strong></div>
+            <div className="du-staged-id-row"><span>DLN</span><strong>J423-5718-9210</strong></div>
+            <div className="du-staged-id-row"><span>CLASS</span><strong>D</strong></div>
+          </div>
+        </div>
+        <div className="du-staged-id-addr">742 Maple Drive, Springfield, IL 62704</div>
+        <div className="du-staged-id-verified">✅ IDP Verified — 96% confidence · Name & DOB matched</div>
+      </div>
+    );
+    if (n.includes('w9') || n.includes('w-9')) return (
+      <div className="du-staged du-staged-irs">
+        <div className="du-staged-irs-hdr">
+          <div className="du-staged-sub" style={{ color: 'rgba(255,255,255,0.8)' }}>Department of the Treasury — IRS</div>
+          <div className="du-staged-title" style={{ fontSize: 22, letterSpacing: 1 }}>Form W-9</div>
+          <div className="du-staged-sub" style={{ color: 'rgba(255,255,255,0.85)' }}>Request for Taxpayer Identification Number</div>
+        </div>
+        <div className="du-staged-fields">
+          <div className="du-staged-field du-full"><span>1. Name</span><strong>Elizabeth Jones</strong></div>
+          <div className="du-staged-field du-full"><span>2. Business name</span><strong>—</strong></div>
+          <div className="du-staged-field"><span>3. Federal tax classification</span><strong>☑ Individual</strong></div>
+          <div className="du-staged-field"><span>Part I — SSN</span><strong>***–**–7193</strong></div>
+          <div className="du-staged-field du-full"><span>5. Address</span><strong>742 Maple Drive, Springfield, IL 62704</strong></div>
+        </div>
+        <div className="du-staged-sig-row" style={{ marginTop: 12 }}>
+          <div><div className="du-staged-sig-line du-signed">Elizabeth Jones</div><div className="du-staged-sig-label">Signature</div></div>
+          <div><div className="du-staged-sig-line" /><div className="du-staged-sig-label">Date</div></div>
+        </div>
+      </div>
+    );
+    if (n.includes('aps') || n.includes('physician')) return (
+      <div className="du-staged du-staged-medical">
+        <div className="du-staged-medical-hdr">
+          <div className="du-staged-title" style={{ fontSize: 14, letterSpacing: 1 }}>ATTENDING PHYSICIAN STATEMENT</div>
+          <div className="du-staged-sub" style={{ color: 'rgba(255,255,255,0.8)' }}>Life Insurance Claim — Confidential</div>
+        </div>
+        <div className="du-staged-fields">
+          <div className="du-staged-field"><span>Patient Name</span><strong>Robert Jones</strong></div>
+          <div className="du-staged-field"><span>Date of Birth</span><strong>1958-06-15</strong></div>
+          <div className="du-staged-field"><span>Date of Death</span><strong>2026-01-15</strong></div>
+          <div className="du-staged-field du-full"><span>Primary Diagnosis</span><strong>Natural Causes</strong></div>
+          <div className="du-staged-field du-full"><span>Manner of Death</span><strong>Natural</strong></div>
+        </div>
+        <div className="du-staged-nigo-note">⚠️ NIGO: Document quality insufficient. Resubmit at 300 dpi minimum.</div>
+      </div>
+    );
+    return (
+      <div className="du-staged du-staged-form" style={{ textAlign: 'center', padding: '40px 24px' }}>
+        <div style={{ fontSize: 40, marginBottom: 8 }}>📄</div>
+        <div style={{ fontWeight: 700, marginBottom: 4 }}>{fileName}</div>
+        <div style={{ fontSize: 11, color: '#888' }}>Document uploaded to claim.<br />AI extraction in progress.</div>
+      </div>
+    );
+  };
+
+  // ── Render split-pane extracted + preview ────────────────────
+  const renderDocumentSplitView = (fileName, idpData, isPending, sysId, blobUrl, blobIsLoading) => {
+    const demoData = getDemoSections(fileName);
+    const sections = idpData
+      ? (() => {
+          // Convert real IDP data to section format
+          const fields = idpData.intents?.[0]?.data || {};
+          const intent = idpData.intents?.[0]?.intent || '';
+          const personal = [], checklist = [];
+          for (const [key, meta] of Object.entries(fields)) {
+            if (key === 'headers' || typeof meta !== 'object' || meta === null) continue;
+            const label = key.replace(/_/g, ' ');
+            const conf = parseFloat(meta.confidence ?? '0');
+            if (key.startsWith('Checklist_')) checklist.push({ label: label.replace('Checklist ', ''), value: meta.value === 'True', conf });
+            else personal.push({ label, value: meta.value ?? '', conf });
+          }
+          const result = [{ title: 'Extracted Information', fields: personal }];
+          if (checklist.length) result.push({ title: 'Checklist', checklist });
+          return { intent: idpData.intents?.[0]?.intent || '', classification: idpData.documents?.[0]?.classification || '', sections: result };
+        })()
+      : demoData;
+
+    const hasEdits = Object.keys(fieldEdits).some(k => k.startsWith(`${fileName}__`));
+    const handleSaveEdits = () => {
+      setFieldEdits(prev => {
+        const next = { ...prev };
+        Object.keys(next).forEach(k => { if (k.startsWith(`${fileName}__`)) delete next[k]; });
+        return next;
+      });
+    };
+
+    return (
+      <div className="du-split">
+        {/* LEFT: Fields */}
+        <div className="du-split__fields">
+          <div className="du-split__fields-hdr">
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#0067b3' }}>smart_toy</span>
+            <span className="du-split__fields-title">AI Extracted Fields</span>
+            {sections.intent && <span className="du-split__badge du-split__badge--intent">{sections.intent.replace(/_/g, ' ')}</span>}
+            {sections.classification && <span className="du-split__badge du-split__badge--class">{sections.classification}</span>}
+            {isPending && !idpData && <span className="du-split__badge du-split__badge--processing">⏳ Processing…</span>}
+            {hasEdits && (
+              <button className="du-split__save-btn" onClick={handleSaveEdits}>
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }}>save</span>
+                Save
+              </button>
+            )}
+          </div>
+
+          {sections.sections.map((sec, si) => (
+            <div key={si} className="du-split__section">
+              <div className="du-split__section-title">{sec.title}</div>
+              {sec.fields?.map((f, fi) => {
+                const editKey = `${fileName}__${sec.title}__${f.label}`;
+                return (
+                  <div key={fi} className="du-split__field">
+                    <span className="du-split__field-label">{f.label}</span>
+                    <input
+                      className="du-split__field-input"
+                      value={fieldEdits[editKey] !== undefined ? fieldEdits[editKey] : (f.value || '')}
+                      onChange={e => setFieldEdits(prev => ({ ...prev, [editKey]: e.target.value }))}
+                    />
+                    {f.conf != null && (
+                      <span className="du-split__conf" style={{ color: confidenceColor(f.conf) }}>
+                        {Math.round(f.conf * 100)}%
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+              {sec.checklist?.map((f, fi) => (
+                <div key={fi} className="du-split__check-row">
+                  <span className={`du-split__check-icon ${f.value ? 'du-split__check-icon--yes' : 'du-split__check-icon--no'}`}>
+                    <span className="material-symbols-outlined">{f.value ? 'check_circle' : 'cancel'}</span>
+                  </span>
+                  <span className="du-split__check-label">{f.label}</span>
+                  {f.conf != null && (
+                    <span className="du-split__conf" style={{ color: confidenceColor(f.conf) }}>
+                      {Math.round(f.conf * 100)}%
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* RIGHT: Document Preview */}
+        <div className="du-split__preview">
+          <div className="du-split__preview-hdr">
+            <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#555' }}>description</span>
+            Source Document — {fileName}
+          </div>
+          <div className={`du-split__preview-body${blobUrl && blobUrl !== 'error' ? ' du-split__preview-body--iframe' : ''}`}>
+            {blobIsLoading ? (
+              <div className="du-split__preview-loading">
+                <span className="material-symbols-outlined du-split__preview-spin">sync</span>
+                Loading document…
+              </div>
+            ) : blobUrl && blobUrl !== 'error' ? (
+              <iframe src={blobUrl} className="du-split__preview-iframe" title={fileName} />
+            ) : blobUrl === 'error' ? (
+              <div className="du-split__preview-error">
+                <span className="material-symbols-outlined" style={{ fontSize: 32, marginBottom: 6 }}>error_outline</span>
+                Unable to load document
+              </div>
+            ) : (
+              renderDocPreview(fileName)
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Render IDP extracted fields — matches screenshot layout
@@ -764,7 +1158,7 @@ const DocumentUpload = ({
               return (
                 <div key={index} className={`doc-row ${isExpanded ? 'doc-row--expanded' : ''}`}>
                   {/* Row Header */}
-                  <div className="doc-row__header" onClick={() => toggleDoc(index)}>
+                  <div className="doc-row__header" onClick={() => toggleDoc(index, attachment)}>
                     <button className={`doc-row__chevron ${isExpanded ? 'doc-row__chevron--open' : ''}`}>
                       <span className="material-symbols-outlined">chevron_right</span>
                     </button>
@@ -783,43 +1177,17 @@ const DocumentUpload = ({
                     </button>
                   </div>
 
-                  {/* Expanded Details */}
+                  {/* Expanded Details — split-pane: left = extracted fields, right = document preview */}
                   {isExpanded && (
                     <div className="doc-row__expanded">
-                      {/* Horizontal meta bar — matches screenshot */}
-                      <div className="doc-row__meta-bar">
-                        <div className="doc-row__meta-col">
-                          <span className="doc-row__meta-label">File Name</span>
-                          <span className="doc-row__meta-val">{fileName}</span>
-                        </div>
-                        <div className="doc-row__meta-col">
-                          <span className="doc-row__meta-label">File Type</span>
-                          <span className="doc-row__meta-val">{fileType}</span>
-                        </div>
-                        <div className="doc-row__meta-col">
-                          <span className="doc-row__meta-label">Size</span>
-                          <span className="doc-row__meta-val">{fileSize}</span>
-                        </div>
-                        <div className="doc-row__meta-col">
-                          <span className="doc-row__meta-label">Uploaded</span>
-                          <span className="doc-row__meta-val">{fileDate}</span>
-                        </div>
-                        {attachment.sys_id && (
-                          <div className="doc-row__meta-col doc-row__meta-col--wide">
-                            <span className="doc-row__meta-label">System ID</span>
-                            <span className="doc-row__meta-val doc-row__meta-val--mono">{attachment.sys_id}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* IDP extraction results */}
-                      {idpPendingDocs[fileName] && !idpResultsByDoc[fileName] && (
-                        <div className="doc-idp-loading">
-                          <span className="material-symbols-outlined doc-idp-loading__icon">sync</span>
-                          <span>Processing document with AI extraction…</span>
-                        </div>
+                      {renderDocumentSplitView(
+                        fileName,
+                        idpResultsByDoc[fileName],
+                        !!idpPendingDocs[fileName],
+                        attachment.sys_id,
+                        blobUrls[attachment.sys_id],
+                        !!blobLoading[attachment.sys_id]
                       )}
-                      {idpResultsByDoc[fileName] && renderIDPFields(idpResultsByDoc[fileName])}
                     </div>
                   )}
                 </div>
