@@ -510,6 +510,26 @@ class ServiceNowService {
   }
 
   /**
+   * Get Individual Death Claim record from sn_ins_claim_indl_death_case
+   * @param {string} sysId - Death claim sys_id
+   * @returns {Promise<Object|null>} Death claim record or null
+   */
+  async getDeathClaim(sysId) {
+    try {
+      const path = `/api/now/table/sn_ins_claim_indl_death_case/${sysId}?sysparm_display_value=true`;
+      const url = this.buildProxyURL(path);
+      const headers = await this.getAuthHeaders();
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.result || null;
+    } catch (err) {
+      console.warn('[ServiceNow] getDeathClaim failed:', err);
+      return null;
+    }
+  }
+
+  /**
    * Get FNOL record by FNOL number
    * @param {string} fnolNumber - FNOL number (e.g., FNOL0001004)
    * @returns {Promise<Object>} FNOL record
@@ -801,10 +821,16 @@ class ServiceNowService {
    * @param {string} policyTable - Policy table name
    * @returns {Promise<Object>} FNOL with enriched policy data
    */
-  async enrichFNOLWithPolicy(fnol, policyTable = 'x_dxcis_claims_a_0_policy') {
+  async enrichFNOLWithPolicy(fnol, policyTable = 'sn_bom_indiv_life_policy') {
     try {
-      // Check if FNOL has policy reference (could be named differently)
-      const policySysId = fnol.policy?.value || fnol.policy_sys_id?.value || fnol.policy;
+      // x_dxcis_bpm_core_reclassify_policy_number is the reference field on the FNOL table
+      // pointing to the Individual Life Policy table (sn_bom_indiv_life_policy)
+      const policyField = fnol.x_dxcis_bpm_core_reclassify_policy_number
+        || fnol.policy
+        || fnol.policy_sys_id;
+      const policySysId = policyField?.link?.split('/').pop()
+        || policyField?.value
+        || (typeof policyField === 'string' && policyField.length === 32 ? policyField : null);
 
       if (!policySysId || typeof policySysId !== 'string') {
         console.log('[ServiceNow] No policy sys_id found in FNOL, using policy number only');
@@ -813,6 +839,7 @@ class ServiceNowService {
 
       console.log('[ServiceNow] Enriching FNOL with policy details for sys_id:', policySysId);
       const policyDetails = await this.getPolicyBySysId(policySysId, policyTable);
+      console.log('[ServiceNow] Policy raw fields:', Object.keys(policyDetails || {}));
 
       // Attach full policy details to FNOL
       return {
@@ -866,6 +893,13 @@ class ServiceNowService {
       const data = await response.json();
       let fnols = data.result || [];
       console.log('[ServiceNow] Global FNOLs fetched:', fnols.length, 'records');
+      if (fnols.length > 0) {
+        console.log('[ServiceNow] Raw FNOL fields:', Object.keys(fnols[0]));
+        console.log('[ServiceNow] Raw FNOL[0] claimant-related fields:',
+          Object.entries(fnols[0]).filter(([k]) => k.includes('claimant') || k.includes('notif') || k.includes('reporter')).reduce((o,[k,v]) => ({...o,[k]:v}), {}));
+        console.log('[ServiceNow] Raw FNOL[0] policy-related fields:',
+          Object.entries(fnols[0]).filter(([k]) => k.includes('policy') || k.includes('reclassify')).reduce((o,[k,v]) => ({...o,[k]:v}), {}));
+      }
 
       // Optionally enrich with policy details
       if (filters.enrichWithPolicy && fnols.length > 0) {
@@ -945,29 +979,55 @@ class ServiceNowService {
           zipCode: fnol.claimant_zip_code?.display_value || fnol.claimant_zip_code || ''
         }
       },
-      policy: fnol.policy_details ? {
-        // Full policy details from enriched data
-        policyNumber: fnol.policy_details.policy_number || fnol.policy_numbers?.display_value || fnol.policy_numbers || 'Unknown',
-        policyType: fnol.policy_details.policy_type || 'Term Life Insurance',
-        policyStatus: fnol.policy_details.policy_status || '',
-        coverageAmount: fnol.policy_details.coverage_amount || fnol.policy_details.face_amount || 0,
-        effectiveDate: fnol.policy_details.effective_date || '',
-        issueDate: fnol.policy_details.issue_date || '',
-        expirationDate: fnol.policy_details.expiration_date || '',
-        premiumAmount: fnol.policy_details.premium_amount || 0,
-        beneficiaries: fnol.policy_details.beneficiaries || [],
-        riders: fnol.policy_details.riders || [],
-        // Include full raw policy data for reference
-        details: fnol.policy_details
-      } : {
+      policy: fnol.policy_details ? (() => {
+        const p = fnol.policy_details;
+        // Helper: unwrap display_value or return raw string
+        const dv = (f) => f?.display_value ?? f ?? '';
+        const num = (f) => parseFloat(dv(f)) || 0;
+        return {
+          // sn_bom_indiv_life_policy uses "number" as the policy number field
+          policyNumber: dv(p.number) || dv(p.policy_number) || dv(fnol.policy_numbers) || 'Unknown',
+          policyType:   dv(p.u_plan_type) || dv(p.plan_type) || dv(p.policy_type) || dv(p.product) || 'Term Life Insurance',
+          policyStatus: dv(p.u_policy_status) || dv(p.policy_status) || dv(p.state) || dv(p.status) || '',
+          faceAmount:   num(p.u_face_amount) || num(p.face_amount) || num(p.coverage_amount) || num(p.face_value),
+          coverageAmount: num(p.u_face_amount) || num(p.face_amount) || num(p.coverage_amount),
+          effectiveDate:  dv(p.effective_date) || dv(p.u_effective_date) || '',
+          issueDate:      dv(p.u_issue_date) || dv(p.issue_date) || dv(p.inception_date) || '',
+          issueState:     dv(p.u_issue_state) || dv(p.issue_state) || dv(p.situs_state) || dv(p.state_of_issue) || '',
+          expirationDate: dv(p.expiry_date) || dv(p.expiration_date) || dv(p.u_expiry_date) || '',
+          premiumAmount:  num(p.u_annual_premium) || num(p.annual_premium) || num(p.premium_amount) || num(p.premium),
+          region:       dv(p.u_region) || dv(p.region) || '',
+          companyCode:  dv(p.u_company_code) || dv(p.company_code) || dv(p.company) || '',
+          planCode:     dv(p.u_plan_code) || dv(p.plan_code) || dv(p.plan) || '',
+          owner:        dv(p.u_owner) || dv(p.owner) || dv(p.policy_owner) || dv(p.holder) || '',
+          paidToDate:   dv(p.u_paid_to_date) || dv(p.paid_to_date) || dv(p.paid_through_date) || '',
+          loanBalance:  num(p.u_loan_balance) || num(p.loan_balance),
+          currentCashValue: num(p.u_cash_value) || num(p.current_cash_value) || num(p.cash_value) || num(p.cash_surrender_value),
+          beneficiaries: p.beneficiaries || [],
+          riders: p.riders || [],
+          // Raw data for debugging — remove once field names confirmed
+          details: p
+        };
+      })() : {
         // Fallback to basic policy info if not enriched
-        policyNumber: fnol.policy_numbers?.display_value || fnol.policy_numbers || fnol.policy_number?.display_value || fnol.policy_number || 'Unknown',
+        policyNumber: fnol.policy_numbers?.display_value || fnol.policy_numbers || fnol.x_dxcis_bpm_core_reclassify_policy_number?.display_value || 'Unknown',
         policyType: fnol.policy_type?.display_value || fnol.policy_type || 'Term Life Insurance'
       },
       financial: {
         claimAmount: parseFloat(fnol.total_claim_amount) || 0,
         totalClaimed: parseFloat(fnol.total_claim_amount) || 0
       },
+      deathClaimId: (() => {
+        const dc = fnol.death_claim;
+        if (!dc) return '';
+        // sysparm_display_value=true returns { display_value, link } — sys_id is the last segment of the link URL
+        if (dc.link) return dc.link.split('/').pop();
+        // sysparm_display_value=all returns { value, display_value }
+        if (dc.value) return dc.value;
+        // plain sys_id string (32 hex chars)
+        if (typeof dc === 'string' && dc.length === 32) return dc;
+        return '';
+      })(),
       deathEvent: {
         dateOfDeath: fnol.insured_date_of_death || '',
         mannerOfDeath: fnol.insured_manner_of_death || 'Natural',
@@ -984,7 +1044,56 @@ class ServiceNowService {
       requirements: [],
       documents: [],
       workNotes: [],
-      parties: [],
+      parties: (() => {
+        const pts = [];
+        const insuredName = fnol.insured_full_name?.display_value || fnol.insured_full_name || fnol.insured_name || '';
+        if (insuredName) {
+          pts.push({
+            id: `${fnol.sys_id}-party-insured`,
+            name: insuredName,
+            role: 'Insured',
+            source: 'Policy Admin',
+            dateOfBirth: fnol.insured_date_of_birth?.display_value || fnol.insured_date_of_birth || '',
+            verificationStatus: 'Verified',
+          });
+        }
+        // Add claimant as primary beneficiary party
+        const claimantName = fnol.claimant_full_name?.display_value || fnol.claimant_full_name || fnol.claimant_name || fnol.caller_id?.display_value || '';
+        if (claimantName) {
+          pts.push({
+            id: `${fnol.sys_id}-party-claimant`,
+            name: claimantName,
+            role: 'Primary Beneficiary',
+            partyType: 'individual',
+            source: 'FNOL',
+            dateOfBirth: fnol.claimant_date_of_birth?.display_value || fnol.claimant_date_of_birth || '',
+            phone: fnol.claimant_phone_number?.display_value || fnol.claimant_phone_number || '',
+            email: fnol.claimant_email_address?.display_value || fnol.claimant_email_address || '',
+            address: [fnol.claimant_street_address?.display_value || fnol.claimant_street_address, fnol.claimant_city?.display_value || fnol.claimant_city, fnol.claimant_state?.display_value || fnol.claimant_state].filter(Boolean).join(', '),
+            verificationStatus: 'Pending',
+          });
+        }
+        // Add additional beneficiaries from policy_details if enriched
+        const benes = fnol.policy_details?.beneficiaries;
+        if (Array.isArray(benes)) {
+          benes.forEach((bene, i) => {
+            if (!bene.name || bene.name === claimantName) return;
+            pts.push({
+              id: `${fnol.sys_id}-party-bene-${i}`,
+              name: bene.name,
+              role: (bene.type === 'Primary' || bene.beneficiary_type === 'Primary') ? 'Primary Beneficiary' : 'Contingent Beneficiary',
+              partyType: bene.entity_type || bene.type_of_entity || 'individual',
+              allocation: bene.percentage || bene.allocation_percentage || null,
+              authorizedSigner: bene.authorized_signer || null,
+              source: 'Policy Admin',
+              phone: bene.phone || '',
+              email: bene.email || '',
+              verificationStatus: 'Pending',
+            });
+          });
+        }
+        return pts;
+      })(),
       // Determine routing type based on claim amount and other factors
       routing: (() => {
         const claimAmount = parseFloat(fnol.total_claim_amount) || 0;
