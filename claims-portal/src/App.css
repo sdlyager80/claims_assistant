@@ -609,7 +609,12 @@ button:not([disabled]):not([class*="icon-only"]):not(.collapse-toggle):not(.nav-
 }
 
 /* Override for NavigationTreeContainer buttons specifically */
-[class*="NavigationTreeContainer"] button:not([disabled]):not([class*="icon-only"]):not(.collapse-toggle):not(.nav-item):not(.footer-item) {
+/* [class*="e1tkggtb0"] = production Emotion target for NavigationTreeContainer */
+/* [class*="ezjvsgl3"]  = production Emotion target for SidenavContainer (outer wrapper) */
+/* NOTE: #root prefix gives specificity 1,2,1 which beats the catch-all above (0,5,1) */
+#root [class*="NavigationTreeContainer"] button:not([disabled]),
+#root [class*="e1tkggtb0"] button:not([disabled]),
+#root [class*="ezjvsgl3"] button:not([disabled]) {
   padding: 0 !important;
   min-height: auto !important;
 }
@@ -636,17 +641,22 @@ button.large,
    ============================================================================ */
 
 /* Make navigation icon spans visible with Bloom blue color */
+/* Dual selectors: label-based (dev) + Emotion target ID (prod: e1tkggtb0=NavigationTreeContainer, e1jlmjs87=IconContainer) */
 [class*="NavigationTreeContainer"] span[role="img"],
+[class*="e1tkggtb0"] span[role="img"],
 [class*="NavigationTreeContainer"] span[aria-hidden="true"],
-[class*="NavigationTreeContainer"] [class*="IconContainer"] span {
+[class*="e1tkggtb0"] span[aria-hidden="true"],
+[class*="NavigationTreeContainer"] [class*="IconContainer"] span,
+[class*="e1tkggtb0"] [class*="e1jlmjs87"] span {
   color: #1B75BB !important;  /* BLOOM: Blue color */
   opacity: 1 !important;
   visibility: visible !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smooth animation */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* Navigation buttons - smooth transitions and subtle effects */
-[class*="NavigationTreeContainer"] button {
+[class*="NavigationTreeContainer"] button,
+[class*="e1tkggtb0"] button {
   transition: all 0.2s ease !important;
   border-radius: 8px !important;
   position: relative !important;
@@ -654,7 +664,8 @@ button.large,
 }
 
 /* Hover effect - subtle background with smooth transition */
-[class*="NavigationTreeContainer"] button:hover {
+[class*="NavigationTreeContainer"] button:hover,
+[class*="e1tkggtb0"] button:hover {
   background: linear-gradient(90deg, rgba(27, 117, 187, 0.08) 0%, rgba(27, 117, 187, 0.12) 100%) !important;
   transform: translateX(2px) !important;
   box-shadow: 0 2px 8px rgba(27, 117, 187, 0.15) !important;
@@ -662,14 +673,18 @@ button.large,
 
 /* Hover: Icon scale animation */
 [class*="NavigationTreeContainer"] button:hover span[role="img"],
-[class*="NavigationTreeContainer"] button:hover [class*="IconContainer"] span {
+[class*="e1tkggtb0"] button:hover span[role="img"],
+[class*="NavigationTreeContainer"] button:hover [class*="IconContainer"] span,
+[class*="e1tkggtb0"] button:hover [class*="e1jlmjs87"] span {
   transform: scale(1.15) !important;
-  color: #155A93 !important; /* Darker blue on hover */
+  color: #155A93 !important;
 }
 
 /* Selected/Active state - Bloom gradient background */
 [class*="NavigationTreeContainer"] button[aria-pressed="true"],
-[class*="NavigationTreeContainer"] button[data-selected="true"] {
+[class*="e1tkggtb0"] button[aria-pressed="true"],
+[class*="NavigationTreeContainer"] button[data-selected="true"],
+[class*="e1tkggtb0"] button[data-selected="true"] {
   background: linear-gradient(90deg, #BBDEFB 0%, #E3F2FD 100%) !important;
   box-shadow: inset 3px 0 0 #1B75BB, 0 2px 6px rgba(27, 117, 187, 0.2) !important;
   font-weight: 700 !important;
@@ -677,25 +692,30 @@ button.large,
 
 /* Selected: Icon stays bold */
 [class*="NavigationTreeContainer"] button[aria-pressed="true"] span,
-[class*="NavigationTreeContainer"] button[data-selected="true"] span {
+[class*="e1tkggtb0"] button[aria-pressed="true"] span,
+[class*="NavigationTreeContainer"] button[data-selected="true"] span,
+[class*="e1tkggtb0"] button[data-selected="true"] span {
   color: #1B75BB !important;
   font-weight: 700 !important;
 }
 
 /* Active/Click effect - subtle press animation */
-[class*="NavigationTreeContainer"] button:active {
+[class*="NavigationTreeContainer"] button:active,
+[class*="e1tkggtb0"] button:active {
   transform: scale(0.98) !important;
   transition: transform 0.1s ease !important;
 }
 
 /* Spacing between nav items */
-[class*="NavigationTreeContainer"] ul {
+[class*="NavigationTreeContainer"] ul,
+[class*="e1tkggtb0"] ul {
   gap: 16px !important;
   padding: 12px 0 !important;
 }
 
 /* Ripple effect on click (pseudo-element) */
-[class*="NavigationTreeContainer"] button::before {
+[class*="NavigationTreeContainer"] button::before,
+[class*="e1tkggtb0"] button::before {
   content: '' !important;
   position: absolute !important;
   top: 50% !important;
@@ -708,7 +728,8 @@ button.large,
   transition: width 0.6s, height 0.6s !important;
 }
 
-[class*="NavigationTreeContainer"] button:active::before {
+[class*="NavigationTreeContainer"] button:active::before,
+[class*="e1tkggtb0"] button:active::before {
   width: 300px !important;
   height: 300px !important;
 }
