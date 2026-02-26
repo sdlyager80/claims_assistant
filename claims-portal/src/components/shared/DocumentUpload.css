@@ -505,17 +505,16 @@
 ════════════════════════════════════════ */
 .du-split {
   display: flex;
-  min-height: 420px;
-  max-height: 580px;
+  min-height: 480px;
+  max-height: 640px;
   overflow: hidden;
   border-top: 1px solid #e0ecf8;
 }
 
 /* ── Left: Extracted Fields ── */
 .du-split__fields {
-  width: 320px;
-  min-width: 260px;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 320px;
   overflow-y: auto;
   border-right: 1px solid #e0ecf8;
   background: #fff;
@@ -565,7 +564,11 @@
 }
 
 .du-split__section {
-  padding: 10px 14px 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+  row-gap: 10px;
+  padding: 12px 16px 14px;
   border-bottom: 1px solid #f0f4f8;
 }
 
@@ -574,42 +577,49 @@
 }
 
 .du-split__section-title {
+  grid-column: 1 / -1;
   font-size: 9px;
   font-weight: 700;
   color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
+/* Each field: label above, then input + confidence side-by-side */
 .du-split__field {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin-bottom: 6px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 3px 4px;
 }
 
 .du-split__field-label {
-  font-size: 12px;
-  color: #777;
+  grid-column: 1 / -1;
+  font-size: 10px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .du-split__field-label::after {
-  content: ':';
+  content: '';
 }
 
 .du-split__field-input {
+  grid-column: 1;
+  grid-row: 2;
   font-size: 12px;
   color: #1a1a1a;
-  flex: 1;
   min-width: 0;
   background: #f0f4f8;
   border: 1px solid #d0dce8;
   border-radius: 3px;
-  padding: 2px 6px;
+  padding: 3px 7px;
   font-family: inherit;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -627,16 +637,19 @@
 }
 
 .du-split__conf {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
   font-size: 10px;
   font-weight: 700;
   flex-shrink: 0;
 }
 
 .du-split__check-row {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 5px;
 }
 
 .du-split__check-icon .material-symbols-outlined {
@@ -655,8 +668,8 @@
 
 /* ── Right: Document Preview ── */
 .du-split__preview {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 400px;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
