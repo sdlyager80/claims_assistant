@@ -182,6 +182,9 @@
 .av-provider { background: linear-gradient(135deg, #0c8a8a, #38d9a9); }
 .av-employer { background: linear-gradient(135deg, #c2610c, #F6921E); }
 .av-system   { background: linear-gradient(135deg, #8c939e, #b8bec6); }
+.av-trust    { background: linear-gradient(135deg, #7b3fa0, #a855f7); }
+.av-estate   { background: linear-gradient(135deg, #946b0e, #d4a017); }
+.av-corp     { background: linear-gradient(135deg, #0c7b8a, #10b8c8); }
 
 /* Role badge classes */
 .re-pp-role {
@@ -196,6 +199,32 @@
 .rl-provider { background: var(--re-teal-bg);   color: var(--re-teal); }
 .rl-employer { background: var(--re-orange-bg); color: var(--re-orange); }
 .rl-system   { background: var(--re-bg-muted);  color: var(--re-text-3); }
+.rl-trust    { background: #f3e8ff;              color: #7b3fa0; }
+.rl-estate   { background: var(--re-yellow-bg); color: var(--re-yellow); }
+.rl-corp     { background: var(--re-teal-bg);   color: var(--re-teal); }
+
+/* Allocation % badge on party card */
+.re-pp-alloc {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: rgba(27, 117, 187, 0.1);
+  color: var(--re-blue);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Authorized signer line under role badge */
+.re-pp-auth-signer {
+  font-size: 10px;
+  color: var(--re-text-3);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
 
 .re-pp-name {
   font-size: 13px;
@@ -732,4 +761,408 @@
   opacity: 0.6;
   cursor: default;
   pointer-events: none;
+}
+
+/* ═══ PARTY TAG ON CARDS ═══ */
+.rc-party-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--re-bg-muted);
+  color: var(--re-text-2);
+}
+
+.rc-party-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ═══ DOCUMENT MODAL ═══ */
+.re-modal-doc {
+  width: 600px;
+  max-height: 85vh;
+}
+
+.re-modal-doc-body {
+  overflow-y: auto;
+  padding: 16px 20px;
+  flex: 1;
+}
+
+.re-modal-doc-body::-webkit-scrollbar { width: 4px; }
+.re-modal-doc-body::-webkit-scrollbar-track { background: transparent; }
+.re-modal-doc-body::-webkit-scrollbar-thumb { background: var(--re-border); border-radius: 2px; }
+
+/* ═══ STAGED DOCUMENT BASE ═══ */
+.re-staged {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #d0d4da;
+  border-radius: 6px;
+  padding: 20px 24px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+}
+
+.re-staged-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin: 10px 0;
+}
+
+.re-staged-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.re-staged-field-full { grid-column: 1 / -1; }
+
+.re-staged-field span {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  font-family: sans-serif;
+}
+
+.re-staged-field strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.re-staged-section-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #888;
+  margin: 14px 0 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.re-staged-cert-text {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+  line-height: 1.6;
+  padding: 8px 0;
+}
+
+.re-staged-sig-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 14px;
+}
+
+.re-staged-sig-row > div { flex: 1; }
+
+.re-staged-sig-line {
+  border-bottom: 1px solid #333;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.re-staged-sig-signed {
+  font-style: italic;
+  font-size: 14px;
+  color: #1a1a8a;
+  padding-top: 4px;
+}
+
+.re-staged-sig-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ── Death Certificate ── */
+.re-staged-cert {
+  border: 3px double #1a5c1a;
+  background: #f9fff9;
+}
+
+.re-staged-cert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 2px solid #1a5c1a;
+}
+
+.re-staged-cert-seal { font-size: 28px; }
+
+.re-staged-cert-state {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #1a5c1a;
+}
+
+.re-staged-cert-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #1a1a1a;
+}
+
+.re-staged-cert-sub {
+  font-size: 10px;
+  color: #555;
+  font-family: sans-serif;
+}
+
+.re-staged-cert-num {
+  font-family: sans-serif;
+  font-size: 10px;
+  color: #666;
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.re-staged-cert-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ccc;
+}
+
+.re-staged-cert-stamp {
+  background: #1a5c1a;
+  color: white;
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.re-staged-cert-sig { text-align: right; }
+
+/* ── Claim / Policy Form ── */
+.re-staged-form { background: #fff; }
+
+.re-staged-form-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 2px solid #1B75BB;
+}
+
+.re-staged-form-logo {
+  font-family: sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B75BB;
+}
+
+.re-staged-form-title {
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  color: #1a1a1a;
+}
+
+.re-staged-form-sub {
+  font-family: sans-serif;
+  font-size: 9px;
+  color: #888;
+  text-align: right;
+}
+
+.re-staged-form-stamp {
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a8a3f;
+  margin-top: 12px;
+  padding: 4px 10px;
+  background: #e8f8ee;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* ── Government ID ── */
+.re-staged-id {
+  background: linear-gradient(135deg, #1B75BB 0%, #0f2d52 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: none;
+  font-family: sans-serif;
+}
+
+.re-staged-id-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.re-staged-id-state {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.re-staged-id-type {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  opacity: 0.8;
+}
+
+.re-staged-id-body {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.re-staged-id-photo {
+  width: 60px;
+  height: 72px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.re-staged-id-fields { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+.re-staged-id-field {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.re-staged-id-field span {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  opacity: 0.7;
+  min-width: 30px;
+}
+
+.re-staged-id-field strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.re-staged-id-address {
+  font-size: 10px;
+  opacity: 0.8;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  margin-bottom: 8px;
+}
+
+.re-staged-id-footer {
+  font-size: 9px;
+  font-weight: 600;
+  color: #8eff8e;
+  letter-spacing: 0.3px;
+}
+
+/* ── IRS W-9 ── */
+.re-staged-irs {
+  background: #fffef5;
+  border: 1px solid #c8a200;
+}
+
+.re-staged-irs-header {
+  background: #c8a200;
+  color: white;
+  margin: -20px -24px 12px;
+  padding: 12px 24px;
+  border-radius: 6px 6px 0 0;
+}
+
+.re-staged-irs-dept {
+  font-family: sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+
+.re-staged-irs-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.re-staged-irs-sub {
+  font-family: sans-serif;
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+/* ── Medical / APS ── */
+.re-staged-medical {
+  background: #f0fffe;
+  border: 1px solid #0c8a8a;
+}
+
+.re-staged-medical-header {
+  background: #0c8a8a;
+  color: white;
+  margin: -20px -24px 12px;
+  padding: 12px 24px;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+}
+
+.re-staged-medical-title {
+  font-family: sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.re-staged-medical-sub {
+  font-family: sans-serif;
+  font-size: 9px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.re-staged-nigo-banner {
+  background: var(--re-red-bg);
+  color: var(--re-red);
+  border: 1px solid var(--re-red-bd);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 10px 0;
 }
