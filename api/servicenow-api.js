@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     // Prepare headers for ServiceNow
     const headers = {
       'Content-Type': req.headers['content-type'] || 'application/json',
-      'Accept': 'application/json'
+      'Accept': req.headers['accept'] || 'application/json'
     };
 
     // Forward Authorization header if present
@@ -86,15 +86,15 @@ export default async function handler(req, res) {
 
     console.log('[API] ServiceNow response status:', snResponse.status);
 
-    // Get response body
-    const responseText = await snResponse.text();
+    // Read response as ArrayBuffer to preserve binary data (e.g. PDF attachments)
+    const responseBuffer = await snResponse.arrayBuffer();
 
     // Set content type from ServiceNow response
     const contentType = snResponse.headers.get('content-type') || 'application/json';
     res.setHeader('Content-Type', contentType);
 
-    // Return the ServiceNow response
-    return res.status(snResponse.status).send(responseText);
+    // Return the ServiceNow response as a binary-safe Buffer
+    return res.status(snResponse.status).send(Buffer.from(responseBuffer));
 
   } catch (err) {
     console.error('[API] Error:', err);
