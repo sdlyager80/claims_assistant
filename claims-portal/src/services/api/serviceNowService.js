@@ -1530,7 +1530,10 @@ class ServiceNowService {
     try {
       const path = `/api/now/attachment/${attachmentSysId}/file`;
       const url = this.buildProxyURL(path);
-      const headers = await this.getAuthHeaders();
+      const authHeaders = await this.getAuthHeaders();
+      // Override Accept to allow binary content — 'application/json' would corrupt the PDF
+      const headers = { ...authHeaders, 'Accept': '*/*' };
+      delete headers['Content-Type']; // Not needed for GET requests
       const response = await fetch(url, { method: 'GET', headers });
       if (!response.ok) throw new Error(`Failed to fetch attachment: ${response.status}`);
       const rawBlob = await response.blob();
