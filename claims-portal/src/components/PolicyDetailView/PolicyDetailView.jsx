@@ -64,21 +64,19 @@ const PolicyDetailView = ({ policy, onEdit, onClose, onSuspend, onAssociate, onD
     >
       <DxcFlex direction="column" gap="var(--spacing-gap-l)">
         {/* Header */}
-        <DxcFlex justifyContent="space-between" alignItems="flex-start">
-          <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
-            <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
-              <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
-                policy
-              </span>
-              <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
-                Policy Details
-              </DxcTypography>
-            </DxcFlex>
-            <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
-              {policy.policyNumber}
+        <DxcFlex direction="column" gap="var(--spacing-gap-xs)">
+          <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+            <span className="material-icons" style={{ color: 'var(--color-fg-primary-stronger)', fontSize: '24px' }}>
+              policy
+            </span>
+            <DxcTypography fontSize="font-scale-04" fontWeight="font-weight-semibold">
+              Policy Details
             </DxcTypography>
+            <DxcBadge label={policy.policyStatus || policy.status || 'Unknown'} />
           </DxcFlex>
-          <DxcBadge label={policy.policyStatus || policy.status || 'Unknown'} />
+          <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+            {policy.policyNumber}
+          </DxcTypography>
         </DxcFlex>
 
         {/* Quick Stats */}
