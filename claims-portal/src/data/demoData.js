@@ -224,8 +224,7 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 76, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000001', currentTask: 'Review Requirements', assignedTo: 'John Smith', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-1'; claim.fnolNumber = 'FNOL0000001'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
-    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
+    claim.sysId = 'demo-sys-id-1'; claim.fnolNumber = 'FNOL0000001';
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
     claims.push(claim);
   }
@@ -322,8 +321,7 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 78, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000004', currentTask: 'Schedule Payment', assignedTo: 'John Smith', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-4'; claim.fnolNumber = 'FNOL0000004'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
-    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
+    claim.sysId = 'demo-sys-id-4'; claim.fnolNumber = 'FNOL0000004';
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
     claims.push(claim);
   }
@@ -357,9 +355,180 @@ const createShowcaseClaims = () => {
       routing: { type: RoutingType.STANDARD, score: 71, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
       workflow: { fsoCase: 'FSO-CLM-000005', currentTask: 'Review Requirements', assignedTo: 'Jane Examiner', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
     };
-    claim.sysId = 'demo-sys-id-5'; claim.fnolNumber = 'FNOL0000005'; claim.claimPacketSentDate = new Date(createdDate.getTime() + 5 * DAY).toISOString().split('T')[0];
-    claim.proofOfLossDate = new Date(createdDate.getTime() + 12 * DAY).toISOString().split('T')[0];
+    claim.sysId = 'demo-sys-id-5'; claim.fnolNumber = 'FNOL0000005';
     claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
+    claims.push(claim);
+  }
+
+  // ---- CLAIM 6: Sam Wright (Option 1 Policy Holder) - NEW, STP eligible ----
+  {
+    const createdDate = new Date(NOW.getTime() - 5 * DAY);
+    const deathDate = new Date(NOW.getTime() - 10 * DAY);
+    const slaDate = new Date(createdDate.getTime() + 10 * DAY);
+    const daysOpen = Math.floor((NOW - createdDate) / DAY);
+    const daysToSla = Math.ceil((slaDate - NOW) / DAY);
+
+    const claim = {
+      id: 'claim-sw', claimNumber: 'CLM-000021', status: ClaimStatus.NEW, type: ClaimType.DEATH,
+      createdAt: createdDate.toISOString(), updatedAt: createdDate.toISOString(), closedAt: null,
+      deathEvent: {
+        dateOfDeath: deathDate.toISOString().split('T')[0], mannerOfDeath: 'Natural', causeOfDeath: 'Cardiac Arrest',
+        deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: 'CA', proofOfDeathSourceType: 'Death Certificate',
+        proofOfDeathDate: new Date(deathDate.getTime() + 2 * DAY).toISOString().split('T')[0],
+        certifiedDOB: '1968-03-14', verificationSource: 'LexisNexis', verificationScore: 96, specialEvent: null
+      },
+      insured: { name: 'Sam Wright', ssn: maskedSSN('3892'), dateOfBirth: '1968-03-14', dateOfDeath: deathDate.toISOString().split('T')[0], age: 56 },
+      claimant: { name: 'Jennifer Wright', relationship: 'Spouse', contactInfo: { email: 'jennifer.wright@email.com', phone: '415-555-0273' } },
+      policies: [{ policyNumber: 'POL-290471', policyType: 'Term Life', policyStatus: 'In Force', issueDate: '2019-07-15', issueState: 'CA', region: 'West', companyCode: 'BLM', planCode: 'TL250', faceAmount: 250000, currentCashValue: 150000, loanBalance: 0, paidToDate: new Date(deathDate.getTime() - 15 * DAY).toISOString().split('T')[0], source: 'Policy Admin', owner: 'Sam Wright' }],
+      policy: { policyNumber: 'POL-290471', type: 'Term Life', policyType: 'Term Life', status: 'In Force', policyStatus: 'In Force', issueDate: '2019-07-15', issueState: 'CA', faceAmount: 250000, owner: 'Sam Wright', region: 'West', companyCode: 'BLM', planCode: 'TL250', paidToDate: new Date(deathDate.getTime() - 15 * DAY).toISOString().split('T')[0], source: 'Policy Admin', currentCashValue: 150000, loanBalance: 0 },
+      parties: [
+        { id: 'party-sw-1', name: 'Sam Wright', role: 'Insured', source: 'Policy Admin', resState: 'CA', dateOfBirth: '1968-03-14', ssn: maskedSSN('3892'), phone: '415-555-0100', email: 'sam.wright@email.com', address: '2847 Sunset Blvd, Los Angeles, CA 90028', verificationStatus: 'Verified', verificationScore: 97, cslnAction: 'Verified', cslnResult: 'Match' },
+        { id: 'party-sw-2', name: 'Jennifer Wright', role: 'Primary Beneficiary', source: 'Policy Admin', resState: 'CA', dateOfBirth: '1970-08-22', ssn: maskedSSN('5641'), phone: '415-555-0273', email: 'jennifer.wright@email.com', address: '2847 Sunset Blvd, Los Angeles, CA 90028', verificationStatus: 'Verified', verificationScore: 95, cslnAction: 'Verified', cslnResult: 'Match' },
+        { id: 'party-sw-3', name: 'Jennifer Wright', role: 'Notifier', source: 'FNOL', resState: 'CA', phone: '415-555-0273', email: 'jennifer.wright@email.com', verificationStatus: 'Verified' }
+      ],
+      aiInsights: { riskScore: 18, alerts: [] },
+      financial: { claimAmount: 250000, reserve: 225000, amountPaid: 0, pmiState: 'CA', pmiRate: 0.10, pmiDays: Math.floor((NOW - deathDate) / DAY), interestAmount: 0, netBenefitProceeds: 250000, netBenefitPMI: 0, federalTaxRate: 24, stateTaxRate: 9.3, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0, percentage: 100, currency: 'USD', payments: [] },
+      routing: { type: RoutingType.STP, score: 93, eligible: true, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: true, noContestability: true, claimAmountThreshold: true, noAnomalies: true } },
+      workflow: { fsoCase: 'FSO-CLM-000021', currentTask: 'Review Requirements', assignedTo: 'Sarah Johnson', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: false } }
+    };
+    claim.sysId = 'demo-sys-id-sw'; claim.fnolNumber = 'FNOL0000021';
+    claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
+    claims.push(claim);
+  }
+
+  // ---- CLAIM 7: Aiden Hakim (Option 2 Policy Holder) - UNDER_REVIEW, Standard ----
+  {
+    const createdDate = new Date(NOW.getTime() - 12 * DAY);
+    const deathDate = new Date(NOW.getTime() - 18 * DAY);
+    const slaDate = new Date(createdDate.getTime() + 30 * DAY);
+    const daysOpen = Math.floor((NOW - createdDate) / DAY);
+    const daysToSla = Math.ceil((slaDate - NOW) / DAY);
+
+    const claim = {
+      id: 'claim-ah', claimNumber: 'CLM-000022', status: ClaimStatus.UNDER_REVIEW, type: ClaimType.DEATH,
+      createdAt: createdDate.toISOString(), updatedAt: new Date(createdDate.getTime() + 3 * DAY).toISOString(), closedAt: null,
+      deathEvent: {
+        dateOfDeath: deathDate.toISOString().split('T')[0], mannerOfDeath: 'Natural', causeOfDeath: 'Hypertensive Heart Disease',
+        deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: 'NY', proofOfDeathSourceType: 'Hospital Record',
+        proofOfDeathDate: new Date(deathDate.getTime() + 3 * DAY).toISOString().split('T')[0],
+        certifiedDOB: '1972-05-18', verificationSource: 'LexisNexis', verificationScore: 88, specialEvent: null
+      },
+      insured: { name: 'Aiden Hakim', ssn: maskedSSN('7614'), dateOfBirth: '1972-05-18', dateOfDeath: deathDate.toISOString().split('T')[0], age: 53 },
+      claimant: { name: 'Layla Hakim', relationship: 'Spouse', contactInfo: { email: 'layla.hakim@email.com', phone: '646-555-0438' } },
+      policies: [{ policyNumber: 'POL-382156', policyType: 'Whole Life', policyStatus: 'In Force', issueDate: '2017-11-01', issueState: 'NY', region: 'Northeast', companyCode: 'NWL', planCode: 'WL350', faceAmount: 350000, currentCashValue: 82000, loanBalance: 0, paidToDate: new Date(deathDate.getTime() - 20 * DAY).toISOString().split('T')[0], source: 'Policy Admin', owner: 'Aiden Hakim' }],
+      policy: { policyNumber: 'POL-382156', type: 'Whole Life', policyType: 'Whole Life', status: 'In Force', policyStatus: 'In Force', issueDate: '2017-11-01', issueState: 'NY', faceAmount: 350000, owner: 'Aiden Hakim', region: 'Northeast', companyCode: 'NWL', planCode: 'WL350', paidToDate: new Date(deathDate.getTime() - 20 * DAY).toISOString().split('T')[0], source: 'Policy Admin', currentCashValue: 82000, loanBalance: 0 },
+      parties: [
+        { id: 'party-ah-1', name: 'Aiden Hakim', role: 'Insured', source: 'Policy Admin', resState: 'NY', dateOfBirth: '1972-05-18', ssn: maskedSSN('7614'), phone: '646-555-0200', email: 'aiden.hakim@email.com', address: '415 West 45th Street, New York, NY 10036', verificationStatus: 'Verified', verificationScore: 96, cslnAction: 'Verified', cslnResult: 'Match' },
+        { id: 'party-ah-2', name: 'Layla Hakim', role: 'Primary Beneficiary', source: 'Policy Admin', resState: 'NY', dateOfBirth: '1974-11-30', ssn: maskedSSN('4127'), phone: '646-555-0438', email: 'layla.hakim@email.com', address: '415 West 45th Street, New York, NY 10036', verificationStatus: 'Pending', verificationScore: 81, cslnAction: 'Search', cslnResult: 'Pending Review' },
+        { id: 'party-ah-3', name: 'Layla Hakim', role: 'Notifier', source: 'FNOL', resState: 'NY', phone: '646-555-0438', email: 'layla.hakim@email.com', verificationStatus: 'Verified' }
+      ],
+      aiInsights: { riskScore: 46, alerts: [
+        { id: 'alert-ah-1', severity: 'Medium', category: 'Address Discrepancy', title: 'Claimant Address Mismatch', message: 'Claimant address differs from policy records', description: 'Beneficiary address submitted in FNOL does not match the address on file in the Policy Admin system. Identity verification is recommended before proceeding with payment.', confidence: 78, recommendation: 'Request updated address confirmation and government-issued photo ID', timestamp: new Date(createdDate.getTime() + 1 * DAY).toISOString() }
+      ] },
+      financial: { claimAmount: 350000, reserve: 315000, amountPaid: 0, pmiState: 'NY', pmiRate: 0.08, pmiDays: Math.floor((NOW - deathDate) / DAY), interestAmount: 0, netBenefitProceeds: 350000, netBenefitPMI: 0, federalTaxRate: 24, stateTaxRate: 6.85, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0, percentage: 100, currency: 'USD', payments: [] },
+      routing: { type: RoutingType.STANDARD, score: 68, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: true, noAnomalies: false } },
+      workflow: { fsoCase: 'FSO-CLM-000022', currentTask: 'Review Requirements', assignedTo: 'Sarah Johnson', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 3 } }
+    };
+    claim.sysId = 'demo-sys-id-ah'; claim.fnolNumber = 'FNOL0000022';
+    claim.requirements = generateRequirements(claim); claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
+    claims.push(claim);
+  }
+
+  // ---- CLAIM 8: Ethan Carter (CLM-000147) - UNDER_REVIEW, Complex Estate w/ Trust/Corp Beneficiaries ----
+  {
+    const createdDate = new Date(NOW.getTime() - 30 * DAY);
+    const deathDate   = new Date('2026-01-15');
+    const slaDate     = new Date(createdDate.getTime() + 45 * DAY);
+    const daysOpen    = Math.floor((NOW - createdDate) / DAY);
+    const daysToSla   = Math.ceil((slaDate - NOW) / DAY);
+    const pmiDays     = Math.floor((NOW - deathDate) / DAY);
+    const fmtDate = (d) => new Date(NOW.getTime() + d * DAY).toISOString().split('T')[0];
+    const pastDate = (d) => new Date(NOW.getTime() - d * DAY).toISOString().split('T')[0];
+
+    const claim = {
+      id: 'claim-ec', claimNumber: 'CLM-000147', status: ClaimStatus.UNDER_REVIEW, type: ClaimType.DEATH,
+      createdAt: createdDate.toISOString(), updatedAt: new Date(createdDate.getTime() + 5 * DAY).toISOString(), closedAt: null,
+      deathEvent: {
+        dateOfDeath: '2026-01-15', mannerOfDeath: 'Natural', causeOfDeath: 'Myocardial Infarction',
+        deathInUSA: true, countryOfDeath: 'USA', stateOfDeath: 'TX', proofOfDeathSourceType: 'Death Certificate',
+        proofOfDeathDate: '2026-01-18', certifiedDOB: '1967-04-22', verificationSource: 'EDRS',
+        verificationScore: 99, specialEvent: null
+      },
+      insured: { name: 'Ethan Carter', ssn: maskedSSN('8812'), dateOfBirth: '1967-04-22', dateOfDeath: '2026-01-15', age: 58 },
+      claimant: { name: 'Isabella Hughes', relationship: 'Sibling', contactInfo: { email: 'isabella.hughes@email.com', phone: '512-555-0192' } },
+      policies: [{ policyNumber: 'POL-571390', policyType: 'Universal Life', policyStatus: 'In Force', issueDate: '2012-03-01', issueState: 'TX', region: 'South', companyCode: 'BLM', planCode: 'UL500', faceAmount: 500000, currentCashValue: 184200, loanBalance: 0, paidToDate: '2026-01-01', source: 'Policy Admin', owner: 'Ethan Carter' }],
+      policy: { policyNumber: 'POL-571390', type: 'Universal Life', policyType: 'Universal Life', status: 'In Force', policyStatus: 'In Force', issueDate: '2012-03-01', issueState: 'TX', faceAmount: 500000, owner: 'Ethan Carter', region: 'South', companyCode: 'BLM', planCode: 'UL500', paidToDate: '2026-01-01', source: 'Policy Admin', currentCashValue: 184200, loanBalance: 0 },
+      parties: [
+        { id: 'party-ec-1', name: 'Ethan Carter', role: 'Insured', source: 'Policy Admin', resState: 'TX', dateOfBirth: '1967-04-22', ssn: maskedSSN('8812'), phone: '512-555-0100', email: 'ethan.carter@email.com', address: '3801 Ranch Road, Austin, TX 78704', verificationStatus: 'Verified', verificationScore: 99, cslnAction: 'Verified', cslnResult: 'Match' },
+        { id: 'party-ec-2', name: 'Isabella Hughes', role: 'Primary Beneficiary', partyType: 'individual', allocation: 40, source: 'Policy Admin', resState: 'TX', dateOfBirth: '1969-05-14', ssn: maskedSSN('4721'), phone: '512-555-0192', email: 'isabella.hughes@email.com', address: '4521 Oak Creek Drive, Austin, TX 78745', verificationStatus: 'In Review', verificationScore: 82, cslnAction: 'Search', cslnResult: 'Pending Review' },
+        { id: 'party-ec-3', name: 'Carter Family Irrevocable Trust', role: 'Primary Beneficiary', partyType: 'trust', allocation: 35, authorizedSigner: 'Benjamin Clark (Trustee)', source: 'Policy Admin', phone: '512-555-0380', email: 'b.clark@cartertrustee.com', address: '200 Congress Ave Suite 400, Austin, TX 78701', verificationStatus: 'Pending', verificationScore: null },
+        { id: 'party-ec-4', name: 'Estate of Ethan Carter', role: 'Contingent Beneficiary', partyType: 'estate', allocation: 15, authorizedSigner: 'Mia Robinson (Administrator)', source: 'Policy Admin', phone: '512-555-0455', email: 'm.robinson@austinlegal.com', address: '1011 San Jacinto Blvd, Austin, TX 78701', verificationStatus: 'Pending', verificationScore: null },
+        { id: 'party-ec-5', name: 'Carter & Sons Construction LLC', role: 'Contingent Beneficiary', partyType: 'corporate', allocation: 10, authorizedSigner: 'Lucas Wright (CEO)', source: 'Policy Admin', phone: '512-555-0711', email: 'lucas.wright@carterconst.com', address: '8900 E Ben White Blvd, Austin, TX 78741', verificationStatus: 'Pending', verificationScore: null },
+        { id: 'party-ec-6', name: 'Dr. Emily Foster', role: 'Attending Physician', partyType: 'provider', source: 'FNOL', phone: '512-555-0892', email: 'efoster@austinmedical.com', address: '1301 W 38th St, Austin, TX 78705', verificationStatus: 'Verified', verificationScore: 97 },
+        { id: 'party-ec-7', name: 'Isabella Hughes', role: 'Notifier', source: 'FNOL', resState: 'TX', phone: '512-555-0192', email: 'isabella.hughes@email.com', verificationStatus: 'Verified' }
+      ],
+      aiInsights: { riskScore: 52, alerts: [
+        { id: 'alert-ec-1', severity: 'Medium', category: 'Complex Estate', title: 'Trust & Estate Beneficiaries', message: 'Claim involves trust, estate, and corporate beneficiaries requiring entity documentation', description: 'Multiple non-individual beneficiaries require additional documentation: Trust Agreement, Letters Testamentary, and Corporate Resolution.', confidence: 95, recommendation: 'Request all entity documentation packages concurrently to avoid delays', timestamp: createdDate.toISOString() },
+        { id: 'alert-ec-2', severity: 'Medium', category: 'Document', title: 'APS Resubmission Required', message: 'Attending physician statement returned NIGO due to illegible scan', description: 'APS from Dr. Emily Foster was returned as NIGO — resubmit at 300 dpi minimum.', confidence: 100, recommendation: 'Contact Dr. Foster office to resubmit at required resolution', timestamp: new Date(createdDate.getTime() + 10 * DAY).toISOString() }
+      ] },
+      financial: { claimAmount: 500000, reserve: 450000, amountPaid: 0, pmiState: 'TX', pmiRate: 0.08, pmiDays, interestAmount: 0, netBenefitProceeds: 500000, netBenefitPMI: 0, federalTaxRate: 24, stateTaxRate: 0, taxableAmount: 0, federalTaxWithheld: 0, stateTaxWithheld: 0, taxWithheld: 0, percentage: 100, currency: 'USD', payments: [] },
+      routing: { type: RoutingType.STANDARD, score: 48, eligible: false, evaluatedAt: new Date(createdDate.getTime() + 15 * 60000).toISOString(), criteria: { deathVerification: true, policyInForce: true, beneficiaryMatch: false, noContestability: true, claimAmountThreshold: false, noAnomalies: false } },
+      workflow: { fsoCase: 'FSO-CLM-000147', currentTask: 'Gather Entity Documentation', assignedTo: 'Sarah Johnson', daysOpen, sla: { dueDate: slaDate.toISOString(), daysRemaining: daysToSla, atRisk: daysToSla < 5 } }
+    };
+
+    claim.sysId = 'demo-sys-id-ec'; claim.fnolNumber = 'FNOL0000147';
+    claim.timeline = generateTimeline(claim); claim.workNotes = generateWorkNotes(claim);
+
+    // Pre-generated 39 requirements — complex estate with trust, estate entity & corp beneficiaries
+    claim.requirements = [
+      // ─── Claim Level (System Auto-Verified) ───
+      { id: 'ec-r01', level: 'claim', name: 'EDRS Death Verification', description: 'Electronic Death Registration System auto-lookup — confirmed via Texas EDRS registry', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(28), dueDate: fmtDate(-25), documents: [{ id: 'ec-d01', name: 'death_cert_edrs.pdf' }], metadata: { confidenceScore: 0.99, verificationSource: 'Texas EDRS' } },
+      { id: 'ec-r02', level: 'claim', name: 'OFAC / Sanctions Screening', description: 'All parties screened against OFAC SDN list and state sanctions databases — no matches', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(29), dueDate: fmtDate(-26), documents: [], metadata: { confidenceScore: 1.0, verificationSource: 'OFAC API' } },
+      // ─── Policy Level (Auto-Verified) ───
+      { id: 'ec-r03', level: 'policy', name: 'Policy In-Force Verification', description: 'Universal Life $500K confirmed in force at date of death — no lapse or surrender', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(29), dueDate: fmtDate(-26), documents: [{ id: 'ec-d03', name: 'policy_admin_extract.pdf' }], metadata: { confidenceScore: 0.99, verificationSource: 'Policy Admin System' } },
+      { id: 'ec-r04', level: 'policy', name: 'Contestability Period Check', description: 'Policy issued 2012-03-01 — past the 2-year contestability window. No further investigation required.', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(29), dueDate: fmtDate(-26), documents: [], metadata: { confidenceScore: 0.99 } },
+      { id: 'ec-r05', level: 'policy', name: 'Beneficiary Designation on File', description: 'All 4 named beneficiaries confirmed with correct allocation percentages (40/35/15/10)', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(28), dueDate: fmtDate(-25), documents: [], metadata: { confidenceScore: 0.98, verificationSource: 'Bene Designation Extract' } },
+      { id: 'ec-r06', level: 'policy', name: 'Universal Life Coverage Confirmation', description: 'Face amount $500,000 — current cash value $184,200 — no outstanding loans', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(28), dueDate: fmtDate(-25), documents: [], metadata: { confidenceScore: 0.99 } },
+      // ─── Isabella Hughes — Primary Beneficiary (Individual, 40%) ───
+      { id: 'ec-r07', level: 'party', partyId: 'party-ec-2', name: 'Claimant Statement of Claim', description: 'Signed Form BLM-1042 — IDP confidence 78%, signature verification in progress on page 3', status: 'in_review', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(4), documents: [{ id: 'ec-d07', name: 'claimant_statement_draft.pdf' }], metadata: { confidenceScore: 0.78, reason: 'Signature verification in progress — IDP flagged signature area on page 3' } },
+      { id: 'ec-r08', level: 'party', partyId: 'party-ec-2', name: 'Certified Death Certificate', description: 'Certified copy from Texas vital records — submitted by claimant and cross-matched with EDRS', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(20), dueDate: fmtDate(-17), documents: [{ id: 'ec-d08', name: 'death_cert_certified.pdf' }], metadata: { confidenceScore: 0.97 } },
+      { id: 'ec-r09', level: 'party', partyId: 'party-ec-2', name: 'Government-Issued Photo ID', description: "Driver's license — IDP confidence 82%, name and DOB match in progress", status: 'in_review', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(4), documents: [{ id: 'ec-d09', name: 'drivers_license_ih.pdf' }], metadata: { confidenceScore: 0.82 } },
+      { id: 'ec-r10', level: 'party', partyId: 'party-ec-2', name: 'IRS Form W-9', description: 'W-9 required for 1099-INT reporting on PMI interest earned during processing', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(7), documents: [], metadata: {} },
+      { id: 'ec-r11', level: 'party', partyId: 'party-ec-2', name: 'Payment Election Form', description: 'ACH direct deposit or check — lump sum or settlement option selection required', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(7), documents: [], metadata: { paymentMethod: 'Not selected' } },
+      { id: 'ec-r12', level: 'party', partyId: 'party-ec-2', name: 'Proof of Relationship Verification', description: 'Relationship to insured confirmed from policy records and FNOL attestation', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(25), dueDate: fmtDate(-22), documents: [], metadata: { confidenceScore: 0.95 } },
+      { id: 'ec-r13', level: 'party', partyId: 'party-ec-2', name: 'OFAC Individual Screening', description: 'Individual SDN and state sanctions search — no matches found', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(29), dueDate: fmtDate(-26), documents: [], metadata: { confidenceScore: 1.0 } },
+      { id: 'ec-r14', level: 'party', partyId: 'party-ec-2', name: 'Identity Verification (SSN Match)', description: '3-point match: name, DOB, address — confirmed via LexisNexis', status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(28), dueDate: fmtDate(-25), documents: [], metadata: { confidenceScore: 0.94 } },
+      // ─── Carter Family Irrevocable Trust — Primary Beneficiary (Trust, 35%) ───
+      { id: 'ec-r15', level: 'party', partyId: 'party-ec-3', name: 'Trust Agreement', description: 'Full trust agreement document — all pages, amendments, and schedules required', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(10), documents: [], metadata: {} },
+      { id: 'ec-r16', level: 'party', partyId: 'party-ec-3', name: 'Certificate of Trust Existence', description: 'Abbreviated certificate confirming trust existence, trustee authority, and tax ID', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(10), documents: [], metadata: {} },
+      { id: 'ec-r17', level: 'party', partyId: 'party-ec-3', name: 'Letters of Authority / Trustee Resolution', description: 'Trustee resolution authorizing claim payment — returned for re-execution (notarization missing)', status: 'nigo', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(3), documents: [{ id: 'ec-d17', name: 'trustee_resolution_draft.pdf' }], metadata: { confidenceScore: 0.31, reason: '❌ NIGO: Document was not properly executed — notarization missing. Returned to trustee for re-execution.' } },
+      { id: 'ec-r18', level: 'party', partyId: 'party-ec-3', name: 'Trust Tax ID (EIN)', description: 'IRS-issued EIN for the trust — required for 1099 and payment processing', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r19', level: 'party', partyId: 'party-ec-3', name: 'Trustee Government-Issued ID', description: "Benjamin Clark's driver's license or passport — identity verification for authorized signer", status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(10), documents: [], metadata: {} },
+      { id: 'ec-r20', level: 'party', partyId: 'party-ec-3', name: 'Trustee IRS Form W-9', description: 'W-9 in name of trust with trust EIN — required for tax reporting', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r21', level: 'party', partyId: 'party-ec-3', name: 'Payment Election Form (Trust)', description: 'Wire transfer or check in name of trust — bank letter on trust letterhead required for ACH', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(14), documents: [], metadata: { paymentMethod: 'Not selected' } },
+      { id: 'ec-r22', level: 'party', partyId: 'party-ec-3', name: 'SOS Entity Verification', description: 'Texas Secretary of State confirmation — trust registration and good standing', status: 'pending', isMandatory: false, pri: 'conditional', dueDate: fmtDate(14), documents: [], metadata: {} },
+      // ─── Estate of Ethan Carter — Contingent Beneficiary (Estate, 15%) ───
+      { id: 'ec-r23', level: 'party', partyId: 'party-ec-4', name: 'Letters Testamentary / Letters of Administration', description: 'Court-issued authorization for estate administrator Mia Robinson — certified copy required', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(14), documents: [], metadata: {} },
+      { id: 'ec-r24', level: 'party', partyId: 'party-ec-4', name: 'Small Estate Affidavit Eligibility Check', description: 'Checking if estate qualifies for small estate affidavit (TX threshold $75K) — benefit share is $75K (15% of $500K)', status: 'in_review', isMandatory: false, pri: 'conditional', dueDate: fmtDate(5), documents: [], metadata: { reason: '⏳ Reviewing eligibility: benefit share $75,000 is at TX small estate threshold. Legal review in progress.' } },
+      { id: 'ec-r25', level: 'party', partyId: 'party-ec-4', name: 'Estate EIN from IRS', description: 'Employer Identification Number for estate — required for payment and tax reporting', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(14), documents: [], metadata: {} },
+      { id: 'ec-r26', level: 'party', partyId: 'party-ec-4', name: 'Administrator Government-Issued ID', description: "Mia Robinson's driver's license or passport — identity verification for authorized administrator", status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(14), documents: [], metadata: {} },
+      { id: 'ec-r27', level: 'party', partyId: 'party-ec-4', name: 'Administrator IRS Form W-9', description: 'W-9 in name of estate with estate EIN — required for 1099 reporting', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(16), documents: [], metadata: {} },
+      { id: 'ec-r28', level: 'party', partyId: 'party-ec-4', name: 'Payment Election Form (Estate)', description: 'Wire or check in name of estate — court authorization may be required for wire transfer', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(18), documents: [], metadata: { paymentMethod: 'Not selected' } },
+      { id: 'ec-r29', level: 'party', partyId: 'party-ec-4', name: 'Surety Bond Verification', description: 'Confirm administrator has filed required surety bond with probate court (if applicable)', status: 'pending', isMandatory: false, pri: 'conditional', dueDate: fmtDate(14), documents: [], metadata: {} },
+      // ─── Carter & Sons Construction LLC — Contingent Beneficiary (Corporate, 10%) ───
+      { id: 'ec-r30', level: 'party', partyId: 'party-ec-5', name: 'Corporate Resolution', description: 'Board resolution authorizing receipt of life insurance proceeds — signed by all officers', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r31', level: 'party', partyId: 'party-ec-5', name: 'Articles of Incorporation', description: 'Certificate of formation or articles of organization — from Texas SOS filing records', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r32', level: 'party', partyId: 'party-ec-5', name: 'SOS Business Entity Verification', description: 'Texas Secretary of State — entity active, good standing, not dissolved or forfeited', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(10), documents: [], metadata: {} },
+      { id: 'ec-r33', level: 'party', partyId: 'party-ec-5', name: 'Certificate of Good Standing', description: 'Texas Comptroller certificate — current franchise tax status and good standing', status: 'pending', isMandatory: false, pri: 'conditional', dueDate: fmtDate(14), documents: [], metadata: {} },
+      { id: 'ec-r34', level: 'party', partyId: 'party-ec-5', name: 'Authorized Signatory Government ID', description: "Lucas Wright (CEO) driver's license — identity verification for corporate authorized signer", status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r35', level: 'party', partyId: 'party-ec-5', name: 'Corporate W-9 (EIN)', description: 'W-9 in corporate name with business EIN — required for 1099-MISC reporting', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(12), documents: [], metadata: {} },
+      { id: 'ec-r36', level: 'party', partyId: 'party-ec-5', name: 'Payment Election Form (Corporate)', description: 'Wire transfer preferred — corporate banking letter with authorized officer signature required', status: 'pending', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(14), documents: [], metadata: { paymentMethod: 'Not selected' } },
+      // ─── Dr. Emily Foster — Attending Physician ───
+      { id: 'ec-r37', level: 'party', partyId: 'party-ec-6', name: 'Attending Physician Statement (APS)', description: 'APS from Dr. Emily Foster required — myocardial infarction confirmation for UL policy review', status: 'nigo', isMandatory: true, pri: 'mandatory', dueDate: fmtDate(2), documents: [{ id: 'ec-d37', name: 'aps_form_scan.pdf' }], metadata: { confidenceScore: 0.41, reason: '❌ NIGO: Document quality insufficient — illegible scan. Please resubmit at 300 dpi minimum.' } },
+      { id: 'ec-r38', level: 'party', partyId: 'party-ec-6', name: 'Medical Records Authorization (HIPAA)', description: 'Signed HIPAA release from authorized estate representative for complete medical records', status: 'pending', isMandatory: false, pri: 'conditional', dueDate: fmtDate(10), documents: [], metadata: {} },
+      { id: 'ec-r39', level: 'party', partyId: 'party-ec-6', name: 'NPI Verification', description: "Dr. Foster's National Provider Identifier verified against NPI registry — confirmed active", status: 'satisfied', isMandatory: true, pri: 'mandatory', satisfiedDate: pastDate(25), dueDate: fmtDate(-22), documents: [], metadata: { confidenceScore: 1.0, verificationSource: 'NPI Registry' } },
+    ];
+
     claims.push(claim);
   }
 
@@ -544,3 +713,11 @@ export const getDemoData = () => {
 
 const demoDataInstance = getDemoData();
 export default demoDataInstance;
+
+// Requirements tab demo data — reuses the Ethan Carter (CLM-000147) showcase claim
+// Used by RequirementsEngine to show rich demo requirements for FNOL/ServiceNow claims
+export const getRequirementsDemoData = () => {
+  const ec = getDemoData().claims.find(c => c.id === 'claim-ec');
+  if (!ec) return { parties: [], requirements: [] };
+  return { parties: ec.parties, requirements: ec.requirements };
+};
