@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DxcFlex,
   DxcCard,
@@ -12,6 +12,22 @@ import {
 const ClaimsWorkbenchSimple = ({ claim, onBack }) => {
   const [activeTab, setActiveTab] = useState('timeline');
   const [newNote, setNewNote] = useState('');
+
+  useEffect(() => {
+    const scrollAll = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.querySelectorAll('div').forEach(el => {
+        if (el.scrollTop > 0) {
+          const ov = window.getComputedStyle(el).overflowY;
+          if (ov === 'auto' || ov === 'scroll') el.scrollTop = 0;
+        }
+      });
+    };
+    const r1 = requestAnimationFrame(() => { requestAnimationFrame(scrollAll); });
+    return () => cancelAnimationFrame(r1);
+  }, [activeTab, claim?.id]);
 
   // Mock timeline data
   const timelineEvents = [
