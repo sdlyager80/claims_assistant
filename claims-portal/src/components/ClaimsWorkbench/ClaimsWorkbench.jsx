@@ -34,6 +34,7 @@ import PartyForm from '../PartyForm/PartyForm';
 import RequirementsEngine from '../RequirementsEngine/RequirementsEngine';
 import WorkNotes from '../WorkNotes/WorkNotes';
 import RelatedPoliciesPanel from '../RelatedPoliciesPanel/RelatedPoliciesPanel';
+import ClaimPlaybook from '../ClaimDetail/ClaimPlaybook';
 import serviceNowService from '../../services/api/serviceNowService';
 import './ClaimsWorkbench.css';
 
@@ -441,50 +442,58 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
             <DxcInset space="var(--spacing-padding-l)" top>
               <DxcTabs iconPosition="left">
                 <DxcTabs.Tab
-                  label="Dashboard"
-                  icon="dashboard"
+                  label="Playbook"
+                  icon="map"
                   active={activeTab === 0}
                   onClick={() => setActiveTab(0)}
                 >
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Financials"
-                  icon="payments"
+                  label="Dashboard"
+                  icon="dashboard"
                   active={activeTab === 1}
                   onClick={() => setActiveTab(1)}
                 >
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Policy 360"
-                  icon="policy"
+                  label="Financials"
+                  icon="payments"
                   active={activeTab === 2}
                   onClick={() => setActiveTab(2)}
                 >
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Timeline"
-                  icon="timeline"
+                  label="Policy 360"
+                  icon="policy"
                   active={activeTab === 3}
                   onClick={() => setActiveTab(3)}
                 >
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Requirements"
-                  icon="checklist"
+                  label="Timeline"
+                  icon="timeline"
                   active={activeTab === 4}
                   onClick={() => setActiveTab(4)}
                 >
                   <div />
                 </DxcTabs.Tab>
                 <DxcTabs.Tab
-                  label="Documents"
-                  icon="folder"
+                  label="Requirements"
+                  icon="checklist"
                   active={activeTab === 5}
                   onClick={() => setActiveTab(5)}
+                >
+                  <div />
+                </DxcTabs.Tab>
+                <DxcTabs.Tab
+                  label="Documents"
+                  icon="folder"
+                  active={activeTab === 6}
+                  onClick={() => setActiveTab(6)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -492,8 +501,8 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcTabs.Tab
                   label="Beneficiary Analyzer"
                   icon="psychology"
-                  active={activeTab === 6}
-                  onClick={() => setActiveTab(6)}
+                  active={activeTab === 7}
+                  onClick={() => setActiveTab(7)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -502,8 +511,8 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                 <DxcTabs.Tab
                   label="Related Policies"
                   icon="policy"
-                  active={activeTab === 7}
-                  onClick={() => setActiveTab(7)}
+                  active={activeTab === 8}
+                  onClick={() => setActiveTab(8)}
                 >
                   <div />
                 </DxcTabs.Tab>
@@ -512,8 +521,17 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
             </DxcInset>
 
             <DxcInset space="var(--spacing-padding-l)">
-              {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
+              {/* Playbook Tab */}
               {activeTab === 0 && (
+                <ClaimPlaybook
+                  claim={claim}
+                  onNavigateToTab={setActiveTab}
+                  onAction={(action) => console.log('[ClaimsWorkbench] Playbook action:', action)}
+                />
+              )}
+
+              {/* Dashboard Tab - SA-001 Claim Dashboard 360° View */}
+              {activeTab === 1 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
 
                   {/* FNOL People Row: Insured + Claimant identity cards */}
@@ -715,28 +733,28 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         label="View Full Financials"
                         mode="secondary"
                         icon="payments"
-                        onClick={() => setActiveTab(1)}
+                        onClick={() => setActiveTab(2)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="View Policy Details"
                         mode="secondary"
                         icon="policy"
-                        onClick={() => setActiveTab(2)}
+                        onClick={() => setActiveTab(3)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="Manage Requirements"
                         mode="secondary"
                         icon="checklist"
-                        onClick={() => setActiveTab(4)}
+                        onClick={() => setActiveTab(5)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       <DxcButton
                         label="Upload Documents"
                         mode="secondary"
                         icon="upload_file"
-                        onClick={() => setActiveTab(5)}
+                        onClick={() => setActiveTab(6)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       {claim.deathEvent && (
@@ -744,7 +762,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                         label="Analyze Beneficiaries"
                         mode="primary"
                         icon="psychology"
-                        onClick={() => setActiveTab(6)}
+                        onClick={() => setActiveTab(7)}
                         style={{ minHeight: 44 }} /* BLOOM: Minimum button height */
                       />
                       )}
@@ -754,7 +772,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Financials Tab */}
-              {activeTab === 1 && (
+              {activeTab === 2 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
                   {/* Reserve Summary - BLOOM: Enhanced stat cards with left accent borders */}
                   <DxcFlex gap="32px">
@@ -1033,7 +1051,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Policy 360 Tab */}
-              {activeTab === 2 && (
+              {activeTab === 3 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
 
                   {/* Death Claim Record — shown first for FNOL claims */}
@@ -1238,7 +1256,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Timeline Tab - SA-010 Activity Timeline */}
-              {activeTab === 3 && (
+              {activeTab === 4 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-m)">
                   <DxcFlex justifyContent="space-between" alignItems="center">
                     <DxcHeading level={4} text="Activity Timeline" />
@@ -1300,7 +1318,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Requirements Tab */}
-              {activeTab === 4 && (
+              {activeTab === 5 && (
                 <RequirementsEngine
                   claim={claim}
                   onGenerateRequirements={() => {
@@ -1311,7 +1329,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                   }}
                   onUploadDocument={(req) => {
                     console.log('Upload document for requirement:', req);
-                    setActiveTab(5); // Switch to Documents tab
+                    setActiveTab(6); // Switch to Documents tab
                   }}
                   onWaive={(req) => {
                     console.log('Waive requirement:', req);
@@ -1320,7 +1338,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Documents Tab */}
-              {activeTab === 5 && (
+              {activeTab === 6 && (
                 <DxcFlex direction="column" gap="var(--spacing-gap-l)">
                   {/* Upload Section */}
                   <DxcFlex direction="column" gap="var(--spacing-gap-m)">
@@ -1358,7 +1376,7 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
               )}
 
               {/* Beneficiary Analyzer Tab */}
-              {activeTab === 6 && (
+              {activeTab === 7 && (
                 <BeneficiaryAnalyzer
                   claimId={claim.claimNumber || claim.id}
                   claim={claim}
@@ -1366,17 +1384,17 @@ const ClaimsWorkbench = ({ claim, onBack }) => {
                     console.log('[ClaimsWorkbench] Beneficiaries approved:', beneficiaries);
                     // TODO: Update claim with approved beneficiaries
                     // Switch back to Policy 360 tab to see updated beneficiaries
-                    setActiveTab(2);
+                    setActiveTab(3);
                   }}
                   onCancel={() => {
                     // Return to Policy 360 tab
-                    setActiveTab(2);
+                    setActiveTab(3);
                   }}
                 />
               )}
 
               {/* Related Policies Tab */}
-              {activeTab === 7 && (
+              {activeTab === 8 && (
                 <RelatedPoliciesPanel
                   claimData={claim}
                   onInitiateClaim={(policy) => {

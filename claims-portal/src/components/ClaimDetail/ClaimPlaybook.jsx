@@ -251,11 +251,14 @@ const buildChecklistForPhase = (phaseIndex, claim, isSTP) => {
 // ---------------------------------------------------------------------------
 // Action button definitions per phase
 // ---------------------------------------------------------------------------
+// Tab indices for ClaimsWorkbench (Playbook is Tab 0, rest shifted +1):
+//   1=Dashboard, 2=Financials, 3=Policy 360, 4=Timeline,
+//   5=Requirements, 6=Documents, 7=Beneficiary Analyzer, 8=Related Policies
 const getActionButtons = (phaseIndex, isSTP, onNavigateToTab, onAction) => {
   if (isSTP) {
     if (phaseIndex === 3) {
       return [
-        { label: 'Manage Payments', onClick: () => onNavigateToTab(6), mode: 'primary' },
+        { label: 'Manage Payments', onClick: () => onNavigateToTab(2), mode: 'primary' },
       ];
     }
     return [];
@@ -267,29 +270,29 @@ const getActionButtons = (phaseIndex, isSTP, onNavigateToTab, onAction) => {
       return [];
     case 1: // Verify
       return [
-        { label: 'Review Related Policies', onClick: () => onNavigateToTab(7), mode: 'secondary' },
-        { label: 'Check Requirements',      onClick: () => onNavigateToTab(1), mode: 'secondary' },
+        { label: 'Review Related Policies', onClick: () => onNavigateToTab(8), mode: 'secondary' },
+        { label: 'Check Requirements',      onClick: () => onNavigateToTab(5), mode: 'secondary' },
       ];
     case 2: // Requirements
       return [
-        { label: 'Manage Requirements', onClick: () => onNavigateToTab(1), mode: 'primary'   },
-        { label: 'Upload Documents',    onClick: () => onNavigateToTab(2), mode: 'secondary' },
+        { label: 'Manage Requirements', onClick: () => onNavigateToTab(5), mode: 'primary'   },
+        { label: 'Upload Documents',    onClick: () => onNavigateToTab(6), mode: 'secondary' },
       ];
     case 3: // Assessment
       return [
-        { label: 'Review Beneficiaries', onClick: () => onNavigateToTab(4), mode: 'primary'   },
-        { label: 'Confirm Policies',     onClick: () => onNavigateToTab(3), mode: 'secondary' },
-        { label: 'Open Adjudication',    onClick: () => onNavigateToTab(5), mode: 'secondary' },
+        { label: 'Review Beneficiaries', onClick: () => onNavigateToTab(7), mode: 'primary'   },
+        { label: 'Policy 360',           onClick: () => onNavigateToTab(3), mode: 'secondary' },
+        { label: 'View Dashboard',       onClick: () => onNavigateToTab(1), mode: 'secondary' },
       ];
     case 4: // Decision
       return [
-        { label: 'Approve Claim',     onClick: () => onAction('approve'), mode: 'primary'   },
-        { label: 'Deny Claim',        onClick: () => onAction('deny'),    mode: 'secondary' },
-        { label: 'Open Adjudication', onClick: () => onNavigateToTab(5), mode: 'secondary' },
+        { label: 'Approve Claim', onClick: () => onAction('approve'), mode: 'primary'   },
+        { label: 'Deny Claim',    onClick: () => onAction('deny'),    mode: 'secondary' },
+        { label: 'View Dashboard', onClick: () => onNavigateToTab(1), mode: 'secondary' },
       ];
     case 5: // Payment
       return [
-        { label: 'Manage Payments', onClick: () => onNavigateToTab(6), mode: 'primary' },
+        { label: 'Manage Payments', onClick: () => onNavigateToTab(2), mode: 'primary' },
       ];
     default:
       return [];
