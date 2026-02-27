@@ -61,6 +61,8 @@ const PHASES_STP = [
 // ---------------------------------------------------------------------------
 // Status → phase index maps
 // ---------------------------------------------------------------------------
+// Aligned with ClaimLifecycleTracker step mapping:
+//   FNOL(0) → Verify(1) → Requirements(2) → Assessment(3) → Decision(4) → Payment(5)
 const STATUS_TO_PHASE_STANDARD = {
   new:                   0,
   submitted:             0,
@@ -69,24 +71,25 @@ const STATUS_TO_PHASE_STANDARD = {
   pending_requirements:  2,
   suspended:             2,
   requirements_complete: 3,
-  in_approval:           4,
-  denied:                4,
-  approved:              5,
+  in_approval:           3,  // still in Assessment/review stage
+  approved:              4,  // Decision rendered (approved)
+  denied:                4,  // Decision rendered (denied)
   payment_scheduled:     5,
   payment_complete:      5,
   closed:                5,
 };
 
+// STP: FNOL(0) → STP Eval(1) → Auto-Approval(2) → Payment(3) → Closed(4)
 const STATUS_TO_PHASE_STP = {
-  new:              0,
-  submitted:        0,
-  under_review:     1,
-  in_review:        1,
-  denied:           1,
-  approved:         2,
-  payment_scheduled:3,
-  payment_complete: 3,
-  closed:           4,
+  new:               0,
+  submitted:         0,
+  under_review:      1,
+  in_review:         1,
+  approved:          2,
+  payment_scheduled: 3,
+  payment_complete:  3,
+  denied:            4,
+  closed:            4,
 };
 
 // ---------------------------------------------------------------------------
@@ -165,20 +168,51 @@ const buildChecklistForPhase = (phaseIndex, claim, isSTP) => {
     if (mandatory.length === 0) {
       return [{ label: 'No mandatory requirements defined', done: true }];
     }
+
     const now = new Date();
-    return mandatory.map(req => {
-      const done = ['igo', 'satisfied', 'waived'].includes(req.status) ||
-                   req.status === RequirementStatus.SATISFIED ||
-                   req.status === RequirementStatus.WAIVED;
-      const dueDate = req.dueDate ? new Date(req.dueDate) : null;
+    const isDoneReq = req =>
+      ['igo', 'satisfied', 'waived'].includes(req.status) ||
+      req.status === RequirementStatus.SATISFIED ||
+      req.status === RequirementStatus.WAIVED;
+
+    // Group: claim-level first, policy-level second, then party-level grouped by participant
+    const claimReqs  = mandatory.filter(r => r.level === 'claim' || (!r.level && !r.metadata?.partyId && !r.metadata?.policyNumber));
+    const policyReqs = mandatory.filter(r => r.level === 'policy' || r.metadata?.policyNumber);
+    const partyReqs  = mandatory.filter(r => r.level === 'party'  || r.metadata?.partyId);
+
+    const toItem = (req, detailOverride) => {
+      const done      = isDoneReq(req);
+      const dueDate   = req.dueDate ? new Date(req.dueDate) : null;
       const isOverdue = dueDate && dueDate < now && !done;
       return {
-        label:   req.type || req.name || req.description || 'Requirement',
+        label:   req.name || req.description || 'Requirement',
         done,
-        detail:  dueDate ? `Due: ${dueDate.toLocaleDateString()}` : null,
+        detail:  detailOverride ?? (dueDate ? `Due ${dueDate.toLocaleDateString()}` : null),
         warning: isOverdue ? 'Overdue' : null,
       };
-    });
+    };
+
+    // Claim-level items — no extra detail needed
+    const claimItems = claimReqs.map(r => toItem(r, null));
+
+    // Policy-level items — show policy number as detail
+    const policyItems = policyReqs.map(r =>
+      toItem(r, r.metadata?.policyNumber ? `Policy ${r.metadata.policyNumber}` : null)
+    );
+
+    // Party-level items — group by participant name, show name as detail
+    // Deduplicate by partyName so each participant's reqs cluster together
+    const byParty = {};
+    for (const r of partyReqs) {
+      const name = r.metadata?.partyName || 'Beneficiary';
+      if (!byParty[name]) byParty[name] = [];
+      byParty[name].push(r);
+    }
+    const partyItems = Object.entries(byParty).flatMap(([name, reqs]) =>
+      reqs.map(r => toItem(r, name))
+    );
+
+    return [...claimItems, ...policyItems, ...partyItems];
   }
 
   // ── Phase 2 (STP): Auto-Approval ───────────────────────────────────────
@@ -192,19 +226,33 @@ const buildChecklistForPhase = (phaseIndex, claim, isSTP) => {
 
   // ── Phase 3 (Standard): Assessment & Beneficiary Review ────────────────
   if (!isSTP && phaseIndex === 3) {
-    const primaryBennies = (claim.beneficiaries || []).filter(b =>
-      (b.type || b.relationship || b.beneficiaryType || '').toLowerCase().includes('primary')
+    // Primary beneficiaries only — contingents are not evaluated unless a primary is deceased
+    const primaryParties = (claim.parties || []).filter(p =>
+      p.role?.toLowerCase() === 'primary beneficiary'
     );
-    const primaryVerified = primaryBennies.length > 0
-      ? primaryBennies.every(b => b.verificationStatus === 'Verified')
-      : false;
     const policiesConfirmed = (claim.policies || []).length > 0;
-    const analysisComplete  = ['requirements_complete', 'in_approval'].includes(status);
+    const analysisComplete  = ['requirements_complete', 'in_approval', 'approved', 'denied', 'payment_scheduled', 'payment_complete', 'closed'].includes(status);
+
+    // One item per primary beneficiary showing their individual verification status
+    const benniesItems = primaryParties.length > 0
+      ? primaryParties.map(p => {
+          const verified = p.verificationStatus === 'Verified';
+          const score    = p.verificationScore != null ? `Score: ${p.verificationScore}%` : null;
+          const pending  = !verified && p.cslnResult ? p.cslnResult : null;
+          return {
+            label:   `${p.name} — identity verified`,
+            done:    verified,
+            detail:  verified ? score : (score || null),
+            warning: pending && !verified ? `CSLN: ${pending}` : null,
+          };
+        })
+      : [{ label: 'No primary beneficiaries identified', done: false, warning: 'Check policy beneficiary designations' }];
 
     return [
-      { label: 'Primary beneficiaries verified',  done: primaryVerified    },
-      { label: 'Policy associations confirmed',    done: policiesConfirmed  },
-      { label: 'Beneficiary analysis complete',    done: analysisComplete   },
+      ...benniesItems,
+      { label: 'Policy associations confirmed', done: policiesConfirmed,
+        detail: policiesConfirmed ? `${(claim.policies || []).length} polic${(claim.policies || []).length === 1 ? 'y' : 'ies'}` : null },
+      { label: 'Beneficiary analysis complete',  done: analysisComplete },
     ];
   }
 
@@ -222,9 +270,12 @@ const buildChecklistForPhase = (phaseIndex, claim, isSTP) => {
   if (!isSTP && phaseIndex === 4) {
     const decisionStatuses = ['approved', 'denied', 'payment_scheduled', 'payment_complete', 'closed'];
     const decided = decisionStatuses.includes(status);
+    const isApproved = ['approved', 'payment_scheduled', 'payment_complete', 'closed'].includes(status);
+    const isDeniedStatus = status === 'denied';
     return [
-      { label: 'Decision entered',            done: decided },
-      { label: 'Decision reason documented',  done: decided },
+      { label: 'Decision entered',           done: decided,        detail: isApproved ? 'Approved' : isDeniedStatus ? 'Denied' : null },
+      { label: 'Decision reason documented', done: decided },
+      { label: 'Claimant notified',          done: isApproved || isDeniedStatus },
     ];
   }
 
@@ -300,10 +351,10 @@ const getActionButtons = (phaseIndex, isSTP, onNavigateToTab, onAction) => {
 };
 
 // ---------------------------------------------------------------------------
-// PlaybookStepper — horizontal stepper (larger version of ClaimLifecycleTracker)
+// PlaybookStepper — horizontal stepper with clickable nodes for demo nav
 // ---------------------------------------------------------------------------
-const PlaybookStepper = ({ phases, currentIndex, isDenied }) => {
-  const CIRCLE_SIZE = 28;
+const PlaybookStepper = ({ phases, currentIndex, isDenied, onSelectPhase }) => {
+  const CIRCLE_SIZE = 32;
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
@@ -323,8 +374,7 @@ const PlaybookStepper = ({ phases, currentIndex, isDenied }) => {
                           : isCurrent   ? PHASE_COLOR.current
                           : PHASE_COLOR.upcoming;
 
-        const lineColor = i < currentIndex ? PHASE_COLOR.completed : PHASE_COLOR.upcoming;
-
+        const lineColor  = i < currentIndex ? PHASE_COLOR.completed : PHASE_COLOR.upcoming;
         const labelColor = isCurrent   ? 'var(--color-fg-neutral-stronger)'
                          : isCompleted ? 'var(--color-fg-neutral-dark)'
                          : 'var(--color-fg-neutral-medium)';
@@ -333,13 +383,23 @@ const PlaybookStepper = ({ phases, currentIndex, isDenied }) => {
           <div
             key={phase.id}
             style={{
-              display: 'flex',
+              display:    'flex',
               alignItems: 'flex-start',
-              flex: i < phases.length - 1 ? '1' : '0',
+              flex:       i < phases.length - 1 ? '1' : '0',
             }}
           >
             {/* Circle + label */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+            <div
+              onClick={() => onSelectPhase(i)}
+              style={{
+                display:       'flex',
+                flexDirection: 'column',
+                alignItems:    'center',
+                flexShrink:    0,
+                cursor:        'pointer',
+              }}
+              title={`Jump to: ${phase.label}`}
+            >
               <div style={{
                 width:           CIRCLE_SIZE,
                 height:          CIRCLE_SIZE,
@@ -350,12 +410,17 @@ const PlaybookStepper = ({ phases, currentIndex, isDenied }) => {
                 alignItems:      'center',
                 justifyContent:  'center',
                 flexShrink:      0,
-              }}>
+                transition:      'box-shadow 0.15s ease, transform 0.1s ease',
+                boxShadow:       isCurrent ? `0 0 0 3px ${borderColor}33` : 'none',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
                 {isCompleted && (
                   <span style={{ color: 'white', fontSize: '14px', fontWeight: 700, lineHeight: 1 }}>✓</span>
                 )}
                 {isCurrent && (
-                  <span className="material-icons" style={{ color: 'white', fontSize: '14px' }}>
+                  <span className="material-icons" style={{ color: 'white', fontSize: '15px' }}>
                     {phase.icon}
                   </span>
                 )}
@@ -366,28 +431,25 @@ const PlaybookStepper = ({ phases, currentIndex, isDenied }) => {
                 )}
               </div>
               <div style={{
-                fontSize:    '10px',
-                color:       labelColor,
-                marginTop:   4,
-                whiteSpace:  'nowrap',
-                fontWeight:  isCurrent ? 700 : 400,
-                letterSpacing: '0.2px',
-                textAlign:   'center',
-                maxWidth:    80,
-                overflowWrap: 'break-word',
-                whiteSpace:  'normal',
-                lineHeight:  1.2,
+                fontSize:     '10px',
+                color:        labelColor,
+                marginTop:    4,
+                fontWeight:   isCurrent ? 700 : 400,
+                letterSpacing:'0.2px',
+                textAlign:    'center',
+                maxWidth:     72,
+                lineHeight:   1.25,
               }}>
                 {phase.label}
               </div>
             </div>
 
-            {/* Connecting line (not after last step) */}
+            {/* Connecting line */}
             {i < phases.length - 1 && (
               <div style={{
                 flex:            1,
                 height:          2,
-                minWidth:        24,
+                minWidth:        20,
                 backgroundColor: lineColor,
                 marginTop:       CIRCLE_SIZE / 2 - 1,
                 alignSelf:       'flex-start',
@@ -657,20 +719,29 @@ const PhaseCard = ({
 // ---------------------------------------------------------------------------
 const ClaimPlaybook = ({ claim, onNavigateToTab, onAction }) => {
   const [expandedCompleted, setExpandedCompleted] = useState(new Set());
+  const [demoPhaseOverride, setDemoPhaseOverride] = useState(null);
 
   if (!claim) {
     return (
-      <DxcContainer padding="var(--spacing-padding-l)">
-        <DxcTypography color="var(--color-fg-neutral-medium)">Loading playbook…</DxcTypography>
-      </DxcContainer>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--color-fg-neutral-medium)' }}>Loading playbook…</span>
+      </div>
     );
   }
 
-  const isSTP         = claim.routing?.type === RoutingType.STP;
-  const phases        = isSTP ? PHASES_STP : PHASES_STANDARD;
-  const currentIndex  = getCurrentPhaseIndex(claim);
-  const isDenied      = claim.status === 'denied';
-  const stpScore      = claim.routing?.stpScore ?? claim.routing?.score ?? null;
+  const isSTP        = claim.routing?.type === RoutingType.STP;
+  const phases       = isSTP ? PHASES_STP : PHASES_STANDARD;
+  const realIndex    = getCurrentPhaseIndex(claim);
+  const currentIndex = demoPhaseOverride ?? realIndex;
+  const isDemo       = demoPhaseOverride !== null;
+  const isDenied     = claim.status === 'denied' && !isDemo;
+  const stpScore     = claim.routing?.stpScore ?? claim.routing?.score ?? null;
+
+  const setPhase = (i) => {
+    const clamped = Math.max(0, Math.min(phases.length - 1, i));
+    // If clicking the real phase, exit demo mode
+    setDemoPhaseOverride(clamped === realIndex ? null : clamped);
+  };
 
   const toggleExpand = (idx) => {
     setExpandedCompleted(prev => {
@@ -696,10 +767,10 @@ const ClaimPlaybook = ({ claim, onNavigateToTab, onAction }) => {
         padding:         '12px 16px',
         backgroundColor: 'var(--color-bg-neutral-lightest)',
         borderRadius:    8,
-        border:          '1px solid #D1D3D4',
+        border:          `1px solid ${isDemo ? '#F5A623' : '#D1D3D4'}`,
         flexWrap:        'wrap',
       }}>
-        <span className="material-icons" style={{ fontSize: '20px', color: PHASE_COLOR.current }}>map</span>
+        <span className="material-icons" style={{ fontSize: '20px', color: isDemo ? '#F5A623' : PHASE_COLOR.current }}>map</span>
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-fg-neutral-stronger)' }}>
@@ -754,7 +825,7 @@ const ClaimPlaybook = ({ claim, onNavigateToTab, onAction }) => {
           </span>
         )}
 
-        {/* Path badge */}
+        {/* STP path badge */}
         {isSTP && (
           <span style={{
             backgroundColor: '#e8f4fe',
@@ -771,19 +842,106 @@ const ClaimPlaybook = ({ claim, onNavigateToTab, onAction }) => {
             ⚡ STP
           </span>
         )}
+
+        {/* Demo mode badge + reset */}
+        {isDemo && (
+          <button
+            onClick={() => setDemoPhaseOverride(null)}
+            style={{
+              backgroundColor: '#FFF8EC',
+              color:           '#B86800',
+              fontSize:        '10px',
+              fontWeight:      700,
+              borderRadius:    10,
+              padding:         '3px 10px',
+              border:          '1px solid #F5A623',
+              cursor:          'pointer',
+              whiteSpace:      'nowrap',
+              display:         'flex',
+              alignItems:      'center',
+              gap:             4,
+            }}
+            title="Exit demo mode and return to actual claim stage"
+          >
+            <span className="material-icons" style={{ fontSize: '11px' }}>refresh</span>
+            DEMO · Reset
+          </button>
+        )}
       </div>
 
-      {/* ── Horizontal stepper ─────────────────────────────────────────── */}
+      {/* ── Stepper + demo navigation controls ─────────────────────────── */}
       <div style={{
         backgroundColor: 'var(--color-bg-neutral-lightest)',
         borderRadius:    8,
-        border:          '1px solid #D1D3D4',
+        border:          `1px solid ${isDemo ? '#F5A623' : '#D1D3D4'}`,
         padding:         '16px 20px',
       }}>
+        {/* Nav row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={() => setPhase(currentIndex - 1)}
+            disabled={currentIndex === 0}
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              gap:             4,
+              backgroundColor: currentIndex === 0 ? 'transparent' : 'var(--color-bg-neutral-lightest)',
+              border:          `1px solid ${currentIndex === 0 ? '#D1D3D4' : PHASE_COLOR.current}`,
+              borderRadius:    6,
+              padding:         '4px 10px',
+              cursor:          currentIndex === 0 ? 'default' : 'pointer',
+              opacity:         currentIndex === 0 ? 0.35 : 1,
+              color:           PHASE_COLOR.current,
+              fontSize:        '12px',
+              fontWeight:      600,
+              flexShrink:      0,
+            }}
+          >
+            <span className="material-icons" style={{ fontSize: '14px' }}>chevron_left</span>
+            Prev
+          </button>
+
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <span style={{
+              fontSize:    '11px',
+              fontWeight:  600,
+              color:       isDemo ? '#B86800' : 'var(--color-fg-neutral-medium)',
+            }}>
+              {isDemo
+                ? `▶ Demo: ${phases[currentIndex].label}`
+                : phases[currentIndex].label}
+            </span>
+          </div>
+
+          <button
+            onClick={() => setPhase(currentIndex + 1)}
+            disabled={currentIndex === phases.length - 1}
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              gap:             4,
+              backgroundColor: currentIndex === phases.length - 1 ? 'transparent' : PHASE_COLOR.current,
+              border:          `1px solid ${currentIndex === phases.length - 1 ? '#D1D3D4' : PHASE_COLOR.current}`,
+              borderRadius:    6,
+              padding:         '4px 10px',
+              cursor:          currentIndex === phases.length - 1 ? 'default' : 'pointer',
+              opacity:         currentIndex === phases.length - 1 ? 0.35 : 1,
+              color:           currentIndex === phases.length - 1 ? 'var(--color-fg-neutral-medium)' : 'white',
+              fontSize:        '12px',
+              fontWeight:      600,
+              flexShrink:      0,
+            }}
+          >
+            Next
+            <span className="material-icons" style={{ fontSize: '14px' }}>chevron_right</span>
+          </button>
+        </div>
+
         <PlaybookStepper
           phases={phases}
           currentIndex={currentIndex}
           isDenied={isDenied}
+          onSelectPhase={setPhase}
         />
       </div>
 
