@@ -45,6 +45,10 @@ import RelatedPoliciesPanel from '../RelatedPoliciesPanel/RelatedPoliciesPanel';
 import PMICalculator from '../PMICalculator/PMICalculator';
 import TaxWithholdingCalculator from '../TaxWithholdingCalculator/TaxWithholdingCalculator';
 import { ClaimStatus, RoutingType, RequirementStatus } from '../../types/claim.types';
+import DeathEventPanel from '../DeathEventPanel/DeathEventPanel';
+import PolicySummaryPanel from '../PolicySummaryPanel/PolicySummaryPanel';
+import PartyManagementPanel from '../PartyManagementPanel/PartyManagementPanel';
+import AIInsightsPanel from '../AIInsightsPanel/AIInsightsPanel';
 
 /**
  * Claim Header Section
@@ -1581,22 +1585,191 @@ const ClaimDetail = ({ claimId, onClose }) => {
 
           {/* Right Column - Sidebar */}
           <DxcFlex direction="column" gap="var(--spacing-gap-m)" style={{ flex: 1, minWidth: '320px' }}>
+
             {/* Quick Actions */}
             <QuickActions claim={claim} onAction={handleAction} />
 
-            {/* Beneficiary Analysis - Auto-triggers when FNOL loads */}
-            {claim?.sysId && claim?.source === 'servicenow' && (
-              <BeneficiaryAnalysisPanel
-                fnolSysId={claim.sysId}
-                claimNumber={claim.claimNumber || claim.fnolNumber || claim.id}
-              />
-            )}
+            {/* 1. Death Details */}
+            <DeathEventPanel
+              claimData={claim.deathEvent || {}}
+              onEdit={() => handleAction('edit_death_event')}
+            />
 
-            {/* Policy Information */}
-            <PolicyInformation claim={claim} policy={currentPolicy} />
+            {/* 2. Policy Details */}
+            <PolicySummaryPanel
+              policies={claim.policies || (claim.policy ? [claim.policy] : [])}
+              onViewPolicy={handleViewPolicy}
+              onAssociate={() => handleAction('associate_policy')}
+              onDissociate={() => {}}
+              onSearchPolicy={() => handleAction('search_policy')}
+            />
 
-            {/* Additional Claim Information */}
-            <AdditionalClaimInfo claim={claim} />
+            {/* 3. Notifier */}
+            {(() => {
+              const notifier = (claim.parties || []).find(p =>
+                (p.role || '').toUpperCase() === 'NOTIFIER'
+              );
+              if (!notifier) return null;
+              return (
+                <DxcContainer
+                  padding="var(--spacing-padding-m)"
+                  style={{ backgroundColor: 'var(--color-bg-neutral-lightest)' }}
+                >
+                  <DxcFlex direction="column" gap="var(--spacing-gap-m)">
+                    {/* Header */}
+                    <DxcFlex gap="var(--spacing-gap-xs)" alignItems="center">
+                      <span className="material-icons" style={{ color: 'var(--color-fg-neutral-strong)', fontSize: '20px' }}>
+                        notification_important
+                      </span>
+                      <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+                        Notifier
+                      </DxcTypography>
+                      <DxcChip label="Reported Claim" size="small" />
+                    </DxcFlex>
+
+                    {/* Notifier Identity */}
+                    <DxcFlex gap="var(--spacing-gap-m)" alignItems="center">
+                      <span className="material-icons" style={{
+                        fontSize: '32px',
+                        color: 'var(--color-fg-primary-stronger)',
+                        backgroundColor: 'var(--color-bg-primary-lightest)',
+                        borderRadius: '50%',
+                        padding: '8px'
+                      }}>
+                        person
+                      </span>
+                      <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                        <DxcTypography fontSize="font-scale-03" fontWeight="font-weight-semibold">
+                          {notifier.name || 'Unknown'}
+                        </DxcTypography>
+                        {notifier.relationship && (
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">
+                            {notifier.relationship} of Deceased
+                          </DxcTypography>
+                        )}
+                        {notifier.verificationStatus && (
+                          <DxcBadge label={notifier.verificationStatus} />
+                        )}
+                      </DxcFlex>
+                    </DxcFlex>
+
+                    {/* Contact Details */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      {notifier.phone && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">PHONE</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">{notifier.phone}</DxcTypography>
+                        </DxcFlex>
+                      )}
+                      {notifier.email && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">EMAIL</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">{notifier.email}</DxcTypography>
+                        </DxcFlex>
+                      )}
+                      {notifier.resState && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">STATE</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">{notifier.resState}</DxcTypography>
+                        </DxcFlex>
+                      )}
+                      {notifier.dateOfBirth && (
+                        <DxcFlex direction="column" gap="var(--spacing-gap-xxs)">
+                          <DxcTypography fontSize="font-scale-01" color="var(--color-fg-neutral-stronger)">DATE OF BIRTH</DxcTypography>
+                          <DxcTypography fontSize="font-scale-02">{notifier.dateOfBirth}</DxcTypography>
+                        </DxcFlex>
+                      )}
+                    </div>
+                  </DxcFlex>
+                </DxcContainer>
+              );
+            })()}
+
+            {/* 4. Other Claim Participants */}
+            {(() => {
+              const participants = (claim.parties || []).filter(p =>
+                (p.role || '').toUpperCase() !== 'NOTIFIER'
+              );
+              if (!participants.length) return null;
+              return (
+                <PartyManagementPanel
+                  parties={participants}
+                  onAddParty={() => handleAction('add_party')}
+                  onEditParty={() => {}}
+                  onChangeInsured={() => handleAction('change_insured')}
+                  onCSLNSearch={() => {}}
+                />
+              );
+            })()}
+
+            {/* 5. Automated Insights */}
+            <AIInsightsPanel
+              claimData={{ ...claim, riskScore: 72 }}
+              insights={[
+                {
+                  severity: 'HIGH',
+                  message: 'Policy lapse flag detected — 2 missed premium payments prior to date of death'
+                },
+                {
+                  severity: 'MEDIUM',
+                  message: 'Date of death falls within contestability period (policy issued 18 months ago)'
+                },
+                {
+                  severity: 'MEDIUM',
+                  message: 'Beneficiary address does not match SSA records — manual verification recommended'
+                },
+                {
+                  severity: 'LOW',
+                  message: 'Cause of death corroborated by attending physician statement and certified death certificate'
+                },
+                {
+                  severity: 'LOW',
+                  message: 'Claimant identity verified via LexisNexis with 94% confidence score'
+                }
+              ]}
+              anomalyData={{
+                riskScore: 72,
+                summary: 'Automated review detected 1 high-priority flag and 2 items requiring examiner review.',
+                findings: [
+                  {
+                    category: 'Policy Status',
+                    severity: 'HIGH',
+                    finding: 'Lapse Detection',
+                    detail: 'Policy shows 2 missed premium payments (Oct 2024, Nov 2024) prior to date of death (Dec 3, 2024). Policy was within the 31-day grace period at time of death — requires examiner confirmation.',
+                    recommendation: 'Verify grace period coverage and confirm policy was In Force at time of death before proceeding to payment.'
+                  },
+                  {
+                    category: 'Contestability',
+                    severity: 'MEDIUM',
+                    finding: 'Within Contestability Window',
+                    detail: 'Policy issued June 12, 2023. Date of death December 3, 2024. Policy was 18 months old — within the standard 2-year contestability period.',
+                    recommendation: 'Request attending physician statement and medical records for full contestability review.'
+                  },
+                  {
+                    category: 'Beneficiary Verification',
+                    severity: 'MEDIUM',
+                    finding: 'Address Discrepancy',
+                    detail: 'Beneficiary Jennifer M. Harrison listed address (142 Maple Lane, Austin TX 78701) does not match SSA records on file. Possible recent relocation or data entry error.',
+                    recommendation: 'Contact beneficiary to confirm current mailing address and request updated government-issued ID.'
+                  },
+                  {
+                    category: 'Death Verification',
+                    severity: 'LOW',
+                    finding: 'Death Certificate Verified',
+                    detail: 'Certified death certificate received and validated against state registry. Cause of death (acute cardiac arrest) corroborated by attending physician Dr. R. Patel, MD.',
+                    recommendation: 'No additional action required for this item.'
+                  },
+                  {
+                    category: 'Identity Verification',
+                    severity: 'LOW',
+                    finding: 'Claimant Identity Confirmed',
+                    detail: 'Claimant Jennifer M. Harrison verified via LexisNexis identity check with 94% confidence score. SSN, date of birth, and known addresses all consistent with submitted documentation.',
+                    recommendation: 'No additional action required for this item.'
+                  }
+                ]
+              }}
+            />
+
           </DxcFlex>
         </DxcFlex>
       </DxcFlex>
