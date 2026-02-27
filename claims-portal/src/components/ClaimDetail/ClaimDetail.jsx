@@ -49,6 +49,7 @@ import DeathEventPanel from '../DeathEventPanel/DeathEventPanel';
 import PolicySummaryPanel from '../PolicySummaryPanel/PolicySummaryPanel';
 import PartyManagementPanel from '../PartyManagementPanel/PartyManagementPanel';
 import AIInsightsPanel from '../AIInsightsPanel/AIInsightsPanel';
+import ClaimPlaybook from './ClaimPlaybook';
 
 /**
  * Claim Header Section
@@ -1414,12 +1415,28 @@ const ClaimDetail = ({ claimId, onClose }) => {
               padding="var(--spacing-padding-m)"
             >
               <DxcTabs iconPosition="left">
-                {/* Tab 0: Requirements */}
+                {/* Tab 0: Playbook */}
+                <DxcTabs.Tab
+                  label="Playbook"
+                  icon="map"
+                  active={activeTabIndex === 0}
+                  onClick={() => setActiveTabIndex(0)}
+                >
+                  <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
+                    <ClaimPlaybook
+                      claim={claim}
+                      onNavigateToTab={setActiveTabIndex}
+                      onAction={handleAction}
+                    />
+                  </div>
+                </DxcTabs.Tab>
+
+                {/* Tab 1: Requirements */}
                 <DxcTabs.Tab
                   label="Requirements"
                   icon="check_circle"
-                  active={activeTabIndex === 0}
-                  onClick={() => setActiveTabIndex(0)}
+                  active={activeTabIndex === 1}
+                  onClick={() => setActiveTabIndex(1)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <RequirementsTracker
@@ -1432,13 +1449,13 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 1: Documents */}
+                {/* Tab 2: Documents */}
                 <DxcTabs.Tab
                   label="Documents"
                   icon="folder"
-                  active={activeTabIndex === 1}
+                  active={activeTabIndex === 2}
                   onClick={() => {
-                    setActiveTabIndex(1);
+                    setActiveTabIndex(2);
                     console.log('[ClaimDetail] Documents tab clicked, claim object:', claim);
                     console.log('[ClaimDetail] claim.sysId:', claim.sysId);
                     console.log('[ClaimDetail] claim.id:', claim.id);
@@ -1469,12 +1486,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 2: Policy Association */}
+                {/* Tab 3: Policy Association */}
                 <DxcTabs.Tab
                   label="Policy Association"
                   icon="account_tree"
-                  active={activeTabIndex === 2}
-                  onClick={() => setActiveTabIndex(2)}
+                  active={activeTabIndex === 3}
+                  onClick={() => setActiveTabIndex(3)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <PolicyAssociationTab
@@ -1484,12 +1501,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 3: Beneficiaries */}
+                {/* Tab 4: Beneficiaries */}
                 <DxcTabs.Tab
                   label="Beneficiaries"
                   icon="people"
-                  active={activeTabIndex === 3}
-                  onClick={() => setActiveTabIndex(3)}
+                  active={activeTabIndex === 4}
+                  onClick={() => setActiveTabIndex(4)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <BeneficiariesTab
@@ -1499,12 +1516,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 4: Adjudicate (NEW) */}
+                {/* Tab 5: Adjudicate */}
                 <DxcTabs.Tab
                   label="Adjudicate"
                   icon="gavel"
-                  active={activeTabIndex === 4}
-                  onClick={() => setActiveTabIndex(4)}
+                  active={activeTabIndex === 5}
+                  onClick={() => setActiveTabIndex(5)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <AdjudicateTab
@@ -1517,12 +1534,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 5: Payments & Interest (NEW) */}
+                {/* Tab 6: Payments & Interest */}
                 <DxcTabs.Tab
                   label="Payments & Interest"
                   icon="payments"
-                  active={activeTabIndex === 5}
-                  onClick={() => setActiveTabIndex(5)}
+                  active={activeTabIndex === 6}
+                  onClick={() => setActiveTabIndex(6)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <PaymentsTab
@@ -1533,12 +1550,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 6: Related Policies (shifted from 4) */}
+                {/* Tab 7: Related Policies */}
                 <DxcTabs.Tab
                   label="Related Policies"
                   icon="policy"
-                  active={activeTabIndex === 6}
-                  onClick={() => setActiveTabIndex(6)}
+                  active={activeTabIndex === 7}
+                  onClick={() => setActiveTabIndex(7)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <RelatedPoliciesPanel
@@ -1552,12 +1569,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 7: Activity (shifted from 5) */}
+                {/* Tab 8: Activity */}
                 <DxcTabs.Tab
                   label="Activity"
                   icon="timeline"
-                  active={activeTabIndex === 7}
-                  onClick={() => setActiveTabIndex(7)}
+                  active={activeTabIndex === 8}
+                  onClick={() => setActiveTabIndex(8)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <DxcTypography fontSize="font-scale-03">
@@ -1566,12 +1583,12 @@ const ClaimDetail = ({ claimId, onClose }) => {
                   </div>
                 </DxcTabs.Tab>
 
-                {/* Tab 8: Notes (shifted from 6) */}
+                {/* Tab 9: Notes */}
                 <DxcTabs.Tab
                   label="Notes"
                   icon="note"
-                  active={activeTabIndex === 8}
-                  onClick={() => setActiveTabIndex(8)}
+                  active={activeTabIndex === 9}
+                  onClick={() => setActiveTabIndex(9)}
                 >
                   <div style={{ paddingTop: 'var(--spacing-padding-m)' }}>
                     <DxcTypography fontSize="font-scale-03">
